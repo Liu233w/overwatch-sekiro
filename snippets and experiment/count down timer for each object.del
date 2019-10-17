@@ -1,0 +1,65 @@
+// do not work, because it cannot chase a value in array yet, nor changing every value in an array in a frame
+
+// set up multiple timer, and get noticed after triggered
+// we cannot put struct into array currently, so we use two array to track it.
+
+define playervar values V = [];
+define playervar timers T = [];
+define playervar huds H = [];
+
+method AddTimer(define value)
+{
+}
+
+define playervar count = 0;
+
+rule: "hold interact button to add a timer"
+Event.OngoingPlayer
+if (IsButtonHeld(EventPlayer(), Button.Interact))
+{
+    count += 1;
+
+    define end = CountOf(timers);
+
+    values = Append(values, count);
+    timers = Append(timers, 3);
+
+    
+
+    CreateHudText(EventPlayer(), values[end], null, null, Location.Left, 0, 
+        Color.White, Color.White, Color.White, StringRev.String, Spectators.DefaultVisibility);
+    huds = Append(huds, LastTextID());
+}
+
+rule: "remove item at time"
+Event.OngoingPlayer
+{
+    while (true)
+    {
+        // loop from n-1 to 0, to prevent index changing when deleting elements
+        for (define i = CountOf(timers) - 1; i >= 0; i--)
+        {
+            if (timers[i] <= 0)
+            {
+                StopChasingVariable(timers[i]);
+                timers = RemoveFromArrayAtIndex(timers, i);
+
+                DestroyHudText(huds[i]);
+                huds = RemoveFromArrayAtIndex(huds, i);
+
+                SmallMessage(EventPlayer(), values[i]);
+                values = RemoveFromArrayAtIndex(values, i);
+            }
+        }
+    }
+}
+
+rule: "update timer"
+Event.OngoingPlayer
+if (CountOf(timers) > 0)
+{
+    
+}
+
+rule: "end"
+{}

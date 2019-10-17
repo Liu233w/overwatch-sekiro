@@ -1,0 +1,64 @@
+/*
+put the attack timer on attacker's variable
+so that we can let multiple player attach one player (each attacker have their own timer)
+for the attackers themselves, their attack cd is longer than timer, so it won't collapse
+*/
+
+// to simulate the variable of the player, set an attacking time
+
+define playervar attackedTimes = 0;
+
+rule: "init attackedTimes"
+Event.OngoingPlayer
+{
+    attackedTimes = 0;
+    Wait(0.5);
+    CreateInWorldText(AllPlayers(), attackedTimes, EventPlayer(), 1, Clipping.ClipAgainstSurfaces, InworldTextRev.String);
+}
+
+rule: "reset attacked time when interact button pressed"
+Event.OngoingPlayer
+if (IsButtonHeld(EventPlayer(), Button.Interact))
+{
+    AllPlayers().attackedTimes = 0;
+}
+
+// the real code begin:
+
+define playervar state;
+
+define playervar attacking T = [];
+define playervar attackingDamage U = [];
+
+rule: "add victim to list after attacking, if the victim is not blocking"
+Event.OnDamageDealt
+// if (Victim().state != 11 || Victim().state != 12)
+{
+    attacking = Append(attacking, Victim());
+    attackingDamage = Append(attackingDamage, EventDamage());
+}
+
+rule: "start checking victim state after a short delay"
+Event.OngoingPlayer
+if (CountOf(attacking) > 0)
+{
+    Wait(0.1);
+
+    // cannot hurt more than 3 persons at once, so the loop is acceptable.
+    while (CountOf(attacking) > 0) // cannot use for loop due to the bug that evaluate rule multiple times
+    {
+        if (attacking[0].state == 11)
+        {
+            // deflecting
+            Heal(attacking[0], null, attackingDamage[0]);
+        }
+        else
+        {
+            // victim cannot being at blocking, just taken damage
+            attacking[0].attackedTimes += attackingDamage[0];
+            // TODO: add posture damage
+        }
+        attacking = RemoveFromArrayAtIndex(attacking, 0);
+        attackingDamage = RemoveFromArrayAtIndex(attackingDamage, 0);
+    }
+}

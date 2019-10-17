@@ -1,0 +1,18 @@
+/*
+posture system
+
+everyone have 200 posture
+
+taken damage amount of posture when directly hitted;
+taken half damage amount of posture when blocked;
+cause the damage amount of posture to attacker if you deflect a attack.
+
+Posture recover speed:
+when you are full health: 25 per second (8 second to clean up posture)
+health reduce to 200: 20 per second
+health reduce to 100: 10 per second (the rate is not related to the scale of health, but assigned when reaching the threshold)
+when blocking: have a double recover speed
+
+only when you are in state 1 (idle) or state 12 (blocking) can you recover posture.
+stop recovering for 1 second every time you are hitted in state 1.
+*/

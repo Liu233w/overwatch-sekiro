@@ -1,2 +1,63 @@
-rule: "Author: Liu233w#5454 (China mainland)"
+rule: "Author: Liu233w#5454 (Ch.ina mainland server)"
+{}
+rule: "Checkout the workshop source code at https://github.com/Liu233w/overwatch-doomfist-fight"
+{}
+
+/*
+
+The project use a state machine to track the status of the hero and 
+the cooldown time before or after a player action.
+
+*/
+
+define playervar currentState; // current state number in state machine
+define playervar stateInited; // is state init code executed
+
+rule: "Initialize"
+Event.OngoingPlayer
+{
+    MinWait();
+    SetAbility1Enabled(EventPlayer(), false);
+    SetAbility2Enabled(EventPlayer(), false);
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+    SetPrimaryFireEnabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
+
+    // init state
+    stateInited = false;
+}
+
+rule: "set state to 1 when spawned"
+Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
+if (currentState == 0)
+if (stateInited == false)
+{
+    currentState = 1;
+}
+
+// ============== state initialize code ====================
+rule: "state 1: idle"
+Event.OngoingPlayer
+if (currentState == 1)
+if (stateInited == false)
+{
+    SetSecondaryFireEnabled(EventPlayer(), true);
+
+    stateInited = true;
+}
+
+// ============== state switching rule =====================
+rule: "1 -- secondary fire --> 11"
+Event.OngoingPlayer
+if (currentState == 1)
+if (IsFiringSecondary(EventPlayer()))
+if (stateInited == true)
+{
+    currentState = 11;
+    stateInited = false;
+}
+
+// =========================================================
+rule: "Powered by Overwatch-Script-To-Workshop (https://github.com/ItsDeltin/Overwatch-Script-To-Workshop)"
 {}

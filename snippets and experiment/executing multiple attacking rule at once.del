@@ -1,0 +1,9 @@
+rule: "attacked"
+Event.OnDamageTaken
+{
+    CreateHudText(EventPlayer(), "hello", null, null, Location.Left);
+    Wait(10);
+    CreateHudText(EventPlayer(), "hello", null, null, Location.Right);
+}
+
+// if we are attacked multiple times, we cannot execute the rule above multiple time, unless the last one is finished
