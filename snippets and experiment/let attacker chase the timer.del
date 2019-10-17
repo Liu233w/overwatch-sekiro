@@ -45,20 +45,21 @@ if (CountOf(attacking) > 0)
     Wait(0.1);
 
     // cannot hurt more than 3 persons at once, so the loop is acceptable.
-    while (CountOf(attacking) > 0) // cannot use for loop due to the bug that evaluate rule multiple times
+    for (define i = 0; i < CountOf(attacking); i++)
     {
-        if (attacking[0].state == 11)
+        if (attacking[i].state == 11)
         {
             // deflecting
-            Heal(attacking[0], null, attackingDamage[0]);
+            Heal(attacking[i], null, attackingDamage[i]);
         }
         else
         {
             // victim cannot being at blocking, just taken damage
-            attacking[0].attackedTimes += attackingDamage[0];
+            attacking[i].attackedTimes += attackingDamage[i];
             // TODO: add posture damage
         }
-        attacking = RemoveFromArrayAtIndex(attacking, 0);
-        attackingDamage = RemoveFromArrayAtIndex(attackingDamage, 0);
     }
+
+    attacking = [];
+    attackingDamage = [];
 }
