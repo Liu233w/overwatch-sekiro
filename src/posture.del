@@ -16,3 +16,8 @@ when blocking: have a double recover speed
 only when you are in state 1 (idle) or state 12 (blocking) can you recover posture.
 stop recovering for 1 second every time you are hitted in state 1.
 */
+
+import "share.del";
+
+rule: "test ..."
+{}

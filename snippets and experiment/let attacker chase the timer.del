@@ -27,15 +27,33 @@ if (IsButtonHeld(EventPlayer(), Button.Interact))
 
 define playervar state;
 
+class AttackingEvent
+{
+    public define victim;
+    public define damage;
+    /*
+    The type of the attack. can be:
+    1 -> ability 1
+    2 -> ability 2
+    3 -> primary fire
+    4 -> secondary fire
+    */
+    public define type;
+
+    public AttackingEvent(define victim, define damage, define type)
+    {
+        this.victim = victim;
+        this.damage = damage;
+        this.type = type;
+    }
+}
 define playervar attacking = [];
-define playervar attackingDamage = [];
 
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
 // if (Victim().state != 11 || Victim().state != 12)
 {
-    attacking = Append(attacking, Victim());
-    attackingDamage = Append(attackingDamage, EventDamage());
+    attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage(), 1));
 }
 
 rule: "start checking victim state after a short delay"
@@ -45,21 +63,20 @@ if (CountOf(attacking) > 0)
     Wait(0.1);
 
     // cannot hurt more than 3 persons at once, so the loop is acceptable.
-    for (define i = 0; i < CountOf(attacking); i++)
+    foreach (AttackingEvent e in attacking)
     {
-        if (attacking[i].state == 11)
+        if (e.victim.state == 11)
         {
             // deflecting
-            Heal(attacking[i], null, attackingDamage[i]);
+            Heal(e.victim, null, e.damage);
         }
         else
         {
             // victim cannot being at blocking, just taken damage
-            attacking[i].attackedTimes += attackingDamage[i];
+            e.victim.attackedTimes += e.damage;
             // TODO: add posture damage
         }
     }
 
     attacking = [];
-    attackingDamage = [];
 }

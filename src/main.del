@@ -1,12 +1,15 @@
+import "posture.del";
+
 rule: "Author: Liu233w#5454 (Ch.ina mainland server)"
 {}
 rule: "Checkout the workshop source code at https://github.com/Liu233w/overwatch-doomfist-fight"
 {}
 
+
 /*
 
 The project use a state machine to track the status of the hero and 
-the cooldown time before or after a player action.
+the cool down time before or after a player action.
 
 */
 
@@ -57,7 +60,3 @@ if (stateInited == true)
     currentState = 11;
     stateInited = false;
 }
-
-// =========================================================
-rule: "Powered by Overwatch-Script-To-Workshop (https://github.com/ItsDeltin/Overwatch-Script-To-Workshop)"
-{}

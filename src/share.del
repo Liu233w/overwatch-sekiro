@@ -1,0 +1,6 @@
+/*
+Share variable definition to be imported
+*/
+
+define playervar isDeflecting;
+define playervar isBlocking;
