@@ -1,0 +1,9 @@
+define globalvar debugging;
+
+macro IsDebugging(): debugging == true;
+
+rule: "start debugging"
+Event.OngoingGlobal
+{
+    debugging = true;
+}

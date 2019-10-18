@@ -55,6 +55,7 @@ if (!HasStatus(EventPlayer(), Status.Stunned))
 {
     // wait 0.15 sec to see if he can regain health (wait for deflect)
     Wait(0.15, WaitBehavior.AbortWhenFalse);
+    PlayEffect(AllPlayers(), PlayEffect.RingExplosionSound, Color.White, EventPlayer(), 100);
     SetStatus(EventPlayer(), null, Status.Stunned, 3);
 }
 
@@ -70,7 +71,7 @@ if (IsAlive(EventPlayer()))
 
 // ================= posture gaining ========================
 
-define playervar posture;
+define playervar posture P;
 
 rule: "set posture to 0 when spawned"
 Event.OngoingPlayer
@@ -98,12 +99,13 @@ method GainPostureWhenDeflected(define player, define attackDamage)
 
 // ================== posture restoring =======================
 
-define playervar postureRestoringRate;
+define playervar postureRestoringRate R;
 
 rule: "start tracking posture restore"
 Event.OngoingPlayer
 {
-    ChaseVariable(posture, 0, -postureRestoringRate);
+    // the ChaseVariable can be buggy. this one below is fine.
+    ChasePlayerVariableAtRate(EventPlayer(), Variable.P, 0, postureRestoringRate, RateChaseReevaluation.DestinationAndRate);
 }
 
 rule: "stop recovering posture when not in idle or blocking"
@@ -167,6 +169,7 @@ Event.OngoingPlayer
 if (posture >= 200)
 {
     SetStatus(EventPlayer(), null, Status.Stunned, 2);
+    PlayEffect(AllPlayers(), PlayEffect.RingExplosionSound, Color.White, EventPlayer(), 100);
     posture = 0; // clear posture
 }
 
@@ -188,11 +191,11 @@ private method PostureHud(Color color)
     }
     MinWait();
 
-    CreateInWorldText(AllPlayers(), <"<0>%", posture / 200>, EventPlayer(), 1, 
+    CreateInWorldText(AllPlayers(), <"<0>%", (posture / 200) * 100>, EventPlayer(), 1, 
         Clipping.ClipAgainstSurfaces, InworldTextRev.VisibleToPositionAndString, color);
     inWorldPostureText = LastTextID();
 
-    CreateHudText(EventPlayer(), <"defend: <0>%", posture / 200>, null, null, Location.Left, 0, color);
+    CreateHudText(EventPlayer(), <"defend: <0>%", (posture / 200) * 100>, null, null, Location.Left, 0, color);
     postureHud = LastTextID();
 }
 
