@@ -37,6 +37,9 @@ if (IsDeflecting(Victim()))
     Heal(Victim(), null, EventDamage());
     GainPostureWhenDeflected(Attacker(), EventDamage());
     PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
 }
 
 rule: "deal posture if victim is blocking"
@@ -61,6 +64,9 @@ if (CountOf(attacking) > 0)
             // deflecting
             Heal(e.victim, null, e.directDamage);
             GainPostureWhenDeflected(EventPlayer(), e.directDamage);
+            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
+            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
+            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
         }
         else

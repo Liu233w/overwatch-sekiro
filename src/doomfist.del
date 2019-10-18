@@ -4,6 +4,7 @@ The state machine of doomfist
 
 import "block.del";
 import "debug.del";
+import "posture.del";
 
 define playervar currentState; // current state number in state machine
 define playervar stateInited; // is state init code executed
@@ -160,10 +161,11 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "any state -- stunned --> 2"
+rule: "any state -- deadly stunned --> 2"
 Event.OngoingPlayer
 Player.Doomfist
 if (HasStatus(EventPlayer(), Status.Stunned))
+if (IsDeadlyStunned(EventPlayer()))
 if (stateInited == true)
 {
     currentState = 2;
@@ -399,6 +401,14 @@ if (currentState != 1)
 if (stateInited == false)
 {
     OffIdle(EventPlayer());
+}
+
+rule: "disable passive"
+Event.OngoingPlayer
+Player.Doomfist
+if (MaxHealth(EventPlayer()) > 250)
+{
+    Damage(EventPlayer(), null, MaxHealth() - 250);
 }
 
 // ================= debugging ====================

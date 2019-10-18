@@ -3,23 +3,24 @@ hero only for debug
 */
 
 import "block.del";
+import "posture.del";
 
-// rule: "is idle all the time"
-// Event.OngoingPlayer
-// Player.Zenyatta
-// if (IsAlive(EventPlayer()))
-// if (!HasStatus(EventPlayer(), Status.Stunned))
-// {
-//     OnIdle(EventPlayer());
-// }
+rule: "is idle all the time"
+Event.OngoingPlayer
+Player.Zenyatta
+if (IsAlive(EventPlayer()))
+if (!IsDeadlyStunned(EventPlayer()))
+{
+    OnIdle(EventPlayer());
+}
 
-// rule: "off idle when dead or stunned"
-// Event.OngoingPlayer
-// Player.Zenyatta
-// if (!IsAlive(EventPlayer()) || HasStatus(EventPlayer(), Status.Stunned))
-// {
-//     OffIdle(EventPlayer());
-// }
+rule: "off idle when dead or stunned"
+Event.OngoingPlayer
+Player.Zenyatta
+if (!IsAlive(EventPlayer()) || IsDeadlyStunned(EventPlayer()))
+{
+    OffIdle(EventPlayer());
+}
 
 // rule: "is blocking all the time"
 // Event.OngoingPlayer
@@ -38,19 +39,19 @@ import "block.del";
 //     OffBlocking(EventPlayer());
 // }
 
-rule: "is deflecting all the time"
-Event.OngoingPlayer
-Player.Zenyatta
-if (IsAlive(EventPlayer()))
-if (!HasStatus(EventPlayer(), Status.Stunned))
-{
-    OnDeflecting(EventPlayer());
-}
+// rule: "is deflecting all the time"
+// Event.OngoingPlayer
+// Player.Zenyatta
+// if (IsAlive(EventPlayer()))
+// if (!IsDeadlyStunned(EventPlayer()))
+// {
+//     OnDeflecting(EventPlayer());
+// }
 
-rule: "off blocking when dead or stunned"
-Event.OngoingPlayer
-Player.Zenyatta
-if (!IsAlive(EventPlayer()) || HasStatus(EventPlayer(), Status.Stunned))
-{
-    OffDeflecting(EventPlayer());
-}
+// rule: "off blocking when dead or stunned"
+// Event.OngoingPlayer
+// Player.Zenyatta
+// if (!IsAlive(EventPlayer()) || IsDeadlyStunned(EventPlayer()))
+// {
+//     OffDeflecting(EventPlayer());
+// }

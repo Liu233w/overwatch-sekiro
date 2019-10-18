@@ -23,24 +23,29 @@ import "block.del";
 
 // ============ status trigger ===================
 
-rule: "clear stunned and set unkillable when in idle"
+define playervar deadlyStunned; // when in this status, a simple attack can kill the player
+
+macro IsDeadlyStunned(define player): player.deadlyStunned == true;
+
+rule: "clear stunned and set unkillable when in idle (or dead)"
 Event.OngoingPlayer
-if (IsIdle(EventPlayer()))
+if (IsIdle(EventPlayer()) || IsDead(EventPlayer()))
 {
     ClearStatus(EventPlayer(), Status.Stunned);
     SetStatus(EventPlayer(), null, Status.Unkillable, 9999);
+    deadlyStunned = false;
 }
 
-rule: "clear unkillable when stunned"
+rule: "clear unkillable when deadly stunned"
 Event.OngoingPlayer
-if (HasStatus(EventPlayer(), Status.Stunned))
+if (deadlyStunned == true)
 {
     ClearStatus(EventPlayer(), Status.Unkillable);
 }
 
 rule: "dead instantly when hitted in stunned, recover attacker 2/3 health"
 Event.OnDamageTaken
-if (HasStatus(EventPlayer(), Status.Stunned))
+if (deadlyStunned == true)
 {
     // ClearStatus(EventPlayer(), Status.Stunned);
     // MinWait();
@@ -51,17 +56,18 @@ if (HasStatus(EventPlayer(), Status.Stunned))
 rule: "stunned 3 seconds after health is 1"
 Event.OngoingPlayer
 if (Health(EventPlayer()) == 1)
-if (!HasStatus(EventPlayer(), Status.Stunned))
+if (deadlyStunned != true)
 {
     // wait 0.15 sec to see if he can regain health (wait for deflect)
     Wait(0.15, WaitBehavior.AbortWhenFalse);
     PlayEffect(AllPlayers(), PlayEffect.RingExplosionSound, Color.White, EventPlayer(), 100);
     SetStatus(EventPlayer(), null, Status.Stunned, 3);
+    deadlyStunned = true;
 }
 
 rule: "kill the player after 2.5 sec in 1 health stunned status"
 Event.OngoingPlayer
-if (HasStatus(EventPlayer(), Status.Stunned))
+if (deadlyStunned == true)
 if (Health(EventPlayer()) == 1)
 if (IsAlive(EventPlayer()))
 {
@@ -168,6 +174,7 @@ rule: "stun player 2 seconds when posture is filled"
 Event.OngoingPlayer
 if (posture >= 200)
 {
+    deadlyStunned = true;
     SetStatus(EventPlayer(), null, Status.Stunned, 2);
     PlayEffect(AllPlayers(), PlayEffect.RingExplosionSound, Color.White, EventPlayer(), 100);
     posture = 0; // clear posture
