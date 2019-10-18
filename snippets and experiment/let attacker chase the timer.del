@@ -27,8 +27,8 @@ if (IsButtonHeld(EventPlayer(), Button.Interact))
 
 define playervar state;
 
-define playervar attacking T = [];
-define playervar attackingDamage U = [];
+define playervar attacking = [];
+define playervar attackingDamage = [];
 
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt

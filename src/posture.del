@@ -5,7 +5,7 @@ everyone have 200 posture
 
 taken damage amount of posture when directly hitted;
 taken half damage amount of posture when blocked;
-cause the damage amount of posture to attacker if you deflect a attack.
+cause  damage amount of posture to attacker if you deflect a attack.
 
 Posture recover speed:
 when you are full health: 25 per second (8 second to clean up posture)
