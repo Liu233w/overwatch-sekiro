@@ -1,47 +1,33 @@
 /*
-common code shared by all files
+code about block state
 */
 
 /* 
-the following two variable is used in tracking status of the player
+the following 3 variables is used in tracking status of the player
 if we add different heroes eventually, there deflecting or blocking state number may be different
-the two variables can be access by the method with the same name
+the 3 variables can be access by the method with the same name
 */
-define playervar isDeflecting D; // is player deflecting
-define playervar isBlocking B; // is player blocking
+define playervar isDeflecting; // is player deflecting
+define playervar isBlocking; // is player blocking
+define playervar isIdle; // is player in idle
 
-method IsDeflecting(define player)
-{
-    if (player.isDeflecting)
-    {
-        return true;
-    }
-    else
-    {
-        // in case that the variable is not inited
-        return false;
-    }
-}
+macro IsDeflecting(define player): player.isDeflecting == true;
 
-method IsBlocking(define player)
-{
-    if (player.isBlocking)
-    {
-        return true;
-    }
-    else
-    {
-        // in case that the variable is not inited
-        return false;
-    }
-}
+macro IsBlocking(define player): player.isBlocking == true;
+
+macro IsIdle(define player): player.isIdle == true;
 
 define playervar blockingAnimation;
 define playervar blockingSound;
 
 method OnIdle(define player)
 {
-    SetStatus(player, null, Status.Unkillable, 9999);
+    player.isIdle = true;
+}
+
+method OffIdle(define player)
+{
+    player.isIdle = false;
 }
 
 method OnDeflecting(define player)

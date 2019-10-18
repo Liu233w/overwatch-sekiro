@@ -2,7 +2,7 @@
 The state machine of doomfist
 */
 
-import "shared.del";
+import "block.del";
 
 define playervar currentState; // current state number in state machine
 define playervar stateInited; // is state init code executed
@@ -25,6 +25,13 @@ if (stateInited == false)
     currentState = 1;
 }
 
+rule: "set state to 0 when dead"
+Event.OnDeath
+Player.Doomfist
+{
+    currentState = 0;
+}
+
 // ============== state initialize code ====================
 rule: "state 1: idle"
 Event.OngoingPlayer
@@ -36,6 +43,15 @@ if (stateInited == false)
 
     SetSecondaryFireEnabled(EventPlayer(), true);
 
+    stateInited = true;
+}
+
+rule: "state 2: stunned"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 2)
+if (stateInited == false)
+{
     stateInited = true;
 }
 
@@ -142,6 +158,27 @@ if (stateInited == true)
     stateInited = false;
 }
 
+rule: "any state -- stunned --> 2"
+Event.OngoingPlayer
+Player.Doomfist
+if (HasStatus(EventPlayer(), Status.Stunned))
+if (stateInited == true)
+{
+    currentState = 2;
+    stateInited = false;
+}
+
+rule: "2 -- un-stunned --> 1"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 2)
+if (!HasStatus(EventPlayer(), Status.Stunned))
+if (stateInited == true)
+{
+    currentState = 1;
+    stateInited = false;
+}
+
 rule: "11 -- 0.2 sec --> 12"
 Event.OngoingPlayer
 Player.Doomfist
@@ -219,13 +256,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "15 -- 0.2 sec --> 14"
+rule: "15 -- 0.4 sec --> 14"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 15)
 if (stateInited == true)
 {
-    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    Wait(0.4, WaitBehavior.AbortWhenFalse);
     currentState = 14;
     stateInited = false;
 }
@@ -351,4 +388,13 @@ if (currentState != 12)
 if (stateInited == false)
 {
     OffBlocking(EventPlayer());
+}
+
+rule: "off idle"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState != 1)
+if (stateInited == false)
+{
+    OffIdle(EventPlayer());
 }

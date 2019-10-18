@@ -1,0 +1,73 @@
+/*
+code about attack
+*/
+
+import "block.del";
+import "posture.del";
+
+class AttackingEvent
+{
+    public define victim;
+
+    public define directDamage;
+
+    // TODO: let each kind of attacking have their own posture damage
+    // can be achieved by adding a multiplier (* the multiplier when hitted in blocking)
+
+    public AttackingEvent(define victim, define damage)
+    {
+        this.victim = victim;
+        this.directDamage = damage;
+    }
+}
+
+define playervar attacking = [];
+
+rule: "add victim to list after attacking, if the victim is not blocking"
+Event.OnDamageDealt
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+{
+    attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage()));
+}
+
+rule: "gain posture if victim is deflecting"
+Event.OnDamageDealt
+if (IsDeflecting(Victim()))
+{
+    Heal(Victim(), null, EventDamage());
+    GainPostureWhenDeflected(Attacker(), EventDamage());
+}
+
+rule: "deal posture if victim is blocking"
+Event.OnDamageDealt
+if (IsBlocking(Victim()))
+{
+    Heal(Victim(), null, EventDamage());
+    GainPostureWhenBlocking(Victim(), EventDamage());
+}
+
+rule: "start checking victim state after a short delay"
+Event.OngoingPlayer
+if (CountOf(attacking) > 0)
+{
+    Wait(0.1);
+
+    // cannot hurt more than 3 persons at once, so the loop is acceptable.
+    foreach (AttackingEvent e in attacking)
+    {
+        if (IsDeflecting(e.victim))
+        {
+            // deflecting
+            Heal(e.victim, null, e.directDamage);
+            GainPostureWhenDeflected(EventPlayer(), e.directDamage);
+        }
+        else
+        {
+            GainPostureByDirectAttack(e.victim, e.directDamage);
+        }
+
+        delete(e);
+    }
+
+    attacking = [];
+}

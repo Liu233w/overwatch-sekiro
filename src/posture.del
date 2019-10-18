@@ -1,21 +1,229 @@
 /*
-posture system
+posture system (also handle hit point)
 
 everyone have 200 posture
 
 taken damage amount of posture when directly hitted;
 taken half damage amount of posture when blocked;
-cause  damage amount of posture to attacker if you deflect a attack.
+cause 2 times damage amount of posture to attacker if you deflect a attack.
 
 Posture recover speed:
 when you are full health: 25 per second (8 second to clean up posture)
-health reduce to 200: 20 per second
-health reduce to 100: 10 per second (the rate is not related to the scale of health, but assigned when reaching the threshold)
+health reduce to 4/5: 20 per second
+health reduce to 2/5: 10 per second (the rate is not related to the scale of health, but assigned when reaching the threshold)
+
 when blocking: have a double recover speed
 
-only when you are in state 1 (idle) or state 12 (blocking) can you recover posture.
-stop recovering for 1 second every time you are hitted in state 1.
+only when you are in idle or blocking can you recover posture.
+stop recovering for 1 second every time you are hitted in idle.
+stop recovering for 0.5 second every time you are hitted in blocking.
 */
 
-rule: "test ..."
-{}
+import "block.del";
+
+// ============ status trigger ===================
+
+rule: "clear stunned and set unkillable when in idle"
+Event.OngoingPlayer
+if (IsIdle(EventPlayer()))
+{
+    ClearStatus(EventPlayer(), Status.Stunned);
+    SetStatus(EventPlayer(), null, Status.Unkillable, 9999);
+}
+
+rule: "clear unkillable when stunned"
+Event.OngoingPlayer
+if (HasStatus(EventPlayer(), Status.Stunned))
+{
+    ClearStatus(EventPlayer(), Status.Unkillable);
+}
+
+rule: "dead instantly when hitted in stunned, recover attacker 2/3 health"
+Event.OnDamageTaken
+if (HasStatus(EventPlayer(), Status.Stunned))
+{
+    // ClearStatus(EventPlayer(), Status.Stunned);
+    // MinWait();
+    Kill(Victim(), Attacker());
+    Heal(Attacker(), null, MaxHealth(Attacker()) * 2 / 3);
+}
+
+rule: "stunned 3 seconds after health is 1"
+Event.OngoingPlayer
+if (Health(EventPlayer()) == 1)
+if (!HasStatus(EventPlayer(), Status.Stunned))
+{
+    // wait 0.15 sec to see if he can regain health (wait for deflect)
+    Wait(0.15, WaitBehavior.AbortWhenFalse);
+    SetStatus(EventPlayer(), null, Status.Stunned, 3);
+}
+
+rule: "kill the player after 2.5 sec in 1 health stunned status"
+Event.OngoingPlayer
+if (HasStatus(EventPlayer(), Status.Stunned))
+if (Health(EventPlayer()) == 1)
+if (IsAlive(EventPlayer()))
+{
+    Wait(2.5, WaitBehavior.AbortWhenFalse);
+    Kill(EventPlayer(), null);
+}
+
+// ================= posture gaining ========================
+
+define playervar posture;
+
+rule: "set posture to 0 when spawned"
+Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
+{
+    posture = 0;
+}
+
+// functions sealed posture calculation
+
+method GainPostureByDirectAttack(define player, define attackDamage)
+{
+    player.posture += attackDamage;
+}
+
+method GainPostureWhenBlocking(define player, define attackDamage)
+{
+    player.posture += attackDamage / 2;
+}
+
+method GainPostureWhenDeflected(define player, define attackDamage)
+{
+    player.posture += attackDamage * 2;
+}
+
+// ================== posture restoring =======================
+
+define playervar postureRestoringRate;
+
+rule: "start tracking posture restore"
+Event.OngoingPlayer
+{
+    ChaseVariable(posture, 0, -postureRestoringRate);
+}
+
+rule: "stop recovering posture when not in idle or blocking"
+Event.OngoingPlayer
+if (!IsIdle(EventPlayer()) && !IsBlocking(EventPlayer()))
+{
+    postureRestoringRate = 0;
+}
+
+method ResolvePostureRecoveringRate(define player)
+{
+    if (Health(player) > (4/5 * MaxHealth(player)))
+    {
+        return 25;
+    }
+    else if (Health(player) > (2/5 * MaxHealth(player)))
+    {
+        return 20;
+    }
+    else
+    {
+        return 10;
+    }
+}
+
+rule: "recovering posture when at idle"
+Event.OngoingPlayer
+if (IsIdle(EventPlayer()))
+if (postureRestoringRate == 0)
+{
+    Wait(1, WaitBehavior.AbortWhenFalse);
+    postureRestoringRate = ResolvePostureRecoveringRate(EventPlayer());
+}
+
+rule: "recovering posture when at blocking"
+Event.OngoingPlayer
+if (IsBlocking(EventPlayer()))
+if (postureRestoringRate == 0)
+{
+    Wait(0.5, WaitBehavior.AbortWhenFalse);
+    postureRestoringRate = ResolvePostureRecoveringRate(EventPlayer()) * 2;
+}
+
+rule: "pause recovering when hitted"
+Event.OnDamageTaken
+{
+    // restart the timer of the rule above
+    postureRestoringRate = 0.01;
+    MinWait();
+
+    // pause recovering
+    postureRestoringRate = 0;
+
+    // it will trigger the rule above, to start recovering after certain seconds
+}
+
+// ==================== posture filled ===================
+
+rule: "stun player 2 seconds when posture is filled"
+Event.OngoingPlayer
+if (posture >= 200)
+{
+    SetStatus(EventPlayer(), null, Status.Stunned, 2);
+    posture = 0; // clear posture
+}
+
+// ==================== hud =====================
+
+define playervar postureColor;
+define playervar inWorldPostureText;
+define playervar postureHud;
+
+private method PostureHud(Color color)
+{
+    if (inWorldPostureText != 0)
+    {
+        DestroyInWorldText(inWorldPostureText);
+    }
+    if (postureHud != 0)
+    {
+        DestroyHudText(postureHud);
+    }
+    MinWait();
+
+    CreateInWorldText(AllPlayers(), <"<0>%", posture / 200>, EventPlayer(), 1, 
+        Clipping.ClipAgainstSurfaces, InworldTextRev.VisibleToPositionAndString, color);
+    inWorldPostureText = LastTextID();
+
+    CreateHudText(EventPlayer(), <"defend: <0>%", posture / 200>, null, null, Location.Left, 0, color);
+    postureHud = LastTextID();
+}
+
+rule: "show white posture text when posture < 100"
+Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
+if (posture < 100)
+{
+    PostureHud(Color.White);
+}
+
+rule: "show orange posture text when posture on 100~150"
+Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
+if (posture >= 100)
+if (posture < 150)
+{
+    PostureHud(Color.Orange);
+}
+
+rule: "show red posture text when posture > 150"
+Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
+if (posture >= 150)
+{
+    PostureHud(Color.Red);
+}
+
+rule: "destroy posture text when dead"
+Event.OngoingPlayer
+if (IsDead(EventPlayer()))
+{
+    DestroyInWorldText(inWorldPostureText);
+}

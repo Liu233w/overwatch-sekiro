@@ -1,0 +1,22 @@
+/*
+hero only for debug
+*/
+
+import "block.del";
+
+rule: "is idle all the time"
+Event.OngoingPlayer
+Player.Zenyatta
+if (IsAlive(EventPlayer()))
+if (!HasStatus(EventPlayer(), Status.Stunned))
+{
+    OnIdle(EventPlayer());
+}
+
+rule: "off idle when dead or stunned"
+Event.OngoingPlayer
+Player.Zenyatta
+if (!IsAlive(EventPlayer()) || HasStatus(EventPlayer(), Status.Stunned))
+{
+    OffIdle(EventPlayer());
+}
