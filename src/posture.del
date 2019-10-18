@@ -17,13 +17,5 @@ only when you are in state 1 (idle) or state 12 (blocking) can you recover postu
 stop recovering for 1 second every time you are hitted in state 1.
 */
 
-/* 
-the following two variable is used in tracking status of the player
-if we add different heroes eventually, there deflecting or blocking state number may be different
-the two variables are defined in every files
-*/
-define playervar isDeflecting D; // is player deflecting
-define playervar isBlocking B; // is player blocking
-
 rule: "test ..."
 {}

@@ -6,7 +6,6 @@ rule: "Author: Liu233w#5454 (Ch-ina mainland server)" // to avoid keyword censor
 rule: "Checkout the workshop source code at https://github.com/Liu233w/overwatch-doomfist-fight"
 {}
 
-
 /*
 
 The project use a state machine to track the status of the hero and 

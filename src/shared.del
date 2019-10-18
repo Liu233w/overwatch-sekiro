@@ -1,0 +1,75 @@
+/*
+common code shared by all files
+*/
+
+/* 
+the following two variable is used in tracking status of the player
+if we add different heroes eventually, there deflecting or blocking state number may be different
+the two variables can be access by the method with the same name
+*/
+define playervar isDeflecting D; // is player deflecting
+define playervar isBlocking B; // is player blocking
+
+method IsDeflecting(define player)
+{
+    if (player.isDeflecting)
+    {
+        return true;
+    }
+    else
+    {
+        // in case that the variable is not inited
+        return false;
+    }
+}
+
+method IsBlocking(define player)
+{
+    if (player.isBlocking)
+    {
+        return true;
+    }
+    else
+    {
+        // in case that the variable is not inited
+        return false;
+    }
+}
+
+define playervar blockingAnimation;
+define playervar blockingSound;
+
+method OnIdle(define player)
+{
+    SetStatus(player, null, Status.Unkillable, 9999);
+}
+
+method OnDeflecting(define player)
+{
+    player.isDeflecting = true;
+    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Blue, player, 2);
+    PlayEffect(AllPlayers(), PlayEffect.DebuffImpactSound, Color.White, player, 30);
+}
+
+method OffDeflecting(define player)
+{
+    player.isDeflecting = false;
+}
+
+method OnBlocking(define player)
+{
+    player.isBlocking = true;
+
+    CreateEffect(AllPlayers(), Effect.Sphere, Color.SkyBlue, player, 1.5);
+    player.blockingAnimation = LastCreatedEntity();
+    CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, player, 200);
+    player.blockingSound = LastCreatedEntity();
+}
+
+method OffBlocking(define player)
+{
+    player.isBlocking = false;
+
+    DestroyEffect(player.blockingAnimation);
+    DestroyEffect(player.blockingSound);
+}

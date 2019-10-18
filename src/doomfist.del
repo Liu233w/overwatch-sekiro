@@ -2,25 +2,22 @@
 The state machine of doomfist
 */
 
-/* 
-the following two variable is used in tracking status of the player
-if we add different heroes eventually, there deflecting or blocking state number may be different
-the two variables are defined in every files
-*/
-define playervar isDeflecting D; // is player deflecting
-define playervar isBlocking B; // is player blocking
+import "shared.del";
 
 define playervar currentState; // current state number in state machine
 define playervar stateInited; // is state init code executed
+define playervar airBlocking; // when entering blocking, is player on the air
 
 rule: "init doomfist state"
 Event.OngoingPlayer
+Player.Doomfist
 {
     stateInited = false;
 }
 
 rule: "set state to 1 when spawned"
 Event.OngoingPlayer
+Player.Doomfist
 if (IsAlive(EventPlayer()))
 if (currentState == 0)
 if (stateInited == false)
@@ -31,21 +28,327 @@ if (stateInited == false)
 // ============== state initialize code ====================
 rule: "state 1: idle"
 Event.OngoingPlayer
+Player.Doomfist
 if (currentState == 1)
 if (stateInited == false)
 {
+    OnIdle(EventPlayer());
+
     SetSecondaryFireEnabled(EventPlayer(), true);
 
     stateInited = true;
 }
 
-// ============== state switching rule =====================
-rule: "1 -- secondary fire --> 11"
+rule: "state 11: deflecting"
 Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 11)
+if (stateInited == false)
+{
+    OnDeflecting(EventPlayer());
+    stateInited = true;
+}
+
+rule: "state 12: blocking"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 12)
+if (stateInited == false)
+{
+    OnBlocking(EventPlayer());
+    stateInited = true;
+    airBlocking = IsInAir(EventPlayer());
+}
+
+rule: "state 13: deflecting cooling down"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 13)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
+rule: "state 14: blocking cooling down"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 14)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
+/* 
+When player are blocking before jumping into the air, they entering another state
+  that holding crouch button won't enter blocking state.
+*/
+rule: "state 15: air switching cooling down"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 15)
+if (stateInited == false)
+{
+    stateInited = true;
+    airBlocking = 0;
+}
+
+rule: "state 21: fist charging"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 21)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
+rule: "state 21: fist releasing"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 22)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
+rule: "state 23: fist cooling down"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 23)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
+// ============== state switching rule =====================
+rule: "1 -- crouch button --> 11"
+Event.OngoingPlayer
+Player.Doomfist
 if (currentState == 1)
-if (IsFiringSecondary(EventPlayer()))
+if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInited == true)
 {
     currentState = 11;
     stateInited = false;
+}
+
+rule: "1 -- secondary fire --> 21"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 1)
+if (IsFiringSecondary(EventPlayer()))
+if (stateInited == true)
+{
+    currentState = 21;
+    stateInited = false;
+}
+
+rule: "11 -- 0.2 sec --> 12"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 11)
+if (stateInited == true)
+{
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    currentState = 12;
+    stateInited = false;
+}
+
+rule: "12 -- release crouch button --> 13"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 12)
+if (!IsButtonHeld(EventPlayer(), Button.Crouch))
+if (stateInited == true)
+{
+    currentState = 13;
+    stateInited = false;
+}
+
+rule: "12 -- switch air --> 15"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 12)
+if (EventPlayer().airBlocking != IsInAir(EventPlayer()))
+if (stateInited == true)
+{
+    currentState = 15;
+    stateInited = false;
+}
+
+rule: "13 -- 0.2 sec --> 14"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 13)
+if (stateInited == true)
+{
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    currentState = 14;
+    stateInited = false;
+}
+
+rule: "13 -- crouch button --> 12"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 13)
+if (IsButtonHeld(EventPlayer(), Button.Crouch))
+if (stateInited == true)
+{
+    currentState = 12;
+    stateInited = false;
+}
+
+rule: "14 -- 0.3 sec --> 1"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 14)
+if (stateInited == true)
+{
+    Wait(0.3, WaitBehavior.AbortWhenFalse);
+    currentState = 1;
+    stateInited = false;
+}
+
+rule: "14 -- crouch button --> 11"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 14)
+if (IsButtonHeld(EventPlayer(), Button.Crouch))
+if (stateInited == true)
+{
+    currentState = 11;
+    stateInited = false;
+}
+
+rule: "15 -- 0.2 sec --> 14"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 15)
+if (stateInited == true)
+{
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    currentState = 14;
+    stateInited = false;
+}
+
+rule: "21 -- 2 sec --> 22"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 21)
+if (stateInited == true)
+{
+    Wait(2, WaitBehavior.AbortWhenFalse);
+    currentState = 22;
+    stateInited = false;
+}
+
+rule: "21 -- release secondary fire --> 22"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 21)
+if (!IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (stateInited == true)
+{
+    currentState = 22;
+    stateInited = false;
+}
+
+rule: "21 -- left button --> 23"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 21)
+if (IsButtonHeld(EventPlayer(), Button.PrimaryFire))
+if (stateInited == true)
+{
+    currentState = 23;
+    stateInited = false;
+}
+
+rule: "21 -- crouch button --> 11"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 21)
+if (IsButtonHeld(EventPlayer(), Button.Crouch))
+if (stateInited == true)
+{
+    currentState = 11;
+    stateInited = false;
+}
+
+rule: "22 -- 0.3 sec --> 23"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 22)
+if (stateInited == true)
+{
+    Wait(0.3, WaitBehavior.AbortWhenFalse);
+    currentState = 23;
+    stateInited = false;
+}
+
+rule: "23 -- 0.5 sec --> 1"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 23)
+if (stateInited == true)
+{
+    Wait(0.5, WaitBehavior.AbortWhenFalse);
+    currentState = 1;
+    stateInited = false;
+}
+
+rule: "23 -- crouch button --> 12"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 23)
+if (IsButtonHeld(EventPlayer(), Button.Crouch))
+if (stateInited == true)
+{
+    currentState = 12;
+    stateInited = false;
+}
+
+// =============== interact as crouch =======================
+rule: "interact to crouch"
+Event.OngoingPlayer
+Player.Doomfist
+if (IsButtonHeld(EventPlayer(), Button.Interact))
+{
+    StartHoldingButton(EventPlayer(), Button.Crouch);
+}
+
+rule: "un-interact to un-crouch"
+Event.OngoingPlayer
+Player.Doomfist
+if (!IsButtonHeld(EventPlayer(), Button.Interact))
+{
+    StopHoldingButton(EventPlayer(), Button.Crouch);
+}
+
+// =============== other rule ===============================
+rule: "disable secondary fire when not in certain state"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState != 1 && currentState != 21 && currentState != 22)
+if (stateInited == true)
+{
+    SetSecondaryFireEnabled(EventPlayer(), false);
+}
+
+rule: "when not deflecting"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState != 11)
+// prevent from collision with state init code
+if (stateInited == false)
+{
+    OffDeflecting(EventPlayer());
+}
+
+rule: "when not blocking"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState != 12)
+if (stateInited == false)
+{
+    OffBlocking(EventPlayer());
 }
