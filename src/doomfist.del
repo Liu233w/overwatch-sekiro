@@ -1,0 +1,51 @@
+/*
+The state machine of doomfist
+*/
+
+/* 
+the following two variable is used in tracking status of the player
+if we add different heroes eventually, there deflecting or blocking state number may be different
+the two variables are defined in every files
+*/
+define playervar isDeflecting D; // is player deflecting
+define playervar isBlocking B; // is player blocking
+
+define playervar currentState; // current state number in state machine
+define playervar stateInited; // is state init code executed
+
+rule: "init doomfist state"
+Event.OngoingPlayer
+{
+    stateInited = false;
+}
+
+rule: "set state to 1 when spawned"
+Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
+if (currentState == 0)
+if (stateInited == false)
+{
+    currentState = 1;
+}
+
+// ============== state initialize code ====================
+rule: "state 1: idle"
+Event.OngoingPlayer
+if (currentState == 1)
+if (stateInited == false)
+{
+    SetSecondaryFireEnabled(EventPlayer(), true);
+
+    stateInited = true;
+}
+
+// ============== state switching rule =====================
+rule: "1 -- secondary fire --> 11"
+Event.OngoingPlayer
+if (currentState == 1)
+if (IsFiringSecondary(EventPlayer()))
+if (stateInited == true)
+{
+    currentState = 11;
+    stateInited = false;
+}

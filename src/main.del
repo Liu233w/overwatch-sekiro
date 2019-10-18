@@ -1,6 +1,7 @@
 import "posture.del";
+import "doomfist.del";
 
-rule: "Author: Liu233w#5454 (Ch.ina mainland server)"
+rule: "Author: Liu233w#5454 (Ch-ina mainland server)" // to avoid keyword censorship
 {}
 rule: "Checkout the workshop source code at https://github.com/Liu233w/overwatch-doomfist-fight"
 {}
@@ -13,9 +14,6 @@ the cool down time before or after a player action.
 
 */
 
-define playervar currentState; // current state number in state machine
-define playervar stateInited; // is state init code executed
-
 rule: "Initialize"
 Event.OngoingPlayer
 {
@@ -25,38 +23,4 @@ Event.OngoingPlayer
     SetUltimateAbilityEnabled(EventPlayer(), false);
     SetPrimaryFireEnabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
-
-    // init state
-    stateInited = false;
-}
-
-rule: "set state to 1 when spawned"
-Event.OngoingPlayer
-if (IsAlive(EventPlayer()))
-if (currentState == 0)
-if (stateInited == false)
-{
-    currentState = 1;
-}
-
-// ============== state initialize code ====================
-rule: "state 1: idle"
-Event.OngoingPlayer
-if (currentState == 1)
-if (stateInited == false)
-{
-    SetSecondaryFireEnabled(EventPlayer(), true);
-
-    stateInited = true;
-}
-
-// ============== state switching rule =====================
-rule: "1 -- secondary fire --> 11"
-Event.OngoingPlayer
-if (currentState == 1)
-if (IsFiringSecondary(EventPlayer()))
-if (stateInited == true)
-{
-    currentState = 11;
-    stateInited = false;
 }

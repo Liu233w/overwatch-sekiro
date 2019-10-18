@@ -76,6 +76,8 @@ if (CountOf(attacking) > 0)
             e.victim.attackedTimes += e.damage;
             // TODO: add posture damage
         }
+
+        delete(e);
     }
 
     attacking = [];
