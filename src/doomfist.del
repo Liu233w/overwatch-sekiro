@@ -169,13 +169,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "11 -- 0.2 sec --> 12"
+rule: "11 -- 0.3 sec --> 12"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 11)
 if (stateInited == true)
 {
-    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    Wait(0.3, WaitBehavior.AbortWhenFalse);
     currentState = 12;
     stateInited = false;
 }
@@ -191,13 +191,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "13 -- 0.2 sec --> 14"
+rule: "13 -- 0.1 sec --> 14"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 13)
 if (stateInited == true)
 {
-    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    Wait(0.1, WaitBehavior.AbortWhenFalse);
     currentState = 14;
     stateInited = false;
 }
@@ -213,13 +213,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "14 -- 0.3 sec --> 1"
+rule: "14 -- 0.4 sec --> 1"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 14)
 if (stateInited == true)
 {
-    Wait(0.3, WaitBehavior.AbortWhenFalse);
+    Wait(0.4, WaitBehavior.AbortWhenFalse);
     currentState = 1;
     stateInited = false;
 }

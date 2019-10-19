@@ -16,7 +16,7 @@ when blocking: have a double recover speed
 
 only when you are in idle or blocking can you recover posture.
 stop recovering for 1 second every time you are hitted in idle.
-stop recovering for 1 second every time you are hitted in blocking.
+stop recovering for 2 second every time you are hitted in blocking.
 */
 
 import "block.del";
@@ -91,19 +91,19 @@ if (IsAlive(EventPlayer()))
 method GainPostureByDirectAttack(define player, define attackDamage, define dealer)
 {
     player.posture += attackDamage;
-    lastPostureAttacker = dealer;
+    player.lastPostureAttacker = dealer;
 }
 
 method GainPostureWhenBlocking(define player, define attackDamage, define dealer)
 {
     player.posture += attackDamage;
-    lastPostureAttacker = dealer;
+    player.lastPostureAttacker = dealer;
 }
 
 method GainPostureWhenDeflected(define player, define attackDamage, define dealer)
 {
     player.posture += attackDamage * 2;
-    lastPostureAttacker = dealer;
+    player.lastPostureAttacker = dealer;
 }
 
 // ================== posture restoring =======================
@@ -154,7 +154,7 @@ Event.OngoingPlayer
 if (IsBlocking(EventPlayer()))
 if (postureRestoringRate == 0)
 {
-    Wait(1, WaitBehavior.AbortWhenFalse);
+    Wait(2, WaitBehavior.AbortWhenFalse);
     postureRestoringRate = ResolvePostureRecoveringRate(EventPlayer()) * 2;
 }
 
@@ -183,7 +183,7 @@ if (posture >= 200)
     posture = 0; // clear posture
 
     // give attacker immutable
-    SetStatus(lastPostureAttacker, EventPlayer(), Status.Invincible, 3);
+    SetStatus(lastPostureAttacker, null, Status.Invincible, 3);
 }
 
 // ==================== hud =====================
