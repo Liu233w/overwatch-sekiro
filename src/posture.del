@@ -27,11 +27,10 @@ define playervar deadlyStunned; // when in this status, a simple attack can kill
 
 macro IsDeadlyStunned(define player): player.deadlyStunned == true;
 
-rule: "clear stunned and set unkillable when in idle (or dead)"
+rule: "clear deadly stunned and set unkillable when not stunned"
 Event.OngoingPlayer
-if (IsIdle(EventPlayer()) || IsDead(EventPlayer()))
+if (!HasStatus(EventPlayer(), Status.Stunned))
 {
-    ClearStatus(EventPlayer(), Status.Stunned);
     SetStatus(EventPlayer(), null, Status.Unkillable, 9999);
     deadlyStunned = false;
 }
@@ -107,7 +106,7 @@ method GainPostureWhenDeflected(define player, define attackDamage)
 
 define playervar postureRestoringRate R;
 
-rule: "start tracking posture restore"
+rule: "start tracking posture rest-ore"
 Event.OngoingPlayer
 {
     // the ChaseVariable can be buggy. this one below is fine.

@@ -1,5 +1,5 @@
 import "doomfist.del";
-import "zenyatta.del";
+// import "zenyatta.del";
 
 import "attack.del";
 import "posture.del";
@@ -19,10 +19,32 @@ the cool down time before or after a player action.
 rule: "Initialize"
 Event.OngoingPlayer
 {
-    MinWait();
+    // MinWait();
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     SetUltimateAbilityEnabled(EventPlayer(), false);
     SetPrimaryFireEnabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
+}
+
+rule: "Reset stunned status immediately when not deadly stunned, caused by doomfist's attack"
+Event.OngoingPlayer
+if (HasStatus(EventPlayer(), Status.Stunned))
+if (!IsDeadlyStunned(EventPlayer()))
+{
+    ClearStatus(EventPlayer(), Status.Stunned);
+}
+
+rule: "Reset knocked down status immediately"
+Event.OngoingPlayer
+if (HasStatus(EventPlayer(), Status.KnockedDown))
+{
+    ClearStatus(EventPlayer(), Status.KnockedDown);
+}
+
+// you can setup your own instruction by setting the team name
+rule: "Show instruction on left"
+Event.OngoingPlayer
+{
+    CreateHudText(EventPlayer(), <"<0> <1>", Team.Team1, Team.Team2>);
 }
