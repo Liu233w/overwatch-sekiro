@@ -8,7 +8,6 @@ import "posture.del";
 
 define playervar currentState; // current state number in state machine
 define playervar stateInited; // is state init code executed
-define playervar airBlocking; // when entering blocking, is player on the air
 
 rule: "init doomfist state"
 Event.OngoingPlayer
@@ -76,7 +75,6 @@ if (stateInited == false)
 {
     OnBlocking(EventPlayer());
     stateInited = true;
-    airBlocking = IsInAir(EventPlayer());
 }
 
 rule: "state 13: deflecting cooling down"
@@ -97,20 +95,6 @@ if (stateInited == false)
     stateInited = true;
 }
 
-/* 
-When player are blocking before jumping into the air, they entering another state
-  that holding crouch button won't enter blocking state.
-*/
-rule: "state 15: air switching cooling down"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState == 15)
-if (stateInited == false)
-{
-    stateInited = true;
-    airBlocking = 0;
-}
-
 rule: "state 21: fist charging"
 Event.OngoingPlayer
 Player.Doomfist
@@ -121,7 +105,7 @@ if (stateInited == false)
     stateInited = true;
 }
 
-rule: "state 21: fist releasing"
+rule: "state 22: fist releasing"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 22)
@@ -207,17 +191,6 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "12 -- switch air --> 15"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState == 12)
-if (EventPlayer().airBlocking != IsInAir(EventPlayer()))
-if (stateInited == true)
-{
-    currentState = 15;
-    stateInited = false;
-}
-
 rule: "13 -- 0.2 sec --> 14"
 Event.OngoingPlayer
 Player.Doomfist
@@ -259,17 +232,6 @@ if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInited == true)
 {
     currentState = 11;
-    stateInited = false;
-}
-
-rule: "15 -- 0.4 sec --> 14"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState == 15)
-if (stateInited == true)
-{
-    Wait(0.4, WaitBehavior.AbortWhenFalse);
-    currentState = 14;
     stateInited = false;
 }
 
