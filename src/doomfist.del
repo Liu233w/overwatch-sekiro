@@ -55,6 +55,8 @@ Player.Doomfist
 if (currentState == 2)
 if (stateInited == false)
 {
+    OffDeflecting(EventPlayer());
+    OffBlocking(EventPlayer());
     stateInited = true;
 }
 
@@ -74,6 +76,7 @@ Player.Doomfist
 if (currentState == 12)
 if (stateInited == false)
 {
+    OffDeflecting(EventPlayer());
     OnBlocking(EventPlayer());
     stateInited = true;
 }
@@ -93,6 +96,7 @@ Player.Doomfist
 if (currentState == 14)
 if (stateInited == false)
 {
+    OffBlocking(EventPlayer());
     stateInited = true;
 }
 
@@ -102,6 +106,7 @@ Player.Doomfist
 if (currentState == 21)
 if (stateInited == false)
 {
+    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Yellow, EventPlayer(), 2);
     StartHoldingButton(EventPlayer(), Button.SecondaryFire);
     stateInited = true;
 }
@@ -220,13 +225,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "13 -- 0.1 sec --> 14"
+rule: "13 -- 0.2 sec --> 14"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 13)
 if (stateInited == true)
 {
-    Wait(0.1, WaitBehavior.AbortWhenFalse);
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
     currentState = 14;
     stateInited = false;
 }
@@ -242,13 +247,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "14 -- 0.4 sec --> 1"
+rule: "14 -- 0.3 sec --> 1"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 14)
 if (stateInited == true)
 {
-    Wait(0.4, WaitBehavior.AbortWhenFalse);
+    Wait(0.3, WaitBehavior.AbortWhenFalse);
     currentState = 1;
     stateInited = false;
 }
@@ -264,13 +269,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "21 -- 0.3 sec --> 22"
+rule: "21 -- 0.2 sec --> 22"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 21)
 if (stateInited == true)
 {
-    Wait(0.3, WaitBehavior.AbortWhenFalse);
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
     currentState = 22;
     stateInited = false;
 }
@@ -397,25 +402,6 @@ if (currentState != 1 && currentState != 31)
 if (stateInited == true)
 {
     SetAbility2Enabled(EventPlayer(), false);
-}
-
-rule: "when not deflecting"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState != 11)
-// prevent from collision with state init code
-if (stateInited == false)
-{
-    OffDeflecting(EventPlayer());
-}
-
-rule: "when not blocking"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState != 12)
-if (stateInited == false)
-{
-    OffBlocking(EventPlayer());
 }
 
 rule: "off idle"

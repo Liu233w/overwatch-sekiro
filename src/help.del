@@ -2,10 +2,10 @@ rule: "Show instruction on left"
 Event.OngoingPlayer
 {
     // you can setup your own instruction by setting the team name
-    CreateHudText(EventPlayer(), <"<0> <1>", Team.Team1, Team.Team2>);
-    CreateHudText(EventPlayer(), "----------", null, null, Location.Left, 1);
-    CreateHudText(EventPlayer(), <"defend -> <0>% = stunned", 100>, null, null, Location.Left, 2);
-    CreateHudText(EventPlayer(), "stunned + attacked = dead", null, null, Location.Left, 2);
+    CreateHudText(EventPlayer(), <"<0> <1>", Team.Team1, Team.Team2>, null, null, Location.Right, 0);
+    CreateHudText(EventPlayer(), "---------- help ----------", null, null, Location.Right, 1);
+    CreateHudText(EventPlayer(), <"defend -> <0>% = stunned", 100>, null, null, Location.Right, 2);
+    CreateHudText(EventPlayer(), "stunned + attacked = dead", null, null, Location.Right, 2);
 }
 
 define playervar helpHud = [];
@@ -21,10 +21,10 @@ Player.Doomfist
     helpHud = [];
 
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), "interact -> defend", null, null, Location.Left, 3);
+    CreateHudText(EventPlayer(), "interact -> defend", null, null, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), "secondary_fire -> attack", null, null, Location.Left, 3);
+    CreateHudText(EventPlayer(), "secondary_fire -> attack", null, null, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), "ability 2 -> reverse defend", null, null, Location.Left, 3);
+    CreateHudText(EventPlayer(), "ability 2 -> reverse defend", null, null, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }

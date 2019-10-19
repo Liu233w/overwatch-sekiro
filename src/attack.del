@@ -36,7 +36,7 @@ if (IsUsingAbility2(Attacker()))
 rule: "doomfist's ability 2: hit when blocked, deal 2X posture damage"
 Event.OnDamageDealt
 Player.Doomfist
-if (IsBlocking(Victim()))
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
 if (IsUsingAbility2(Attacker()))
 {
     Heal(Victim(), null, EventDamage());
@@ -70,7 +70,7 @@ if (IsDeflecting(Victim()))
 
 rule: "deal posture if victim is blocking"
 Event.OnDamageDealt
-if (IsBlocking(Victim()))
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
     Heal(Victim(), null, EventDamage());
     GainPostureWhenBlocking(Victim(), EventDamage(), Attacker());

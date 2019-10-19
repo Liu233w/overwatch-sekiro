@@ -42,7 +42,7 @@ if (deadlyStunned == true)
     ClearStatus(EventPlayer(), Status.Unkillable);
 }
 
-rule: "dead instantly when hitted in stunned, recover attacker 2/3 health"
+rule: "dead instantly when hitted in stunned, recover attacker 2/3 health and 150 posture"
 Event.OnDamageTaken
 if (deadlyStunned == true)
 {
@@ -50,6 +50,11 @@ if (deadlyStunned == true)
     // MinWait();
     Kill(Victim(), Attacker());
     Heal(Attacker(), null, MaxHealth(Attacker()) * 2 / 3);
+    Attacker().posture -= 150;
+    if (Attacker().posture < 0)
+    {
+        Attacker().posture = 0;
+    }
 }
 
 rule: "stunned 3 seconds after health is 1"
@@ -189,8 +194,8 @@ if (posture >= 200)
 // ==================== hud =====================
 
 define playervar postureColor;
-define playervar inWorldPostureText;
-define playervar postureHud;
+define playervar inWorldPostureText = 0;
+define playervar postureHud = 0;
 
 private method PostureHud(Color color)
 {
@@ -202,7 +207,7 @@ private method PostureHud(Color color)
     {
         DestroyHudText(postureHud);
     }
-    MinWait();
+    // MinWait();
 
     CreateInWorldText(AllPlayers(), <"<0>%", (posture / 200) * 100>, EventPlayer(), 1, 
         Clipping.ClipAgainstSurfaces, InworldTextRev.VisibleToPositionAndString, color);
@@ -214,7 +219,7 @@ private method PostureHud(Color color)
 
 rule: "show white posture text when posture < 100"
 Event.OngoingPlayer
-if (IsAlive(EventPlayer()))
+// if (IsAlive(EventPlayer()))
 if (posture < 100)
 {
     PostureHud(Color.White);
@@ -222,7 +227,7 @@ if (posture < 100)
 
 rule: "show orange posture text when posture on 100~150"
 Event.OngoingPlayer
-if (IsAlive(EventPlayer()))
+// if (IsAlive(EventPlayer()))
 if (posture >= 100)
 if (posture < 150)
 {
@@ -231,7 +236,7 @@ if (posture < 150)
 
 rule: "show red posture text when posture > 150"
 Event.OngoingPlayer
-if (IsAlive(EventPlayer()))
+// if (IsAlive(EventPlayer()))
 if (posture >= 150)
 {
     PostureHud(Color.Red);
@@ -241,5 +246,9 @@ rule: "destroy posture text when dead"
 Event.OngoingPlayer
 if (IsDead(EventPlayer()))
 {
+    if (inWorldPostureText != 0)
+    {
+        DestroyInWorldText(inWorldPostureText);
+    }
     DestroyInWorldText(inWorldPostureText);
 }
