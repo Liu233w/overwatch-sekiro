@@ -235,25 +235,25 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "21 -- 0.5 sec --> 22"
+rule: "21 -- 0.3 sec --> 22"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 21)
 if (stateInited == true)
 {
-    Wait(0.5, WaitBehavior.AbortWhenFalse);
+    Wait(0.3, WaitBehavior.AbortWhenFalse);
     currentState = 22;
     stateInited = false;
 }
 
-rule: "21 -- release secondary fire --> 22"
+rule: "21 -- release secondary fire --> 23"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 21)
 if (!IsButtonHeld(EventPlayer(), Button.SecondaryFire))
 if (stateInited == true)
 {
-    currentState = 22;
+    currentState = 23;
     stateInited = false;
 }
 
