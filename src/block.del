@@ -46,10 +46,14 @@ method OnBlocking(define player)
 {
     player.isBlocking = true;
 
+    if (player.blockingAnimation != 0)
+    {
+        DestroyEffect(player.blockingAnimation);
+    }
     CreateEffect(AllPlayers(), Effect.Sphere, Color.SkyBlue, player, 1.5);
     player.blockingAnimation = LastCreatedEntity();
-    CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, player, 200);
-    player.blockingSound = LastCreatedEntity();
+    // CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, player, 200);
+    // player.blockingSound = LastCreatedEntity();
 }
 
 method OffBlocking(define player)
@@ -57,5 +61,5 @@ method OffBlocking(define player)
     player.isBlocking = false;
 
     DestroyEffect(player.blockingAnimation);
-    DestroyEffect(player.blockingSound);
+    // DestroyEffect(player.blockingSound);
 }

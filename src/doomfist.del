@@ -117,6 +117,7 @@ Player.Doomfist
 if (currentState == 21)
 if (stateInited == false)
 {
+    StartHoldingButton(EventPlayer(), Button.SecondaryFire);
     stateInited = true;
 }
 
@@ -126,6 +127,7 @@ Player.Doomfist
 if (currentState == 22)
 if (stateInited == false)
 {
+    StopHoldingButton(EventPlayer(), Button.SecondaryFire);
     stateInited = true;
 }
 
@@ -271,13 +273,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "21 -- 2 sec --> 22"
+rule: "21 -- 0.5 sec --> 22"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 21)
 if (stateInited == true)
 {
-    Wait(2, WaitBehavior.AbortWhenFalse);
+    Wait(0.5, WaitBehavior.AbortWhenFalse);
     currentState = 22;
     stateInited = false;
 }

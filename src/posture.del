@@ -4,7 +4,7 @@ posture system (also handle hit point)
 everyone have 200 posture
 
 taken damage amount of posture when directly hitted;
-taken half damage amount of posture when blocked;
+taken damage amount of posture when blocked;
 cause 2 times damage amount of posture to attacker if you deflect a attack.
 
 Posture recover speed:
@@ -16,7 +16,7 @@ when blocking: have a double recover speed
 
 only when you are in idle or blocking can you recover posture.
 stop recovering for 1 second every time you are hitted in idle.
-stop recovering for 0.5 second every time you are hitted in blocking.
+stop recovering for 1 second every time you are hitted in blocking.
 */
 
 import "block.del";
@@ -94,7 +94,7 @@ method GainPostureByDirectAttack(define player, define attackDamage)
 
 method GainPostureWhenBlocking(define player, define attackDamage)
 {
-    player.posture += attackDamage / 2;
+    player.posture += attackDamage;
 }
 
 method GainPostureWhenDeflected(define player, define attackDamage)
@@ -150,7 +150,7 @@ Event.OngoingPlayer
 if (IsBlocking(EventPlayer()))
 if (postureRestoringRate == 0)
 {
-    Wait(0.5, WaitBehavior.AbortWhenFalse);
+    Wait(1, WaitBehavior.AbortWhenFalse);
     postureRestoringRate = ResolvePostureRecoveringRate(EventPlayer()) * 2;
 }
 
