@@ -23,6 +23,32 @@ class AttackingEvent
 
 define playervar attacking = [];
 
+// ----------- doomfist ------------
+rule: "doomfist's ability 2: deal 1/2 damage when directly hitted"
+Event.OnDamageDealt
+Player.Doomfist
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility2(Attacker()))
+{
+    attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 2));
+}
+
+rule: "doomfist's ability 2: hit when blocked, deal 2X posture damage"
+Event.OnDamageDealt
+Player.Doomfist
+if (IsBlocking(Victim()))
+if (IsUsingAbility2(Attacker()))
+{
+    Heal(Victim(), null, EventDamage());
+    GainPostureWhenBlocking(Victim(), EventDamage() * 2, Attacker());
+}
+
+// ability 2: gain ordinary damage when deflected
+
+// ------- doomfist's end ------------
+
+// ================= default damage calculation ==================
+
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
 if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))

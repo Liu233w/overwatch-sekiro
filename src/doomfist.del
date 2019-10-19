@@ -44,6 +44,7 @@ if (stateInited == false)
     OnIdle(EventPlayer());
 
     SetSecondaryFireEnabled(EventPlayer(), true);
+    SetAbility2Enabled(EventPlayer(), true);
 
     stateInited = true;
 }
@@ -124,6 +125,24 @@ if (stateInited == false)
     stateInited = true;
 }
 
+rule: "state 31: activating ability 2"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 31)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
+rule: "state 32: ability 2 cooling down"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 32)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
 // ============== state switching rule =====================
 rule: "1 -- crouch button --> 11"
 Event.OngoingPlayer
@@ -147,6 +166,16 @@ if (stateInited == true)
     stateInited = false;
 }
 
+rule: "1 -- using ability 2 --> 31"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 1)
+if (IsUsingAbility2(EventPlayer()))
+if (stateInited == true)
+{
+    currentState = 31;
+    stateInited = false;
+}
 rule: "any state -- deadly stunned --> 2"
 Event.OngoingPlayer
 Player.Doomfist
@@ -312,6 +341,28 @@ if (stateInited == true)
     stateInited = false;
 }
 
+rule: "31 -- finish ability 2 --> 32"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 31)
+if (!IsUsingAbility2(EventPlayer()))
+if (stateInited == true)
+{
+    currentState = 32;
+    stateInited = false;
+}
+
+rule: "32 -- 0.3 sec --> 1"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 32)
+if (stateInited == true)
+{
+    Wait(0.5, WaitBehavior.AbortWhenFalse);
+    currentState = 1;
+    stateInited = false;
+}
+
 // =============== interact as crouch =======================
 rule: "interact to crouch"
 Event.OngoingPlayer
@@ -337,6 +388,15 @@ if (currentState != 1 && currentState != 21 && currentState != 22)
 if (stateInited == true)
 {
     SetSecondaryFireEnabled(EventPlayer(), false);
+}
+
+rule: "disable ability 2 when not in certain state"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState != 1 && currentState != 31)
+if (stateInited == true)
+{
+    SetAbility2Enabled(EventPlayer(), false);
 }
 
 rule: "when not deflecting"

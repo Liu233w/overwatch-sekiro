@@ -1,3 +1,5 @@
+import "help.del";
+
 import "doomfist.del";
 // import "zenyatta.del";
 
@@ -40,11 +42,4 @@ Event.OngoingPlayer
 if (HasStatus(EventPlayer(), Status.KnockedDown))
 {
     ClearStatus(EventPlayer(), Status.KnockedDown);
-}
-
-// you can setup your own instruction by setting the team name
-rule: "Show instruction on left"
-Event.OngoingPlayer
-{
-    CreateHudText(EventPlayer(), <"<0> <1>", Team.Team1, Team.Team2>);
 }
