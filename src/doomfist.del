@@ -35,6 +35,10 @@ Player.Doomfist
 }
 
 // ============== state initialize code ====================
+
+// the state in the list below only set stateInited to true, so their rules can be merged into 1
+define globalvar simpleStateList = [];
+
 rule: "state 1: idle"
 Event.OngoingPlayer
 Player.Doomfist
@@ -127,6 +131,8 @@ Player.Doomfist
 if (currentState == 23)
 if (stateInited == false)
 {
+    SetSecondaryFireEnabled(EventPlayer(), false);
+    StopHoldingButton(EventPlayer(), Button.SecondaryFire);
     stateInited = true;
 }
 
@@ -145,8 +151,41 @@ Player.Doomfist
 if (currentState == 32)
 if (stateInited == false)
 {
+    SetAbility2Enabled(EventPlayer(), false);
     stateInited = true;
 }
+
+// rule: "state 41: primary attack charging"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 41)
+// if (stateInited == false)
+// {
+//     PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Purple, EventPlayer(), 2);
+//     stateInited = true;
+// }
+
+// rule: "state 42: primary attack"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 42)
+// if (stateInited == false)
+// {
+//     SetPrimaryFireEnabled(EventPlayer(), true);
+//     MinWait();
+//     PressButton(EventPlayer(), Button.PrimaryFire);
+//     stateInited = true;
+// }
+
+// rule: "state 43: primary attack cd"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 43)
+// if (stateInited == false)
+// {
+//     SetPrimaryFireEnabled(EventPlayer(), false);
+//     stateInited = true;
+// }
 
 // ============== state switching rule =====================
 rule: "1 -- crouch button --> 11"
@@ -156,9 +195,29 @@ if (currentState == 1)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInited == true)
 {
+    OffIdle(EventPlayer());
+    SetAbility2Enabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
+    StopHoldingButton(EventPlayer(), Button.SecondaryFire);
+    SetPrimaryFireEnabled(EventPlayer(), false);
     currentState = 11;
     stateInited = false;
 }
+
+// rule: "1 -- primary fire --> 41"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 1)
+// if (IsButtonHeld(EventPlayer(), Button.PrimaryFire))
+// if (stateInited == true)
+// {
+//     OffIdle(EventPlayer());
+//     SetAbility2Enabled(EventPlayer(), false);
+//     SetSecondaryFireEnabled(EventPlayer(), false);
+//     StopHoldingButton(EventPlayer(), Button.SecondaryFire);
+//     currentState = 41;
+//     stateInited = false;
+// }
 
 rule: "1 -- secondary fire --> 21"
 Event.OngoingPlayer
@@ -167,6 +226,9 @@ if (currentState == 1)
 if (IsFiringSecondary(EventPlayer()))
 if (stateInited == true)
 {
+    OffIdle(EventPlayer());
+    SetAbility2Enabled(EventPlayer(), false);
+    SetPrimaryFireEnabled(EventPlayer(), false);
     currentState = 21;
     stateInited = false;
 }
@@ -178,9 +240,12 @@ if (currentState == 1)
 if (IsUsingAbility2(EventPlayer()))
 if (stateInited == true)
 {
+    OffIdle(EventPlayer());
+    SetPrimaryFireEnabled(EventPlayer(), false);
     currentState = 31;
     stateInited = false;
 }
+
 rule: "any state -- deadly stunned --> 2"
 Event.OngoingPlayer
 Player.Doomfist
@@ -188,6 +253,7 @@ if (HasStatus(EventPlayer(), Status.Stunned))
 if (IsDeadlyStunned(EventPlayer()))
 if (stateInited == true)
 {
+    OffIdle(EventPlayer());
     currentState = 2;
     stateInited = false;
 }
@@ -368,6 +434,50 @@ if (stateInited == true)
     stateInited = false;
 }
 
+// rule: "41 -- crouch button --> 11"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 41)
+// if (IsButtonHeld(EventPlayer(), Button.Crouch))
+// if (stateInited == true)
+// {
+//     currentState = 11;
+//     stateInited = false;
+// }
+
+// rule: "41 -- 0.3 sec --> 42"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 41)
+// if (stateInited == true)
+// {
+//     Wait(0.3, WaitBehavior.AbortWhenFalse);
+//     currentState = 42;
+//     stateInited = false;
+// }
+
+// rule: "42 -- 0.5 sec --> 43"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 42)
+// if (stateInited == true)
+// {
+//     Wait(0.5, WaitBehavior.AbortWhenFalse);
+//     currentState = 43;
+//     stateInited = false;
+// }
+
+// rule: "43 -- 0.5 sec --> 1"
+// Event.OngoingPlayer
+// Player.Doomfist
+// if (currentState == 43)
+// if (stateInited == true)
+// {
+//     Wait(0.5, WaitBehavior.AbortWhenFalse);
+//     currentState = 1;
+//     stateInited = false;
+// }
+
 // =============== interact as crouch =======================
 rule: "interact to crouch"
 Event.OngoingPlayer
@@ -386,32 +496,6 @@ if (!IsButtonHeld(EventPlayer(), Button.Interact))
 }
 
 // =============== other rule ===============================
-rule: "disable secondary fire when not in certain state"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState != 1 && currentState != 21 && currentState != 22)
-if (stateInited == true)
-{
-    SetSecondaryFireEnabled(EventPlayer(), false);
-}
-
-rule: "disable ability 2 when not in certain state"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState != 1 && currentState != 31)
-if (stateInited == true)
-{
-    SetAbility2Enabled(EventPlayer(), false);
-}
-
-rule: "off idle"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentState != 1)
-if (stateInited == false)
-{
-    OffIdle(EventPlayer());
-}
 
 rule: "disable passive"
 Event.OngoingPlayer
