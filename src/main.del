@@ -29,17 +29,17 @@ Event.OngoingPlayer
     SetSecondaryFireEnabled(EventPlayer(), false);
 }
 
-rule: "Reset stunned status immediately when not deadly stunned, caused by doomfist's attack"
-Event.OngoingPlayer
-if (HasStatus(EventPlayer(), Status.Stunned))
-if (!IsDeadlyStunned(EventPlayer()))
-{
-    ClearStatus(EventPlayer(), Status.Stunned);
-}
+// rule: "Reset stunned status immediately when not deadly stunned, caused by doomfist's attack"
+// Event.OngoingPlayer
+// if (HasStatus(EventPlayer(), Status.Stunned))
+// if (!IsDeadlyStunned(EventPlayer()))
+// {
+//     ClearStatus(EventPlayer(), Status.Stunned);
+// }
 
-rule: "Reset knocked down status immediately"
-Event.OngoingPlayer
-if (HasStatus(EventPlayer(), Status.KnockedDown))
-{
-    ClearStatus(EventPlayer(), Status.KnockedDown);
-}
+// rule: "Reset knocked down status immediately"
+// Event.OngoingPlayer
+// if (HasStatus(EventPlayer(), Status.KnockedDown))
+// {
+//     ClearStatus(EventPlayer(), Status.KnockedDown);
+// }

@@ -1,0 +1,16 @@
+rule: "show hello when primary fire"
+Event.OngoingPlayer
+if (IsFiringPrimary(EventPlayer()))
+{
+    CreateHudText(EventPlayer(), "hello");
+}
+
+rule: "show go when not primary fire"
+Event.OngoingPlayer
+if (!IsFiringPrimary(EventPlayer()))
+{
+    CreateHudText(EventPlayer(), "go");
+}
+
+// for doomfist: click left: hello then go immediately
+// hold left: hello then go immediately, can fire after `go' shown, but no more hud shown
