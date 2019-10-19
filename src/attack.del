@@ -35,7 +35,7 @@ Event.OnDamageDealt
 if (IsDeflecting(Victim()))
 {
     Heal(Victim(), null, EventDamage());
-    GainPostureWhenDeflected(Attacker(), EventDamage());
+    GainPostureWhenDeflected(Attacker(), EventDamage(), Victim());
     PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
     PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
     PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
@@ -47,7 +47,7 @@ Event.OnDamageDealt
 if (IsBlocking(Victim()))
 {
     Heal(Victim(), null, EventDamage());
-    GainPostureWhenBlocking(Victim(), EventDamage());
+    GainPostureWhenBlocking(Victim(), EventDamage(), Attacker());
 }
 
 rule: "start checking victim state after a short delay"
@@ -63,7 +63,7 @@ if (CountOf(attacking) > 0)
         {
             // deflecting
             Heal(e.victim, null, e.directDamage);
-            GainPostureWhenDeflected(EventPlayer(), e.directDamage);
+            GainPostureWhenDeflected(EventPlayer(), e.directDamage, e.victim);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
@@ -71,7 +71,7 @@ if (CountOf(attacking) > 0)
         }
         else
         {
-            GainPostureByDirectAttack(e.victim, e.directDamage);
+            GainPostureByDirectAttack(e.victim, e.directDamage, EventPlayer());
         }
 
         delete(e);
