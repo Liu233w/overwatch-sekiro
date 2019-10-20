@@ -1,11 +1,11 @@
 import "help.del";
+import "debug.del";
 
 import "doomfist.del";
 // import "zenyatta.del";
 
 import "attack.del";
 import "posture.del";
-import "debug.del";
 
 rule: "Author: Liu233w#5454 (Ch-ina mainland server)" // to avoid keyword censorship
 {}

@@ -4,6 +4,7 @@ code about attack
 
 import "block.del";
 import "posture.del";
+import "state-mark.del";
 
 class AttackingEvent
 {
@@ -13,6 +14,8 @@ class AttackingEvent
 
     // TODO: let each kind of attacking have their own posture damage
     // can be achieved by adding a multiplier (* the multiplier when hitted in blocking)
+
+    public define directlyHittedPostureMultiplier = 1;
 
     public AttackingEvent(define victim, define damage)
     {
@@ -44,6 +47,40 @@ if (IsUsingAbility2(Attacker()))
 }
 
 // ability 2: gain ordinary damage when deflected
+
+rule: "doomfist's primary attack: deal 1/4 damage when directly hitted"
+Event.OnDamageDealt
+Player.Doomfist
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsOnGround(Victim()))
+if (InFiringPrimaryState(Attacker()))
+{
+    Heal(Victim(), null, EventDamage() * 3 / 4);
+    attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 4));
+}
+
+rule: "doomfist's primary attack: deal 1/2 posture if blocked"
+Event.OnDamageDealt
+Player.Doomfist
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (InFiringPrimaryState(Attacker()))
+{
+    Heal(Victim(), null, EventDamage());
+    GainPostureWhenBlocking(Victim(), EventDamage() / 2, Attacker());
+}
+
+rule: "doomfist's primary attack: deal 1/4 damage and 2X posture damage when directly hitted on the air"
+Event.OnDamageDealt
+Player.Doomfist
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (!IsOnGround(Victim()))
+if (InFiringPrimaryState(Attacker()))
+{
+    Heal(Victim(), null, EventDamage() * 3 / 4);
+    AttackingEvent e = new AttackingEvent(Victim(), EventDamage() / 4);
+    e.directlyHittedPostureMultiplier = 8; // 1/4 * 8 = 2
+    attacking = Append(attacking, e);
+}
 
 // ------- doomfist's end ------------
 
@@ -97,7 +134,7 @@ if (CountOf(attacking) > 0)
         }
         else
         {
-            GainPostureByDirectAttack(e.victim, e.directDamage, EventPlayer());
+            GainPostureByDirectAttack(e.victim, e.directDamage * e.directlyHittedPostureMultiplier, EventPlayer());
         }
 
         delete(e);
