@@ -192,7 +192,6 @@ if (deadlyStunned == true)
 
 // ==================== hud =====================
 
-define playervar postureColor;
 define playervar inWorldPostureText = 0;
 define playervar postureHud = 0;
 

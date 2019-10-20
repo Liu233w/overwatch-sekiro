@@ -6,15 +6,8 @@ import "block.del";
 import "debug.del";
 import "posture.del";
 
-define playervar currentState; // current state number in state machine
-define playervar stateInited; // is state init code executed
-
-rule: "init doomfist state"
-Event.OngoingPlayer
-Player.Doomfist
-{
-    stateInited = false;
-}
+define playervar currentState = 0; // current state number in state machine
+define playervar stateInited = false; // is state init code executed
 
 rule: "set state to 1 when spawned"
 Event.OngoingPlayer
@@ -451,10 +444,17 @@ if (MaxHealth(EventPlayer()) > 250)
 }
 
 // ================= debugging ====================
+
+define playervar debugHud;
+
 rule: "debug doomfist"
 Event.OngoingPlayer
 Player.Doomfist
 if (IsDebugging())
 {
-    CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentState, stateInited>);
+    if (debugHud == 0)
+    {
+        CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentState, stateInited>);
+        debugHud = LastTextID();
+    }
 }
