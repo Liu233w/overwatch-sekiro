@@ -247,13 +247,13 @@ if (stateInited == true)
     stateInited = false;
 }
 
-rule: "11 -- 0.3 sec --> 12"
+rule: "11 -- 0.2 sec --> 12"
 Event.OngoingPlayer
 Player.Doomfist
 if (currentState == 11)
 if (stateInited == true)
 {
-    Wait(0.3, WaitBehavior.AbortWhenFalse);
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
     currentState = 12;
     stateInited = false;
 }

@@ -142,8 +142,8 @@ Event.OngoingPlayer
 if (Health(EventPlayer()) == 1)
 if (deadlyStunned != true)
 {
-    // wait 0.15 sec to see if he can regain health (wait for deflect)
-    Wait(0.15, WaitBehavior.AbortWhenFalse);
+    // wait 0.25 sec to see if he can regain health (wait for deflect)
+    Wait(0.25, WaitBehavior.AbortWhenFalse);
     SetDeadlyStunned(3);
 }
 

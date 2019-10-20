@@ -94,7 +94,14 @@ rule: "start checking victim state after a short delay"
 Event.OngoingPlayer
 if (CountOf(attacking) > 0)
 {
-    Wait(0.1);
+    if (HeroOf(EventPlayer()) == Hero.Doomfist)
+    {
+        Wait(0.15);
+    }
+    else
+    {
+        Wait(0.1);
+    }
 
     // cannot hurt more than 3 persons at once, so the loop is acceptable.
     foreach (AttackingEvent e in attacking)
