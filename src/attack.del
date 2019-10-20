@@ -23,57 +23,71 @@ class AttackingEvent
 
 define playervar attacking = [];
 
-// ----------- doomfist ------------
-rule: "doomfist's ability 2: deal 1/2 damage when directly hitted"
-Event.OnDamageDealt
-Player.Doomfist
-if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
-if (IsUsingAbility2(Attacker()))
-{
-    attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 2));
-}
-
-rule: "doomfist's ability 2: hit when blocked, deal 2X posture damage"
-Event.OnDamageDealt
-Player.Doomfist
-if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
-if (IsUsingAbility2(Attacker()))
-{
-    Heal(Victim(), null, EventDamage());
-    GainPostureWhenBlocking(Victim(), EventDamage() * 2, Attacker());
-}
-
-// ability 2: gain ordinary damage when deflected
-
-// ------- doomfist's end ------------
-
-// ================= default damage calculation ==================
-
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
 if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
-    attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage()));
+    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
+    {
+        // doomfist's ability 2: deal 1/2 damage
+        attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 2));
+    }
+    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
+    {
+        // doomfist's ability 1: deal no damage
+        Heal(Victim(), null, EventDamage());
+        if (!IsOnGround(Victim()))
+        {
+            // deal 150 posture damage if not on the ground
+            GainPosture(Victim(), 150, Attacker());
+        }
+    }
+    else
+    {
+        attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage()));
+    }
 }
 
 rule: "gain posture if victim is deflecting"
 Event.OnDamageDealt
 if (IsDeflecting(Victim()))
 {
-    Heal(Victim(), null, EventDamage());
-    GainPostureWhenDeflected(Attacker(), EventDamage(), Victim());
-    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
+    {
+        // doomfist's ability 1: deal no damage
+        Heal(Victim(), null, EventDamage());
+    }
+    else
+    {
+        Heal(Victim(), null, EventDamage());
+        GainPosture(Attacker(), EventDamage() * 2, Victim());
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    }
 }
 
 rule: "deal posture if victim is blocking"
 Event.OnDamageDealt
 if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
-    Heal(Victim(), null, EventDamage());
-    GainPostureWhenBlocking(Victim(), EventDamage(), Attacker());
+    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
+    {
+        // doomfist's ability 2: deal 2X posture damage
+        Heal(Victim(), null, EventDamage());
+        GainPosture(Victim(), EventDamage() * 2, Attacker());
+    }
+    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
+    {
+        // doomfist's ability 1: deal no damage
+        Heal(Victim(), null, EventDamage());
+    }
+    else
+    {
+        Heal(Victim(), null, EventDamage());
+        GainPosture(Victim(), EventDamage(), Attacker());
+    }
 }
 
 rule: "start checking victim state after a short delay"
@@ -89,7 +103,7 @@ if (CountOf(attacking) > 0)
         {
             // deflecting
             Heal(e.victim, null, e.directDamage);
-            GainPostureWhenDeflected(EventPlayer(), e.directDamage, e.victim);
+            GainPosture(EventPlayer(), e.directDamage * 2, e.victim);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
@@ -97,7 +111,7 @@ if (CountOf(attacking) > 0)
         }
         else
         {
-            GainPostureByDirectAttack(e.victim, e.directDamage, EventPlayer());
+            GainPosture(e.victim, e.directDamage, EventPlayer());
         }
 
         delete(e);

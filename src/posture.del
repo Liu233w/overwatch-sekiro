@@ -35,21 +35,9 @@ if (IsAlive(EventPlayer()))
 
 // functions sealed posture calculation
 
-method GainPostureByDirectAttack(define player, define attackDamage, define dealer)
+method GainPosture(define player, define postureAdded, define dealer)
 {
-    player.posture += attackDamage;
-    player.lastPostureAttacker = dealer;
-}
-
-method GainPostureWhenBlocking(define player, define attackDamage, define dealer)
-{
-    player.posture += attackDamage;
-    player.lastPostureAttacker = dealer;
-}
-
-method GainPostureWhenDeflected(define player, define attackDamage, define dealer)
-{
-    player.posture += attackDamage * 2;
+    player.posture += postureAdded;
     player.lastPostureAttacker = dealer;
 }
 

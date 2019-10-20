@@ -48,6 +48,7 @@ if (stateInited == false)
     OnIdle(EventPlayer());
 
     SetSecondaryFireEnabled(EventPlayer(), true);
+    SetAbility1Enabled(EventPlayer(), true);
     SetAbility2Enabled(EventPlayer(), true);
 
     stateInited = true;
@@ -155,6 +156,15 @@ if (stateInited == false)
     stateInited = true;
 }
 
+rule: "state 41: ability 1 activated"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 41)
+if (stateInited == false)
+{
+    stateInited = true;
+}
+
 // ============== state switching rule =====================
 rule: "1 -- crouch button --> 11"
 Event.OngoingPlayer
@@ -164,6 +174,7 @@ if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInited == true)
 {
     OffIdle(EventPlayer());
+    SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
     StopHoldingButton(EventPlayer(), Button.SecondaryFire);
@@ -179,8 +190,23 @@ if (IsFiringSecondary(EventPlayer()))
 if (stateInited == true)
 {
     OffIdle(EventPlayer());
+    SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     currentState = 21;
+    stateInited = false;
+}
+
+rule: "1 -- using ability 1 --> 41"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 1)
+if (IsUsingAbility1(EventPlayer()))
+if (stateInited == true)
+{
+    SetAbility2Enabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
+    OffIdle(EventPlayer());
+    currentState = 31;
     stateInited = false;
 }
 
@@ -191,6 +217,8 @@ if (currentState == 1)
 if (IsUsingAbility2(EventPlayer()))
 if (stateInited == true)
 {
+    SetAbility1Enabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
     OffIdle(EventPlayer());
     currentState = 31;
     stateInited = false;
@@ -380,6 +408,17 @@ if (currentState == 32)
 if (stateInited == true)
 {
     Wait(0.5, WaitBehavior.AbortWhenFalse);
+    currentState = 1;
+    stateInited = false;
+}
+
+rule: "41 -- 1 sec --> 1"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentState == 41)
+if (stateInited == true)
+{
+    Wait(1, WaitBehavior.AbortWhenFalse);
     currentState = 1;
     stateInited = false;
 }
