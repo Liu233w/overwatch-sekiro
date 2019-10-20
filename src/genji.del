@@ -9,6 +9,14 @@ import "posture.del";
 define playervar currentStateGenji = 0; // current state number in state machine
 define playervar stateInitedGenji = false; // is state init code executed
 
+rule: "Initialize Genji" // if player switch a hero, the init code in main.del may not work
+Event.OngoingPlayer
+Player.Genji
+{
+    SetAbility1Enabled(EventPlayer(), false);
+    SetAbility2Enabled(EventPlayer(), false);
+}
+
 rule: "set state to 1 when spawned"
 Event.OngoingPlayer
 Player.Genji
@@ -175,13 +183,13 @@ if (stateInitedGenji == true)
     stateInitedGenji = false;
 }
 
-rule: "11 -- 0.2 sec --> 12"
+rule: "11 -- 0.1 sec --> 12"
 Event.OngoingPlayer
 Player.Genji
 if (currentStateGenji == 11)
 if (stateInitedGenji == true)
 {
-    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    Wait(0.1, WaitBehavior.AbortWhenFalse);
     currentStateGenji = 12;
     stateInitedGenji = false;
 }
