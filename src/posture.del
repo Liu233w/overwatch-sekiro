@@ -57,11 +57,20 @@ method GainPostureWhenDeflected(define player, define attackDamage, define deale
 
 define playervar postureRestoringRate R;
 
-rule: "start tracking posture rest-ore"
+rule: "manually chase posture variable rest-ore"
 Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
 {
-    // the ChaseVariable can be buggy. this one below is fine.
-    ChasePlayerVariableAtRate(EventPlayer(), Variable.P, 0, postureRestoringRate, RateChaseReevaluation.DestinationAndRate);
+    // the ChaseVariableAtRate is lack of performance, use a loop instead
+    while(true)
+    {
+        posture -= postureRestoringRate * 0.016;
+        if (posture < 0)
+        {
+            posture = 0;
+        }
+        Wait(0.016, WaitBehavior.AbortWhenFalse);
+    }
 }
 
 rule: "stop recovering posture when not in idle or blocking"
