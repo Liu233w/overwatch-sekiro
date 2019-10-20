@@ -14,6 +14,8 @@ rule: "init doomfist state"
 Event.OngoingPlayer
 Player.Doomfist
 {
+    MinWait();
+    SetPrimaryFireEnabled(EventPlayer(), true);
     stateInited = false;
 }
 
@@ -64,6 +66,7 @@ if (stateInited == false)
     OffDeflecting(EventPlayer());
     OffBlocking(EventPlayer());
     SetInFiringPrimaryState(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
     stateInited = true;
 }
 
@@ -174,7 +177,7 @@ Player.Doomfist
 if (currentState == 42)
 if (stateInited == false)
 {
-    SetPrimaryFireEnabled(EventPlayer(), true);
+    AllowButton(EventPlayer(), Button.PrimaryFire);
     SetInFiringPrimaryState(EventPlayer(), true);
     MinWait();
     PressButton(EventPlayer(), Button.PrimaryFire);
@@ -187,7 +190,7 @@ Player.Doomfist
 if (currentState == 43)
 if (stateInited == false)
 {
-    SetPrimaryFireEnabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
     stateInited = true;
 }
 
