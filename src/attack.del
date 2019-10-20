@@ -42,6 +42,11 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
             GainPosture(Victim(), 150, Attacker());
         }
     }
+    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
+    {
+        // genji's ability 1: deal no damage or posture
+        Heal(Victim(), null, EventDamage());
+    }
     else
     {
         attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage()));
@@ -57,6 +62,11 @@ if (IsDeflecting(Victim()))
         // doomfist's ability 1: deal no damage
         Heal(Victim(), null, EventDamage());
     }
+    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
+    {
+        // genji's ability 1: cannot be deflected
+        Heal(Victim(), null, EventDamage());
+    }
     else
     {
         Heal(Victim(), null, EventDamage());
@@ -65,6 +75,8 @@ if (IsDeflecting(Victim()))
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+
+        OnSucceedDeflecting(Victim());
     }
 }
 
@@ -81,6 +93,11 @@ if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
     else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
     {
         // doomfist's ability 1: deal no damage
+        Heal(Victim(), null, EventDamage());
+    }
+    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
+    {
+        // genji's ability 1: deal no posture damage
         Heal(Victim(), null, EventDamage());
     }
     else
@@ -115,6 +132,8 @@ if (CountOf(attacking) > 0)
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
+
+            OnSucceedDeflecting(e.victim);
         }
         else
         {

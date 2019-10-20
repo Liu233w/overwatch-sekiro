@@ -1,0 +1,353 @@
+/*
+The state machine of genji
+*/
+
+import "block.del";
+import "debug.del";
+import "posture.del";
+
+define playervar currentStateGenji = 0; // current state number in state machine
+define playervar stateInitedGenji = false; // is state init code executed
+
+rule: "set state to 1 when spawned"
+Event.OngoingPlayer
+Player.Genji
+if (IsAlive(EventPlayer()))
+if (currentStateGenji == 0)
+if (stateInitedGenji == false)
+{
+    currentStateGenji = 1;
+}
+
+rule: "set state to 0 when dead"
+Event.OnDeath
+Player.Genji
+{
+    currentStateGenji = 0;
+    stateInitedGenji = false;
+}
+
+// ============== state initialize code ====================
+
+rule: "state 1: idle"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 1)
+if (stateInitedGenji == false)
+{
+    OnIdle(EventPlayer());
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
+
+    stateInitedGenji = true;
+}
+
+rule: "state 2: stunned"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 2)
+if (stateInitedGenji == false)
+{
+    OffDeflecting(EventPlayer());
+    OffBlocking(EventPlayer());
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
+    stateInitedGenji = true;
+}
+
+rule: "state 11: deflecting"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 11)
+if (stateInitedGenji == false)
+{
+    OnDeflecting(EventPlayer());
+    stateInitedGenji = true;
+}
+
+rule: "state 12: blocking"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 12)
+if (stateInitedGenji == false)
+{
+    OffDeflecting(EventPlayer());
+    OnBlocking(EventPlayer());
+    stateInitedGenji = true;
+}
+
+rule: "state 13: deflect cd"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 13)
+if (stateInitedGenji == false)
+{
+    OffBlocking(EventPlayer());
+    stateInitedGenji = true;
+}
+
+rule: "state 14: block cd"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 14)
+if (stateInitedGenji == false)
+{
+    stateInitedGenji = true;
+}
+
+rule: "state 21: attack charging"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 21)
+if (stateInitedGenji == false)
+{
+    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Yellow, EventPlayer(), 2);
+    stateInitedGenji = true;
+}
+
+rule: "state 22: attacking"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 22)
+if (stateInitedGenji == false)
+{
+    AllowButton(EventPlayer(), Button.PrimaryFire);
+    MinWait();
+    PressButton(EventPlayer(), Button.PrimaryFire);
+    stateInitedGenji = true;
+}
+
+rule: "state 23: attack cd"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 23)
+if (stateInitedGenji == false)
+{
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
+    stateInitedGenji = true;
+}
+
+// ============== state switching rule =====================
+
+rule: "1 -- right button --> 11"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 1)
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (!IsOnWall(EventPlayer()))
+if (stateInitedGenji == true)
+{
+    OffIdle(EventPlayer());
+    currentStateGenji = 11;
+    stateInitedGenji = false;
+}
+
+rule: "1 -- left button --> 21"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 1)
+if (IsButtonHeld(EventPlayer(), Button.PrimaryFire))
+if (stateInitedGenji == true)
+{
+    OffIdle(EventPlayer());
+    currentStateGenji = 21;
+    stateInitedGenji = false;
+}
+
+rule: "any state -- deadly stunned --> 2"
+Event.OngoingPlayer
+Player.Genji
+if (HasStatus(EventPlayer(), Status.Stunned))
+if (IsDeadlyStunned(EventPlayer()))
+if (stateInitedGenji == true)
+{
+    OffIdle(EventPlayer());
+    currentStateGenji = 2;
+    stateInitedGenji = false;
+}
+
+rule: "2 -- un-stunned --> 1"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 2)
+if (!HasStatus(EventPlayer(), Status.Stunned))
+if (stateInitedGenji == true)
+{
+    currentStateGenji = 1;
+    stateInitedGenji = false;
+}
+
+rule: "11 -- 0.2 sec --> 12"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 11)
+if (stateInitedGenji == true)
+{
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    currentStateGenji = 12;
+    stateInitedGenji = false;
+}
+
+rule: "12 -- release right --> 13"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 12)
+if (stateInitedGenji == true)
+if (!IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+{
+     
+    currentStateGenji = 13;
+    stateInitedGenji = false;
+}
+
+rule: "12 -- climbing/use shift --> 13"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 12)
+if (stateInitedGenji == true)
+if (IsOnWall(EventPlayer()) || IsUsingAbility1(EventPlayer()))
+{
+    currentStateGenji = 13;
+    stateInitedGenji = false;
+}
+
+rule: "13 -- 0.2 sec --> 14"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 13)
+if (stateInitedGenji == true)
+{
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    currentStateGenji = 14;
+    stateInitedGenji = false;
+}
+
+rule: "13 -- right button --> 12"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 13)
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (!IsOnWall(EventPlayer()))
+if (stateInitedGenji == true)
+{
+    currentStateGenji = 12;
+    stateInitedGenji = false;
+}
+
+rule: "14 -- 0.3 sec --> 1"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 14)
+if (stateInitedGenji == true)
+{
+    Wait(0.3, WaitBehavior.AbortWhenFalse);
+    currentStateGenji = 1;
+    stateInitedGenji = false;
+}
+
+rule: "14 -- right button --> 11"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 14)
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (!IsOnWall(EventPlayer()))
+if (stateInitedGenji == true)
+{
+    currentStateGenji = 11;
+    stateInitedGenji = false;
+}
+
+rule: "21 -- 0.1 sec --> 22"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 21)
+if (stateInitedGenji == true)
+{
+    Wait(0.1, WaitBehavior.AbortWhenFalse);
+    currentStateGenji = 22;
+    stateInitedGenji = false;
+}
+
+rule: "21 -- right button --> 11"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 21)
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (!IsOnWall(EventPlayer()))
+if (stateInitedGenji == true)
+{
+    currentStateGenji = 11;
+    stateInitedGenji = false;
+}
+
+rule: "22 -- 0.75 sec --> 23"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 22)
+if (stateInitedGenji == true)
+{
+    Wait(0.75, WaitBehavior.AbortWhenFalse);
+    currentStateGenji = 23;
+    stateInitedGenji = false;
+}
+
+rule: "23 -- 0.25 sec --> 1"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 23)
+if (stateInitedGenji == true)
+{
+    Wait(0.25, WaitBehavior.AbortWhenFalse);
+    currentStateGenji = 1;
+    stateInitedGenji = false;
+}
+
+rule: "23 -- right button --> 11"
+Event.OngoingPlayer
+Player.Genji
+if (currentStateGenji == 23)
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (!IsOnWall(EventPlayer()))
+if (stateInitedGenji == true)
+{
+    currentStateGenji = 11;
+    stateInitedGenji = false;
+}
+
+// =============== other rule ===============================
+
+rule: "use ultimate ability automatically"
+Event.OngoingPlayer
+Player.Genji
+if (IsAlive(EventPlayer()))
+{
+    MinWait();
+    SetUltimateAbilityEnabled(EventPlayer(), true);
+    SetUltimateCharge(EventPlayer(), 100);
+    MinWait();
+    PressButton(EventPlayer(), Button.Ultimate);
+}
+
+rule: "unlock shift ability for 2 seconds when deflect successfully"
+Event.OngoingPlayer
+Player.Genji
+if (DeflectSucceedCount(EventPlayer()) > 0)
+{
+    SetAbility1Enabled(EventPlayer(), true);
+    Wait(2);
+    SetAbility1Enabled(EventPlayer(), false);
+}
+
+// ================= debugging ====================
+
+define playervar debugHudGenji;
+
+rule: "debug genji"
+Event.OngoingPlayer
+Player.Genji
+if (IsDebugging())
+{
+    if (debugHudGenji == 0)
+    {
+        CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentStateGenji, stateInitedGenji>);
+        debugHudGenji = LastTextID();
+    }
+}

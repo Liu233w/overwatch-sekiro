@@ -11,11 +11,15 @@ define playervar isDeflecting; // is player deflecting
 define playervar isBlocking; // is player blocking
 define playervar isIdle; // is player in idle
 
+define playervar deflectingSucceedCount = 0;
+
 macro IsDeflecting(define player): player.isDeflecting == true;
 
 macro IsBlocking(define player): player.isBlocking == true;
 
 macro IsIdle(define player): player.isIdle == true;
+
+macro DeflectSucceedCount(define player): player.deflectingSucceedCount;
 
 define playervar blockingAnimation;
 define playervar blockingSound;
@@ -35,11 +39,18 @@ method OnDeflecting(define player)
     player.isDeflecting = true;
     PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Blue, player, 2);
     PlayEffect(AllPlayers(), PlayEffect.DebuffImpactSound, Color.White, player, 30);
+
+    player.deflectingSucceedCount = 0;
 }
 
 method OffDeflecting(define player)
 {
     player.isDeflecting = false;
+}
+
+method OnSucceedDeflecting(define player)
+{
+    player.deflectingSucceedCount += 1;
 }
 
 method OnBlocking(define player)

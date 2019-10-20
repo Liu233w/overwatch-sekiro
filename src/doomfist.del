@@ -6,37 +6,34 @@ import "block.del";
 import "debug.del";
 import "posture.del";
 
-define playervar currentState = 0; // current state number in state machine
-define playervar stateInited = false; // is state init code executed
+define playervar currentStateDoomfist = 0; // current state number in state machine
+define playervar stateInitedDoomfist = false; // is state init code executed
 
 rule: "set state to 1 when spawned"
 Event.OngoingPlayer
 Player.Doomfist
 if (IsAlive(EventPlayer()))
-if (currentState == 0)
-if (stateInited == false)
+if (currentStateDoomfist == 0)
+if (stateInitedDoomfist == false)
 {
-    currentState = 1;
+    currentStateDoomfist = 1;
 }
 
 rule: "set state to 0 when dead"
 Event.OnDeath
 Player.Doomfist
 {
-    currentState = 0;
-    stateInited = false;
+    currentStateDoomfist = 0;
+    stateInitedDoomfist = false;
 }
 
 // ============== state initialize code ====================
 
-// the state in the list below only set stateInited to true, so their rules can be merged into 1
-define globalvar simpleStateList = [];
-
 rule: "state 1: idle"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 1)
-if (stateInited == false)
+if (currentStateDoomfist == 1)
+if (stateInitedDoomfist == false)
 {
     OnIdle(EventPlayer());
 
@@ -44,177 +41,178 @@ if (stateInited == false)
     SetAbility1Enabled(EventPlayer(), true);
     SetAbility2Enabled(EventPlayer(), true);
 
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 2: stunned"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 2)
-if (stateInited == false)
+if (currentStateDoomfist == 2)
+if (stateInitedDoomfist == false)
 {
     OffDeflecting(EventPlayer());
     OffBlocking(EventPlayer());
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 11: deflecting"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 11)
-if (stateInited == false)
+if (currentStateDoomfist == 11)
+if (stateInitedDoomfist == false)
 {
     OnDeflecting(EventPlayer());
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 12: blocking"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 12)
-if (stateInited == false)
+if (currentStateDoomfist == 12)
+if (stateInitedDoomfist == false)
 {
     OffDeflecting(EventPlayer());
     OnBlocking(EventPlayer());
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 13: deflecting cooling down"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 13)
-if (stateInited == false)
+if (currentStateDoomfist == 13)
+if (stateInitedDoomfist == false)
 {
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 14: blocking cooling down"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 14)
-if (stateInited == false)
+if (currentStateDoomfist == 14)
+if (stateInitedDoomfist == false)
 {
     OffBlocking(EventPlayer());
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 21: fist charging"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 21)
-if (stateInited == false)
+if (currentStateDoomfist == 21)
+if (stateInitedDoomfist == false)
 {
     PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Yellow, EventPlayer(), 2);
     StartHoldingButton(EventPlayer(), Button.SecondaryFire);
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 22: fist releasing"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 22)
-if (stateInited == false)
+if (currentStateDoomfist == 22)
+if (stateInitedDoomfist == false)
 {
     StopHoldingButton(EventPlayer(), Button.SecondaryFire);
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 23: fist cooling down"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 23)
-if (stateInited == false)
+if (currentStateDoomfist == 23)
+if (stateInitedDoomfist == false)
 {
     SetSecondaryFireEnabled(EventPlayer(), false);
     StopHoldingButton(EventPlayer(), Button.SecondaryFire);
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 31: activating ability 2"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 31)
-if (stateInited == false)
+if (currentStateDoomfist == 31)
+if (stateInitedDoomfist == false)
 {
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 32: ability 2 cooling down"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 32)
-if (stateInited == false)
+if (currentStateDoomfist == 32)
+if (stateInitedDoomfist == false)
 {
     SetAbility2Enabled(EventPlayer(), false);
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 rule: "state 41: ability 1 activated"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 41)
-if (stateInited == false)
+if (currentStateDoomfist == 41)
+if (stateInitedDoomfist == false)
 {
-    stateInited = true;
+    stateInitedDoomfist = true;
 }
 
 // ============== state switching rule =====================
+
 rule: "1 -- crouch button --> 11"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 1)
+if (currentStateDoomfist == 1)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
     OffIdle(EventPlayer());
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
     StopHoldingButton(EventPlayer(), Button.SecondaryFire);
-    currentState = 11;
-    stateInited = false;
+    currentStateDoomfist = 11;
+    stateInitedDoomfist = false;
 }
 
 rule: "1 -- secondary fire --> 21"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 1)
+if (currentStateDoomfist == 1)
 if (IsFiringSecondary(EventPlayer()))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
     OffIdle(EventPlayer());
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
-    currentState = 21;
-    stateInited = false;
+    currentStateDoomfist = 21;
+    stateInitedDoomfist = false;
 }
 
 rule: "1 -- using ability 1 --> 41"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 1)
+if (currentStateDoomfist == 1)
 if (IsUsingAbility1(EventPlayer()))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
     SetAbility2Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
     OffIdle(EventPlayer());
-    currentState = 31;
-    stateInited = false;
+    currentStateDoomfist = 31;
+    stateInitedDoomfist = false;
 }
 
 rule: "1 -- using ability 2 --> 31"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 1)
+if (currentStateDoomfist == 1)
 if (IsUsingAbility2(EventPlayer()))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
     SetAbility1Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
     OffIdle(EventPlayer());
-    currentState = 31;
-    stateInited = false;
+    currentStateDoomfist = 31;
+    stateInitedDoomfist = false;
 }
 
 rule: "any state -- deadly stunned --> 2"
@@ -222,198 +220,198 @@ Event.OngoingPlayer
 Player.Doomfist
 if (HasStatus(EventPlayer(), Status.Stunned))
 if (IsDeadlyStunned(EventPlayer()))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
     OffIdle(EventPlayer());
-    currentState = 2;
-    stateInited = false;
+    currentStateDoomfist = 2;
+    stateInitedDoomfist = false;
 }
 
 rule: "2 -- un-stunned --> 1"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 2)
+if (currentStateDoomfist == 2)
 if (!HasStatus(EventPlayer(), Status.Stunned))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 1;
-    stateInited = false;
+    currentStateDoomfist = 1;
+    stateInitedDoomfist = false;
 }
 
 rule: "11 -- 0.2 sec --> 12"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 11)
-if (stateInited == true)
+if (currentStateDoomfist == 11)
+if (stateInitedDoomfist == true)
 {
     Wait(0.2, WaitBehavior.AbortWhenFalse);
-    currentState = 12;
-    stateInited = false;
+    currentStateDoomfist = 12;
+    stateInitedDoomfist = false;
 }
 
 rule: "12 -- release crouch button --> 13"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 12)
+if (currentStateDoomfist == 12)
 if (!IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 13;
-    stateInited = false;
+    currentStateDoomfist = 13;
+    stateInitedDoomfist = false;
 }
 
 rule: "13 -- 0.2 sec --> 14"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 13)
-if (stateInited == true)
+if (currentStateDoomfist == 13)
+if (stateInitedDoomfist == true)
 {
     Wait(0.2, WaitBehavior.AbortWhenFalse);
-    currentState = 14;
-    stateInited = false;
+    currentStateDoomfist = 14;
+    stateInitedDoomfist = false;
 }
 
 rule: "13 -- crouch button --> 12"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 13)
+if (currentStateDoomfist == 13)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 12;
-    stateInited = false;
+    currentStateDoomfist = 12;
+    stateInitedDoomfist = false;
 }
 
 rule: "14 -- 0.3 sec --> 1"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 14)
-if (stateInited == true)
+if (currentStateDoomfist == 14)
+if (stateInitedDoomfist == true)
 {
     Wait(0.3, WaitBehavior.AbortWhenFalse);
-    currentState = 1;
-    stateInited = false;
+    currentStateDoomfist = 1;
+    stateInitedDoomfist = false;
 }
 
 rule: "14 -- crouch button --> 11"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 14)
+if (currentStateDoomfist == 14)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 11;
-    stateInited = false;
+    currentStateDoomfist = 11;
+    stateInitedDoomfist = false;
 }
 
 rule: "21 -- 0.2 sec --> 22"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 21)
-if (stateInited == true)
+if (currentStateDoomfist == 21)
+if (stateInitedDoomfist == true)
 {
     Wait(0.2, WaitBehavior.AbortWhenFalse);
-    currentState = 22;
-    stateInited = false;
+    currentStateDoomfist = 22;
+    stateInitedDoomfist = false;
 }
 
 rule: "21 -- release secondary fire --> 23"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 21)
+if (currentStateDoomfist == 21)
 if (!IsButtonHeld(EventPlayer(), Button.SecondaryFire))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 23;
-    stateInited = false;
+    currentStateDoomfist = 23;
+    stateInitedDoomfist = false;
 }
 
 rule: "21 -- left button --> 23"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 21)
+if (currentStateDoomfist == 21)
 if (IsButtonHeld(EventPlayer(), Button.PrimaryFire))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 23;
-    stateInited = false;
+    currentStateDoomfist = 23;
+    stateInitedDoomfist = false;
 }
 
 rule: "21 -- crouch button --> 11"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 21)
+if (currentStateDoomfist == 21)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 11;
-    stateInited = false;
+    currentStateDoomfist = 11;
+    stateInitedDoomfist = false;
 }
 
 rule: "22 -- 0.3 sec --> 23"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 22)
-if (stateInited == true)
+if (currentStateDoomfist == 22)
+if (stateInitedDoomfist == true)
 {
     Wait(0.3, WaitBehavior.AbortWhenFalse);
-    currentState = 23;
-    stateInited = false;
+    currentStateDoomfist = 23;
+    stateInitedDoomfist = false;
 }
 
 rule: "23 -- 0.5 sec --> 1"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 23)
-if (stateInited == true)
+if (currentStateDoomfist == 23)
+if (stateInitedDoomfist == true)
 {
     Wait(0.5, WaitBehavior.AbortWhenFalse);
-    currentState = 1;
-    stateInited = false;
+    currentStateDoomfist = 1;
+    stateInitedDoomfist = false;
 }
 
 rule: "23 -- crouch button --> 12"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 23)
+if (currentStateDoomfist == 23)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 12;
-    stateInited = false;
+    currentStateDoomfist = 12;
+    stateInitedDoomfist = false;
 }
 
 rule: "31 -- finish ability 2 --> 32"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 31)
+if (currentStateDoomfist == 31)
 if (!IsUsingAbility2(EventPlayer()))
-if (stateInited == true)
+if (stateInitedDoomfist == true)
 {
-    currentState = 32;
-    stateInited = false;
+    currentStateDoomfist = 32;
+    stateInitedDoomfist = false;
 }
 
 rule: "32 -- 0.3 sec --> 1"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 32)
-if (stateInited == true)
+if (currentStateDoomfist == 32)
+if (stateInitedDoomfist == true)
 {
     Wait(0.5, WaitBehavior.AbortWhenFalse);
-    currentState = 1;
-    stateInited = false;
+    currentStateDoomfist = 1;
+    stateInitedDoomfist = false;
 }
 
 rule: "41 -- 1 sec --> 1"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentState == 41)
-if (stateInited == true)
+if (currentStateDoomfist == 41)
+if (stateInitedDoomfist == true)
 {
     Wait(1, WaitBehavior.AbortWhenFalse);
-    currentState = 1;
-    stateInited = false;
+    currentStateDoomfist = 1;
+    stateInitedDoomfist = false;
 }
 
 // =============== interact as crouch =======================
@@ -445,16 +443,16 @@ if (MaxHealth(EventPlayer()) > 250)
 
 // ================= debugging ====================
 
-define playervar debugHud;
+define playervar debugHudDoomfist;
 
 rule: "debug doomfist"
 Event.OngoingPlayer
 Player.Doomfist
 if (IsDebugging())
 {
-    if (debugHud == 0)
+    if (debugHudDoomfist == 0)
     {
-        CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentState, stateInited>);
-        debugHud = LastTextID();
+        CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentStateDoomfist, stateInitedDoomfist>);
+        debugHudDoomfist = LastTextID();
     }
 }
