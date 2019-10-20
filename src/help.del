@@ -25,8 +25,8 @@ Player.Doomfist
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), "secondary_fire -> attack", null, null, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), "primary_fire -> distance attack", null, null, Location.Right, 3);
-    helpHud = Append(helpHud, LastTextID());
+    // CreateHudText(EventPlayer(), "primary_fire -> distance attack", null, null, Location.Right, 3);
+    // helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), "ability 2 -> reverse defend", null, null, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
