@@ -4,7 +4,6 @@ code about attack
 
 import "block.del";
 import "posture.del";
-import "state-track.del";
 
 class AttackingEvent
 {
@@ -14,9 +13,6 @@ class AttackingEvent
 
     // TODO: let each kind of attacking have their own posture damage
     // can be achieved by adding a multiplier (* the multiplier when hitted in blocking)
-
-    public define extraPostureDamageWhenDirectlyHitted = 0;
-    public define extraPostureDamageWhenDeflected = 0;
 
     public AttackingEvent(define victim, define damage)
     {
@@ -51,27 +47,6 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
         // genji's ability 1: deal no damage or posture
         Heal(Victim(), null, EventDamage());
     }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
-    {
-        // reinhardt's ability 2: deal no damage, but 200 posture when hitted.
-        Heal(Victim(), null, EventDamage());
-        AttackingEvent e = new AttackingEvent(Victim(), 0);
-        e.extraPostureDamageWhenDirectlyHitted = 200;
-        attacking = Append(attacking, e);
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
-    {
-        // reinhardt's ability 1: deal no damage, but 200 posture when hitted.
-        // if deflected, gain 200 posture damage
-        Heal(Victim(), null, EventDamage());
-        AttackingEvent e = new AttackingEvent(Victim(), 0);
-        e.extraPostureDamageWhenDirectlyHitted = 200;
-        e.extraPostureDamageWhenDeflected = 200;
-        attacking = Append(attacking, e);
-
-        // stop reinhardt
-        SetStatus(Attacker(), null, Status.KnockedDown, 0.5);
-    }
     else
     {
         attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage()));
@@ -91,23 +66,6 @@ if (IsDeflecting(Victim()))
     {
         // genji's ability 1: cannot be deflected
         Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
-    {
-        // reinhardt's ability 2: do nothing
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
-    {
-        // reinhardt's ability 1: gain 200 posture damage
-        Heal(Victim(), null, EventDamage());
-        GainPosture(Attacker(), 200, Victim()); // it can stun attack immediately
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-
-        OnSucceedDeflecting(Victim());
     }
     else
     {
@@ -142,18 +100,6 @@ if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
         // genji's ability 1: deal no posture damage
         Heal(Victim(), null, EventDamage());
     }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
-    {
-        // reinhardt's ability 2: do nothing
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
-    {
-        // reinhardt's ability 1: knockdown reinhardt, deal reinhardt posture
-        Heal(Victim(), null, EventDamage());
-        GainPosture(Attacker(), 150, Victim());
-        SetStatus(Attacker(), Victim(), Status.KnockedDown, 2);
-    }
     else
     {
         Heal(Victim(), null, EventDamage());
@@ -181,7 +127,7 @@ if (CountOf(attacking) > 0)
         {
             // deflecting
             Heal(e.victim, null, e.directDamage);
-            GainPosture(EventPlayer(), e.directDamage * 2 + e.extraPostureDamageWhenDeflected, e.victim);
+            GainPosture(EventPlayer(), e.directDamage * 2, e.victim);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
@@ -191,7 +137,7 @@ if (CountOf(attacking) > 0)
         }
         else
         {
-            GainPosture(e.victim, e.directDamage + e.extraPostureDamageWhenDirectlyHitted, EventPlayer());
+            GainPosture(e.victim, e.directDamage, EventPlayer());
         }
 
         delete(e);

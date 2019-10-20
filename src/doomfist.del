@@ -9,13 +9,6 @@ import "posture.del";
 define playervar currentStateDoomfist = 0; // current state number in state machine
 define playervar stateInitedDoomfist = false; // is state init code executed
 
-rule: "Initialize doomfist" // if player switch a hero, the init code in main.del may not work
-Event.OngoingPlayer
-Player.Doomfist
-{
-    SetDamageDealt(EventPlayer(), 100);
-}
-
 rule: "set state to 1 when spawned"
 Event.OngoingPlayer
 Player.Doomfist

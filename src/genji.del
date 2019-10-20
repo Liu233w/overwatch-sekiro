@@ -15,8 +15,6 @@ Player.Genji
 {
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
-
-    SetDamageDealt(EventPlayer(), 100);
 }
 
 rule: "set state to 1 when spawned"

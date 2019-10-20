@@ -43,14 +43,3 @@ Player.Genji
     CreateHudText(EventPlayer(), "secondary_fire -> defend", null, null, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
-
-rule: "Reinhardt help info"
-Event.OngoingPlayer
-Player.Reinhardt
-{
-    foreach (define item in helpHud)
-    {
-        DestroyHudText(item);
-    }
-    helpHud = [];
-}

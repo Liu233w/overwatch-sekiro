@@ -2,7 +2,6 @@ import "help.del";
 
 import "doomfist.del";
 import "genji.del";
-import "reinhardt.del";
 // import "zenyatta.del";
 
 import "attack.del";
@@ -30,8 +29,6 @@ Event.OngoingPlayer
     SetUltimateAbilityEnabled(EventPlayer(), false);
     SetPrimaryFireEnabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
-
-    SetDamageDealt(EventPlayer(), 100);
 }
 
 // rule: "Reset stunned status immediately when not deadly stunned, caused by doomfist's attack"
