@@ -21,64 +21,6 @@ stop recovering for 2 second every time you are hitted in blocking.
 
 import "block.del";
 
-// ============ status trigger ===================
-
-define playervar deadlyStunned; // when in this status, a simple attack can kill the player
-
-macro IsDeadlyStunned(define player): player.deadlyStunned == true;
-
-rule: "clear deadly stunned and set unkillable when not stunned"
-Event.OngoingPlayer
-if (!HasStatus(EventPlayer(), Status.Stunned))
-{
-    SetStatus(EventPlayer(), null, Status.Unkillable, 9999);
-    deadlyStunned = false;
-}
-
-rule: "clear unkillable when deadly stunned"
-Event.OngoingPlayer
-if (deadlyStunned == true)
-{
-    ClearStatus(EventPlayer(), Status.Unkillable);
-}
-
-rule: "dead instantly when hitted in stunned, recover attacker 2/3 health and 150 posture"
-Event.OnDamageTaken
-if (deadlyStunned == true)
-{
-    // ClearStatus(EventPlayer(), Status.Stunned);
-    // MinWait();
-    Kill(Victim(), Attacker());
-    Heal(Attacker(), null, MaxHealth(Attacker()) * 2 / 3);
-    Attacker().posture -= 150;
-    if (Attacker().posture < 0)
-    {
-        Attacker().posture = 0;
-    }
-}
-
-rule: "stunned 3 seconds after health is 1"
-Event.OngoingPlayer
-if (Health(EventPlayer()) == 1)
-if (deadlyStunned != true)
-{
-    // wait 0.15 sec to see if he can regain health (wait for deflect)
-    Wait(0.15, WaitBehavior.AbortWhenFalse);
-    PlayEffect(AllPlayers(), PlayEffect.RingExplosionSound, Color.White, EventPlayer(), 100);
-    SetStatus(EventPlayer(), null, Status.Stunned, 3);
-    deadlyStunned = true;
-}
-
-rule: "kill the player after 2.5 sec in 1 health stunned status"
-Event.OngoingPlayer
-if (deadlyStunned == true)
-if (Health(EventPlayer()) == 1)
-if (IsAlive(EventPlayer()))
-{
-    Wait(2.5, WaitBehavior.AbortWhenFalse);
-    Kill(EventPlayer(), null);
-}
-
 // ================= posture gaining ========================
 
 define playervar posture P;
@@ -176,19 +118,79 @@ Event.OnDamageTaken
     // it will trigger the rule above, to start recovering after certain seconds
 }
 
-// ==================== posture filled ===================
+// ============ status trigger ===================
+
+define playervar deadlyStunned; // when in this status, a simple attack can kill the player
+
+macro IsDeadlyStunned(define player): player.deadlyStunned == true;
+
+rule: "clear deadly stunned and set unkillable when not stunned"
+Event.OngoingPlayer
+if (!HasStatus(EventPlayer(), Status.Stunned))
+{
+    SetStatus(EventPlayer(), null, Status.Unkillable, 9999);
+    deadlyStunned = false;
+}
+
+private method SetDeadlyStunned(define duration)
+{
+    ClearStatus(EventPlayer(), Status.Unkillable);
+    PlayEffect(AllPlayers(), PlayEffect.RingExplosionSound, Color.White, EventPlayer(), 100);
+    SetStatus(EventPlayer(), null, Status.Stunned, duration);
+    deadlyStunned = true;
+}
+
+rule: "stunned 3 seconds after health is 1"
+Event.OngoingPlayer
+if (Health(EventPlayer()) == 1)
+if (deadlyStunned != true)
+{
+    // wait 0.15 sec to see if he can regain health (wait for deflect)
+    Wait(0.15, WaitBehavior.AbortWhenFalse);
+    SetDeadlyStunned(3);
+}
+
+rule: "kill the player after 2.5 sec in 1 health stunned status"
+Event.OngoingPlayer
+if (deadlyStunned == true)
+if (Health(EventPlayer()) == 1)
+if (IsAlive(EventPlayer()))
+{
+    Wait(2.5, WaitBehavior.AbortWhenFalse);
+    Kill(EventPlayer(), null);
+}
 
 rule: "stun player 2 seconds when posture is filled"
 Event.OngoingPlayer
 if (posture >= 200)
 {
-    deadlyStunned = true;
-    SetStatus(EventPlayer(), null, Status.Stunned, 2);
-    PlayEffect(AllPlayers(), PlayEffect.RingExplosionSound, Color.White, EventPlayer(), 100);
+    SetDeadlyStunned(2);
     posture = 0; // clear posture
-
     // give attacker immutable
-    SetStatus(lastPostureAttacker, null, Status.Invincible, 3);
+    SetStatus(lastPostureAttacker, null, Status.Invincible, 2);
+}
+
+rule: "dead instantly when hitted in stunned, recover attacker 2/3 health and 150 posture"
+Event.OnDamageTaken
+if (deadlyStunned == true)
+{
+    // ClearStatus(EventPlayer(), Status.Stunned);
+    // MinWait();
+    Kill(Victim(), Attacker());
+    if (HeroOf(Attacker()) == Hero.Doomfist)
+    {
+        // when hitted, the max health of doomfist can be greater than 250
+        Heal(Attacker(), null, 160);
+    }
+    else
+    {
+        Heal(Attacker(), null, MaxHealth(Attacker()) * 2 / 3);
+    }
+    Attacker().posture -= 150;
+    if (Attacker().posture < 0)
+    {
+        Attacker().posture = 0;
+    }
 }
 
 // ==================== hud =====================
@@ -250,5 +252,4 @@ if (IsDead(EventPlayer()))
     {
         DestroyInWorldText(inWorldPostureText);
     }
-    DestroyInWorldText(inWorldPostureText);
 }
