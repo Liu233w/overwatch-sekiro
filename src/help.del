@@ -20,9 +20,8 @@ Player.Doomfist
     }
     helpHud = [];
 
-    helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), "interact -> defend", null, null, Location.Right, 3);
-    // helpHud = Append(helpHud, LastTextID());
+    helpHud = Append(helpHud, LastTextID());
     // CreateHudText(EventPlayer(), "secondary_fire -> attack", null, null, Location.Right, 3);
     // helpHud = Append(helpHud, LastTextID());
     // CreateHudText(EventPlayer(), "ability 1 -> fly, no damage", null, null, Location.Right, 3);
@@ -41,6 +40,6 @@ Player.Genji
     }
     helpHud = [];
 
-    helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), "secondary_fire -> defend", null, null, Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
 }
