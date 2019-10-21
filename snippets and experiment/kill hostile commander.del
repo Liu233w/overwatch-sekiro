@@ -20,7 +20,7 @@ if (IsOnObjective(EventPlayer()))
     final = true;
 }
 
-rule: "commander remove all abilities"
+rule: "commander remove all abilities and set max health"
 Event.OngoingPlayer
 Player.Soldier76
 {
@@ -29,20 +29,22 @@ Player.Soldier76
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     SetUltimateAbilityEnabled(EventPlayer(), false);
+
+    SetMaxHealth(EventPlayer(), 500);
 }
 
 rule: "commander be slow when not in final"
 Event.OngoingPlayer
 Player.Soldier76
-if (!final && !IsInSpawnRoom(EventPlayer()))
+if (!final)
 {
     SetMoveSpeed(EventPlayer(), 10);
 }
 
-rule: "commander be quick in final or at spawn room"
+rule: "commander be quick in final"
 Event.OngoingPlayer
 Player.Soldier76
-if (final || IsInSpawnRoom(EventPlayer()))
+if (final)
 {
     SetMoveSpeed(EventPlayer(), 500);
 }
