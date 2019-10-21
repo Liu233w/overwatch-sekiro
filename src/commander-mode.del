@@ -1,0 +1,107 @@
+import "block.del";
+import "settings.del";
+import "posture.del";
+
+rule: "disable win rule"
+{
+    DisableCompletion();
+    DisableAnnouncer();
+}
+
+define globalvar final = false;
+
+rule: "not final at the beginning"
+if (IsGameInProgress())
+{
+    final = false;
+}
+
+rule: "when commander reach object point, set final"
+Event.OngoingPlayer
+Player.Roadhog
+if (IsOnObjective(EventPlayer()))
+{
+    final = true;
+}
+
+rule: "commander remove all abilities and set max health"
+Event.OngoingPlayer
+Player.Roadhog
+{
+    SetPrimaryFireEnabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
+    SetAbility1Enabled(EventPlayer(), false);
+    SetAbility2Enabled(EventPlayer(), false);
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+
+    SetMaxHealth(EventPlayer(), 600);
+    SetMaxPosture(EventPlayer(), 5000); // need 25 times charges of reinhardt
+
+    OnIdle(EventPlayer());
+}
+
+rule: "commander be slow when not in final"
+Event.OngoingPlayer
+Player.Roadhog
+if (!final)
+{
+    SetMoveSpeed(EventPlayer(), 20);
+}
+
+rule: "commander be quick in final, and make health less"
+Event.OngoingPlayer
+Player.Roadhog
+if (final)
+{
+    SetHealth(EventPlayer(), Health(EventPlayer()) * 1/4);
+    SetMoveSpeed(EventPlayer(), 200);
+}
+
+rule: "reset other player's if choose roadhog"
+Event.OngoingPlayer
+if (HeroOf(EventPlayer()) != Hero.Roadhog)
+{
+    SetMoveSpeed(EventPlayer(), 100);
+    SetMaxHealth(EventPlayer(), 100);
+    SetMaxPosture(EventPlayer(), 200); 
+}
+
+rule: "kill hostile commander to win"
+Event.OnDeath
+Player.Roadhog
+{
+    DeclareRoundVictory(OppositeTeamOf(TeamOf(EventPlayer())));
+}
+
+rule: "show commander location"
+Event.OngoingPlayer
+if (IsGameInProgress())
+{
+    define friendlyCommander = PlayersOnHero(Hero.Roadhog, TeamOf(EventPlayer()))[0];
+    define enemyCommander = PlayersOnHero(Hero.Roadhog,OppositeTeamOf(TeamOf(EventPlayer())))[0];
+    CreateIcon(EventPlayer(), friendlyCommander, Icon.Heart, IconRev.VisibleToAndPosition, Color.Blue, true);
+    CreateIcon(EventPlayer(), enemyCommander, Icon.Skull, IconRev.VisibleToAndPosition, Color.Red, true);
+}
+
+define playervar currentHealth;
+
+rule: "show message if commander attacked"
+Event.OngoingPlayer
+Player.Roadhog
+if (Health(EventPlayer()) != currentHealth)
+{
+    currentHealth = Health(EventPlayer());
+    if (IsGameInProgress())
+    {
+        BigMessage(FilteredArray(AllPlayers(), Compare(TeamOf(ArrayElement()), Operators.Equal, TeamOf(EventPlayer()))), "protect current_objective");
+    }
+}
+
+rule: "show objective health and posture"
+Event.OngoingPlayer
+{
+    CreateHudText(EventPlayer(), <"teammate: life <0>", 
+        Health(PlayersOnHero(Hero.Roadhog, TeamOf(EventPlayer()))[0])>);
+    CreateHudText(EventPlayer(), <"enemy: life <0>", 
+        Health(PlayersOnHero(Hero.Roadhog, OppositeTeamOf(TeamOf(EventPlayer())))[0])>);
+}

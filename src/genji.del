@@ -340,6 +340,15 @@ if (IsAlive(EventPlayer()))
     PressButton(EventPlayer(), Button.Ultimate);
 }
 
+rule: "use ultimate when game begin"
+Event.OngoingPlayer
+Player.Genji
+if (IsAlive(EventPlayer()) && IsGameInProgress())
+{
+    MinWait();
+    PressButton(EventPlayer(), Button.Ultimate);
+}
+
 rule: "unlock shift ability for 2 seconds when deflect successfully"
 Event.OngoingPlayer
 Player.Genji

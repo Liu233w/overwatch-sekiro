@@ -1,0 +1,8 @@
+define playervar maxPosture = 200;
+
+macro MaxPosture(define player): player.maxPosture;
+
+method SetMaxPosture(define player, define number)
+{
+    player.maxPosture = number;
+}
