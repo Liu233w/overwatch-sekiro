@@ -21,19 +21,6 @@ the cool down time before or after a player action.
 
 */
 
-rule: "Initialize"
-Event.OngoingPlayer
-{
-    // MinWait();
-    SetAbility1Enabled(EventPlayer(), false);
-    SetAbility2Enabled(EventPlayer(), false);
-    SetUltimateAbilityEnabled(EventPlayer(), false);
-    SetPrimaryFireEnabled(EventPlayer(), false);
-    SetSecondaryFireEnabled(EventPlayer(), false);
-
-    SetDamageDealt(EventPlayer(), 100);
-}
-
 // rule: "Reset stunned status immediately when not deadly stunned, caused by doomfist's attack"
 // Event.OngoingPlayer
 // if (HasStatus(EventPlayer(), Status.Stunned))
