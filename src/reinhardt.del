@@ -2,12 +2,14 @@
 
 import "state-track.del";
 import "block.del";
+import "optimise.del";
 
 rule: "initialize reinhardt"
 Event.OngoingPlayer
 Player.Reinhardt
 {
-    // MinWait();
+    ContinueWhenServerLoadAcceptable();
+
     SetAbility1Enabled(EventPlayer(), true);
     SetAbility2Enabled(EventPlayer(), true);
     SetUltimateAbilityEnabled(EventPlayer(), false);

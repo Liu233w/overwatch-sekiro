@@ -1,0 +1,10 @@
+method ContinueWhenServerLoadAcceptable()
+{
+    // wait a randomly time if server load is too high
+    if (ServerLoad() > 100)
+    {
+        // wait a while, to prevent from initializing too many heros at once crashing the server
+        Wait(0.032);
+        Loop();
+    }
+}

@@ -5,6 +5,7 @@ The state machine of doomfist
 import "block.del";
 import "debug.del";
 import "posture.del";
+import "optimise.del";
 
 define playervar currentStateDoomfist = 0; // current state number in state machine
 define playervar stateInitedDoomfist = false; // is state init code executed
@@ -13,6 +14,8 @@ rule: "Initialize doomfist" // if player switch a hero, the init code in main.de
 Event.OngoingPlayer
 Player.Doomfist
 {
+    ContinueWhenServerLoadAcceptable();
+
     SetUltimateAbilityEnabled(EventPlayer(), false);
     SetPrimaryFireEnabled(EventPlayer(), false);
 
@@ -26,8 +29,7 @@ if (IsAlive(EventPlayer()))
 if (currentStateDoomfist == 0)
 if (stateInitedDoomfist == false)
 {
-    // wait a while, to prevent from initializing too many doomfist crashing the server
-    Wait(RandomReal(0.016, 0.1), WaitBehavior.AbortWhenFalse);
+    ContinueWhenServerLoadAcceptable();
     currentStateDoomfist = 1;
 }
 

@@ -5,6 +5,7 @@ The state machine of genji
 import "block.del";
 import "debug.del";
 import "posture.del";
+import "optimise.del";
 
 define playervar currentStateGenji = 0; // current state number in state machine
 define playervar stateInitedGenji = false; // is state init code executed
@@ -13,6 +14,8 @@ rule: "Initialize Genji" // if player switch a hero, the init code in main.del m
 Event.OngoingPlayer
 Player.Genji
 {
+    ContinueWhenServerLoadAcceptable();
+
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
 
@@ -26,6 +29,7 @@ if (IsAlive(EventPlayer()))
 if (currentStateGenji == 0)
 if (stateInitedGenji == false)
 {
+    ContinueWhenServerLoadAcceptable();
     currentStateGenji = 1;
 }
 
