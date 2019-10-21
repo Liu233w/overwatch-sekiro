@@ -13,6 +13,9 @@ rule: "Initialize doomfist" // if player switch a hero, the init code in main.de
 Event.OngoingPlayer
 Player.Doomfist
 {
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+    SetPrimaryFireEnabled(EventPlayer(), false);
+
     SetDamageDealt(EventPlayer(), 100);
 }
 

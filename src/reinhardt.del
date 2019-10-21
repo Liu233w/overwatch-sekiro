@@ -6,16 +6,51 @@ import "block.del";
 rule: "initialize reinhardt"
 Event.OngoingPlayer
 Player.Reinhardt
-if (IsAlive(EventPlayer()))
 {
-    MinWait();
-    SetPrimaryFireEnabled(EventPlayer(), true);
+    // MinWait();
     SetAbility1Enabled(EventPlayer(), true);
     SetAbility2Enabled(EventPlayer(), true);
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+    AllowButton(EventPlayer(), Button.PrimaryFire);
+    SetPrimaryFireEnabled(EventPlayer(), true);
+    SetSecondaryFireEnabled(EventPlayer(), false);
 
     SetDamageDealt(EventPlayer(), 50);
+}
 
+rule: "set idle on alive"
+Event.OngoingPlayer
+Player.Reinhardt
+if (IsAlive(EventPlayer()))
+{
     OnIdle(EventPlayer());
+}
+
+rule: "off idle when dead"
+Event.OngoingPlayer
+Player.Reinhardt
+if (!IsAlive(EventPlayer()))
+{
+    OffIdle(EventPlayer());
+}
+
+rule: "deal damage to player nearby when charging"
+Event.OngoingPlayer
+Player.Reinhardt
+if (IsUsingAbility1(EventPlayer()))
+{
+    // do not start calculation immediately
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    // this will trigger the damage dealt event
+    while (true)
+    {
+        Damage(
+            PlayersWithinRadius(PositionOf(EventPlayer()), 2, OppositeTeamOf(TeamOf(EventPlayer())), RadiusLOS.SurfacesAndEnemyBarriers),
+            EventPlayer(),
+            1
+            );
+        Wait(0.016, WaitBehavior.AbortWhenFalse);
+    }
 }
 
 rule: "release shift button to stop charging"

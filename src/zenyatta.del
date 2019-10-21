@@ -26,7 +26,7 @@ if (!IsAlive(EventPlayer()) || IsDeadlyStunned(EventPlayer()))
 // Event.OngoingPlayer
 // Player.Zenyatta
 // if (IsAlive(EventPlayer()))
-// if (!HasStatus(EventPlayer(), Status.Stunned))
+// if (!IsDeadlyStunned(EventPlayer()))
 // {
 //     OnBlocking(EventPlayer());
 // }
@@ -34,7 +34,7 @@ if (!IsAlive(EventPlayer()) || IsDeadlyStunned(EventPlayer()))
 // rule: "off blocking when dead or stunned"
 // Event.OngoingPlayer
 // Player.Zenyatta
-// if (!IsAlive(EventPlayer()) || HasStatus(EventPlayer(), Status.Stunned))
+// if (!IsAlive(EventPlayer()) || IsDeadlyStunned(EventPlayer()))
 // {
 //     OffBlocking(EventPlayer());
 // }
