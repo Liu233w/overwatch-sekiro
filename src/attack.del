@@ -54,7 +54,10 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
     else if (HeroOf(Attacker()) == Hero.Genji && HeroOf(Victim()) == Hero.Roadhog)
     {
         // only deal 1/2 damage to commander
-        Heal(Victim(), null, EventDamage() / 2);
+        if (EventDamage() > 60)
+        {
+            Heal(Victim(), null, EventDamage() - 60);
+        }
     }
     else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
     {
