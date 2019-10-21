@@ -1,0 +1,64 @@
+rule: "disable win rule"
+{
+    DisableCompletion();
+    DisableAnnouncer();
+}
+
+define globalvar final = false;
+
+rule: "not final at the beginning"
+if (IsGameInProgress())
+{
+    final = false;
+}
+
+rule: "when commander reach object point, set final"
+Event.OngoingPlayer
+Player.Soldier76
+if (IsOnObjective(EventPlayer()))
+{
+    final = true;
+}
+
+rule: "commander remove all abilities"
+Event.OngoingPlayer
+Player.Soldier76
+{
+    SetPrimaryFireEnabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
+    SetAbility1Enabled(EventPlayer(), false);
+    SetAbility2Enabled(EventPlayer(), false);
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+}
+
+rule: "commander be slow when not in final"
+Event.OngoingPlayer
+Player.Soldier76
+if (!final && !IsInSpawnRoom(EventPlayer()))
+{
+    SetMoveSpeed(EventPlayer(), 10);
+}
+
+rule: "commander be quick in final or at spawn room"
+Event.OngoingPlayer
+Player.Soldier76
+if (final || IsInSpawnRoom(EventPlayer()))
+{
+    SetMoveSpeed(EventPlayer(), 500);
+}
+
+rule: "kill hostile commander to win"
+Event.OnDeath
+Player.Soldier76
+{
+    DeclareRoundVictory(OppositeTeamOf(TeamOf(EventPlayer())));
+}
+
+rule: "show commander location"
+Event.OngoingPlayer
+{
+    define friendlyLucio = PlayersOnHero(Hero.Soldier76, TeamOf(EventPlayer()))[0];
+    define enemyLucio = PlayersOnHero(Hero.Soldier76,OppositeTeamOf(TeamOf(EventPlayer())))[0];
+    CreateIcon(EventPlayer(), friendlyLucio, Icon.Heart, IconRev.VisibleToAndPosition, Color.Blue, true);
+    CreateIcon(EventPlayer(), enemyLucio, Icon.Skull, IconRev.VisibleToAndPosition, Color.Red, true);
+}
