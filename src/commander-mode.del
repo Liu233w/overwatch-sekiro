@@ -45,7 +45,7 @@ Event.OngoingPlayer
 Player.Roadhog
 if (!final)
 {
-    SetMoveSpeed(EventPlayer(), 20);
+    SetMoveSpeed(EventPlayer(), 15);
 }
 
 rule: "commander be quick in final, and make health less"
@@ -53,6 +53,11 @@ Event.OngoingPlayer
 Player.Roadhog
 if (final)
 {
+    ClearStatus(EventPlayer(), Status.PhasedOut);
+    ClearStatus(EventPlayer(), Status.Asleep);
+
+    MinWait();
+
     SetHealth(EventPlayer(), Health(EventPlayer()) * 1/4);
     SetMoveSpeed(EventPlayer(), 200);
 }
@@ -83,20 +88,6 @@ if (IsGameInProgress())
     CreateIcon(EventPlayer(), enemyCommander, Icon.Skull, IconRev.VisibleToAndPosition, Color.Red, true);
 }
 
-define playervar currentHealth;
-
-rule: "show message if commander attacked"
-Event.OngoingPlayer
-Player.Roadhog
-if (Health(EventPlayer()) != currentHealth)
-{
-    currentHealth = Health(EventPlayer());
-    if (IsGameInProgress())
-    {
-        BigMessage(FilteredArray(AllPlayers(), Compare(TeamOf(ArrayElement()), Operators.Equal, TeamOf(EventPlayer()))), "protect current_objective");
-    }
-}
-
 rule: "show objective health and posture"
 Event.OngoingPlayer
 {
@@ -104,4 +95,23 @@ Event.OngoingPlayer
         Health(PlayersOnHero(Hero.Roadhog, TeamOf(EventPlayer()))[0])>);
     CreateHudText(EventPlayer(), <"enemy: life <0>", 
         Health(PlayersOnHero(Hero.Roadhog, OppositeTeamOf(TeamOf(EventPlayer())))[0])>);
+}
+
+rule: "if current posture > 600, sleep commander and make it phased out"
+Event.OngoingPlayer
+Player.Roadhog
+if (Posture(EventPlayer()) > 600 && !final)
+{
+    SetStatus(EventPlayer(), null, Status.Asleep, 30);
+    SetStatus(EventPlayer(), null, Status.PhasedOut, 30);
+    
+    BigMessage(AllPlayers(), <"<0> sleep <1> sec", HeroIconString(Hero.Roadhog), 30>);
+}
+
+rule: "prevent commander from dead by cliff"
+Event.OngoingPlayer
+Player.Roadhog
+if (IsInAir(EventPlayer()))
+{
+    Teleport(EventPlayer(), NearestWalkablePosition(PositionOf(EventPlayer())));
 }

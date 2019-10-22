@@ -42,6 +42,8 @@ method GainPosture(define player, define postureAdded, define dealer)
     player.lastPostureAttacker = dealer;
 }
 
+macro Posture(define player): player.posture;
+
 // ================== posture restoring =======================
 
 define playervar postureRestoringRate R;

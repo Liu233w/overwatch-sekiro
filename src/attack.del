@@ -58,6 +58,7 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
         {
             Heal(Victim(), null, EventDamage() - 60);
         }
+        GainPosture(Victim(), 60, Attacker());
     }
     else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
     {
