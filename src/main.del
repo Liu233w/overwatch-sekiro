@@ -3,6 +3,7 @@ import "help.del";
 import "doomfist.del";
 import "genji.del";
 import "reinhardt.del";
+import "mercy.del";
 // import "zenyatta.del";
 
 import "attack.del";

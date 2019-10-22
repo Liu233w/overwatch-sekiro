@@ -81,6 +81,18 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
         // stop reinhardt
         SetStatus(Attacker(), null, Status.KnockedDown, 0.5);
     }
+    else if (HeroOf(Victim()) == Hero.Mercy)
+    {
+        // mercy deal fixed 150 posture damage when deflecting
+        AttackingEvent e = new AttackingEvent(Victim(), EventDamage());
+        e.extraPostureDamageWhenDeflected = 150 - (EventDamage() * 2);
+        attacking = Append(attacking, e);
+    }
+    else if (HeroOf(Attacker()) == Hero.Mercy)
+    {
+        // mercy deal no damage or posture when directly attacking
+        Heal(Victim(), null, EventDamage());
+    }
     else
     {
         attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage()));
@@ -117,6 +129,23 @@ if (IsDeflecting(Victim()))
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
 
         OnSucceedDeflecting(Victim());
+    }
+    else if (HeroOf(Victim()) == Hero.Mercy)
+    {
+        // mercy deal fixed 150 posture damage when deflecting
+        Heal(Victim(), null, EventDamage());
+        GainPosture(Attacker(), 150, Victim()); // it can stun attack immediately
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+
+        OnSucceedDeflecting(Victim());
+    }
+    else if (HeroOf(Attacker()) == Hero.Mercy)
+    {
+        // mercy cannot be deflected
+        Heal(Victim(), null, EventDamage());
     }
     else
     {
@@ -163,6 +192,11 @@ if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
         GainPosture(Attacker(), 150, Victim());
         SetStatus(Attacker(), Victim(), Status.KnockedDown, 2);
     }
+    else if (HeroOf(Attacker()) == Hero.Mercy)
+    {
+        // mercy deal no damage
+        Heal(Victim(), null, EventDamage());
+    }
     else
     {
         Heal(Victim(), null, EventDamage());
@@ -186,7 +220,7 @@ if (CountOf(attacking) > 0)
     // cannot hurt more than 3 persons at once, so the loop is acceptable.
     foreach (AttackingEvent e in attacking)
     {
-        if (IsDeflecting(e.victim))
+        if (IsDeflecting(e.victim) || IsBlocking(e.victim))
         {
             // deflecting
             Heal(e.victim, null, e.directDamage);

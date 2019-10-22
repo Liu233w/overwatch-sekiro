@@ -54,3 +54,17 @@ Player.Reinhardt
     }
     helpHud = [];
 }
+
+rule: "mercy help info"
+Event.OngoingPlayer
+Player.Mercy
+{
+    foreach (define item in helpHud)
+    {
+        DestroyHudText(item);
+    }
+    helpHud = [];
+
+    CreateHudText(EventPlayer(), "secondary_fire -> defend", null, null, Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+}

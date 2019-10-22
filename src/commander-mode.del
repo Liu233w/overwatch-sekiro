@@ -8,6 +8,20 @@ rule: "disable win rule"
     DisableAnnouncer();
 }
 
+rule: "only slot 0 and 5 is allowed to choose roadhog"
+Event.OnPlayerJoin
+Player.Slot0
+{
+    SetHeroRoster(EventPlayer(), Hero.Roadhog);
+}
+
+rule: "only slot 0 and 5 is allowed to choose roadhog"
+Event.OnPlayerJoin
+Player.Slot5
+{
+    SetHeroRoster(EventPlayer(), Hero.Roadhog);
+}
+
 define globalvar final = false;
 
 rule: "not final at the beginning"
@@ -62,15 +76,6 @@ if (final)
     SetMoveSpeed(EventPlayer(), 200);
 }
 
-rule: "reset other player's if choose roadhog"
-Event.OngoingPlayer
-if (HeroOf(EventPlayer()) != Hero.Roadhog)
-{
-    SetMoveSpeed(EventPlayer(), 100);
-    SetMaxHealth(EventPlayer(), 100);
-    SetMaxPosture(EventPlayer(), 200); 
-}
-
 rule: "kill hostile commander to win"
 Event.OnDeath
 Player.Roadhog
@@ -114,4 +119,12 @@ Player.Roadhog
 if (IsInAir(EventPlayer()))
 {
     Teleport(EventPlayer(), NearestWalkablePosition(PositionOf(EventPlayer())));
+}
+
+rule: "prevent commander from healed by mercy"
+Event.OnHealingTaken
+Player.Roadhog
+if (HeroOf(Healer()) == Hero.Mercy)
+{
+    Damage(EventPlayer(), null, EventHealing());
 }

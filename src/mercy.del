@@ -1,0 +1,283 @@
+import "state-track.del";
+import "block.del";
+import "optimise.del";
+import "posture.del";
+import "debug.del";
+
+define playervar mercyShiftCD;
+define playervar mercyShiftHud;
+
+rule: "initialize mercy"
+Event.OngoingPlayer
+Player.Mercy
+{
+    ContinueWhenServerLoadAcceptable();
+
+    SetAbility2Enabled(EventPlayer(), false);
+    SetUltimateAbilityEnabled(EventPlayer(), true);
+    SetPrimaryFireEnabled(EventPlayer(), false);
+}
+
+rule: "mercy shift cd hud"
+Event.OngoingPlayer
+Player.Mercy
+{
+    if (mercyShiftHud != 0)
+    {
+        DestroyHudText(mercyShiftHud);
+    }
+    CreateHudText(EventPlayer(), <"ability 1: <0> sec", mercyShiftCD>);
+    mercyShiftHud = LastTextID();
+}
+
+rule: "destroy hud"
+Event.OngoingPlayer
+if (HeroOf(EventPlayer()) != Hero.Mercy)
+if (mercyShiftHud != 0)
+{
+    DestroyHudText(mercyShiftHud);
+}
+
+rule: "manually chase mercy shift cd"
+Event.OngoingPlayer
+Player.Mercy
+if (mercyShiftCD > 0)
+{
+    mercyShiftCD -= 1;
+    if (mercyShiftCD < 0)
+    {
+        mercyShiftCD = 0;
+    }
+    Wait(1, WaitBehavior.AbortWhenFalse);
+    Loop();
+}
+
+rule: "set cd when shift enabled"
+Event.OngoingPlayer
+Player.Mercy
+if (IsUsingAbility1(EventPlayer()))
+{
+    mercyShiftCD = 6;
+    SetAbility1Enabled(EventPlayer(), false);
+}
+
+rule: "reset cd when successful deflected and gain ultimate charging"
+Event.OngoingPlayer
+Player.Mercy
+if (DeflectSucceedCount(EventPlayer()) > 0)
+{
+    mercyShiftCD = 0;
+    SetUltimateCharge(EventPlayer(), UltimateChargePercent(EventPlayer()) + 25);
+}
+
+rule: "enable ability 1 when mercyShiftCD is 0"
+Event.OngoingPlayer
+Player.Mercy
+if (mercyShiftCD <= 0)
+{
+    SetAbility1Enabled(EventPlayer(), true);
+}
+
+private method MercyUltimateEffect(define mercy, define player)
+{
+    SetPosture(player, 0);
+    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Green, player, 1);
+    Heal(player, mercy, 20);
+}
+
+rule: "when ultimate enabled, reset teammate's posture"
+Event.OngoingPlayer
+Player.Mercy
+if (IsUsingUltimate(EventPlayer()))
+{
+    while (IsUsingUltimate(EventPlayer()))
+    {
+        MercyUltimateEffect(EventPlayer(), EventPlayer());
+        define teammates = PlayersWithinRadius(PositionOf(EventPlayer()), 30, TeamOf(EventPlayer()), RadiusLOS.SurfacesAndEnemyBarriers);
+        foreach (define player in teammates)
+        {
+            if (HeroOf(player) != Hero.Roadhog)
+            {
+                MercyUltimateEffect(EventPlayer(), player);
+            }
+        }
+        Wait(0.5);
+    }
+}
+
+// ================= state machine of deflecting ================
+
+define playervar currentStateMercy = 0; // current state number in state machine
+define playervar stateInitedMercy = false; // is state init code executed
+
+rule: "set state to 1 when spawned"
+Event.OngoingPlayer
+Player.Mercy
+if (IsAlive(EventPlayer()))
+if (currentStateMercy == 0)
+if (stateInitedMercy == false)
+{
+    ContinueWhenServerLoadAcceptable();
+    currentStateMercy = 1;
+}
+
+rule: "set state to 0 when dead"
+Event.OnDeath
+Player.Mercy
+{
+    currentStateMercy = 0;
+    stateInitedMercy = false;
+}
+
+// ============== state initialize code ====================
+
+rule: "state 1: idle"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 1)
+if (stateInitedMercy == false)
+{
+    OnIdle(EventPlayer());
+
+    stateInitedMercy = true;
+}
+
+rule: "state 2: stunned"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 2)
+if (stateInitedMercy == false)
+{
+    OffDeflecting(EventPlayer());
+    OffBlocking(EventPlayer());
+    stateInitedMercy = true;
+}
+
+rule: "state 11: deflecting"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 11)
+if (stateInitedMercy == false)
+{
+    OnDeflecting(EventPlayer());
+    stateInitedMercy = true;
+}
+
+rule: "state 12: blocking"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 12)
+if (stateInitedMercy == false)
+{
+    OffDeflecting(EventPlayer());
+    OnBlocking(EventPlayer());
+    stateInitedMercy = true;
+}
+
+rule: "state 13: deflect cd"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 13)
+if (stateInitedMercy == false)
+{
+    OffBlocking(EventPlayer());
+    stateInitedMercy = true;
+}
+
+// ============== state switching rule =====================
+
+rule: "1 -- right button --> 11"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 1)
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (stateInitedMercy == true)
+{
+    OffIdle(EventPlayer());
+    currentStateMercy = 11;
+    stateInitedMercy = false;
+}
+
+rule: "any state -- deadly stunned --> 2"
+Event.OngoingPlayer
+Player.Mercy
+if (HasStatus(EventPlayer(), Status.Stunned))
+if (IsDeadlyStunned(EventPlayer()))
+if (stateInitedMercy == true)
+{
+    OffIdle(EventPlayer());
+    currentStateMercy = 2;
+    stateInitedMercy = false;
+}
+
+rule: "2 -- un-stunned --> 1"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 2)
+if (!HasStatus(EventPlayer(), Status.Stunned))
+if (stateInitedMercy == true)
+{
+    currentStateMercy = 1;
+    stateInitedMercy = false;
+}
+
+rule: "11 -- 0.2 sec --> 12"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 11)
+if (stateInitedMercy == true)
+{
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    currentStateMercy = 12;
+    stateInitedMercy = false;
+}
+
+rule: "12 -- release right --> 13"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 12)
+if (stateInitedMercy == true)
+if (!IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+{
+     
+    currentStateMercy = 13;
+    stateInitedMercy = false;
+}
+
+rule: "13 -- 0.2 sec --> 1"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 13)
+if (stateInitedMercy == true)
+{
+    Wait(0.2, WaitBehavior.AbortWhenFalse);
+    currentStateMercy = 1;
+    stateInitedMercy = false;
+}
+
+rule: "13 -- right button --> 12"
+Event.OngoingPlayer
+Player.Mercy
+if (currentStateMercy == 13)
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
+if (stateInitedMercy == true)
+{
+    currentStateMercy = 12;
+    stateInitedMercy = false;
+}
+
+// ================= debugging ====================
+
+define playervar debugHudMercy;
+
+rule: "debug Mercy"
+Event.OngoingPlayer
+Player.Mercy
+if (IsDebugging())
+{
+    if (debugHudMercy == 0)
+    {
+        CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentStateMercy, stateInitedMercy>);
+        debugHudMercy = LastTextID();
+    }
+}

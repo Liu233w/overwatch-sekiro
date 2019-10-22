@@ -44,6 +44,11 @@ method GainPosture(define player, define postureAdded, define dealer)
 
 macro Posture(define player): player.posture;
 
+method SetPosture(define player, define number)
+{
+    player.posture = number;
+}
+
 // ================== posture restoring =======================
 
 define playervar postureRestoringRate R;
