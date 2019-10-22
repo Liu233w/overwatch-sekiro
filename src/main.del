@@ -10,9 +10,9 @@ import "posture.del";
 import "debug.del";
 import "commander-mode.del";
 
-rule: "Author: Liu233w#5454 (Ch-ina mainland server)" // to avoid keyword censorship
+rule: "Author: Liu233w#5454 (Ch-ina mainland server)" // use `-' to avoid keyword censorship
 {}
-rule: "Checkout the workshop source code at https://github.com/Liu233w/overwatch-doomfist-fight"
+rule: "Checkout the workshop source code at https://github.com/Liu233w/overwatch-sekiro"
 {}
 
 /*
