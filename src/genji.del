@@ -16,8 +16,8 @@ Player.Genji
 {
     ContinueWhenServerLoadAcceptable();
 
-    SetAbility1Enabled(EventPlayer(), false);
-    SetAbility2Enabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.Ability1);
+    DisallowButton(EventPlayer(), Button.Ability2);
 
     SetDamageDealt(EventPlayer(), 100);
 }
@@ -354,9 +354,9 @@ Event.OngoingPlayer
 Player.Genji
 if (DeflectSucceedCount(EventPlayer()) > 0)
 {
-    SetAbility1Enabled(EventPlayer(), true);
+    AllowButton(EventPlayer(), Button.Ability1);
     Wait(2);
-    SetAbility1Enabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.Ability1);
 }
 
 // ================= debugging ====================

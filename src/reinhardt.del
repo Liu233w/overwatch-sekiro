@@ -10,12 +10,11 @@ Player.Reinhardt
 {
     ContinueWhenServerLoadAcceptable();
 
-    SetAbility1Enabled(EventPlayer(), true);
-    SetAbility2Enabled(EventPlayer(), true);
+    AllowButton(EventPlayer(), Button.Ability1);
+    AllowButton(EventPlayer(), Button.Ability2);
     SetUltimateAbilityEnabled(EventPlayer(), false);
     AllowButton(EventPlayer(), Button.PrimaryFire);
-    SetPrimaryFireEnabled(EventPlayer(), true);
-    SetSecondaryFireEnabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.SecondaryFire);
 
     SetDamageDealt(EventPlayer(), 50);
 }
@@ -64,15 +63,15 @@ if (IsUsingAbility1(EventPlayer()))
     SetStatus(EventPlayer(), null, Status.Hacked, 0.1);
 
     // 2s cd if manually canceled
-    SetPrimaryFireEnabled(EventPlayer(), false);
-    SetAbility1Enabled(EventPlayer(), false);
-    SetAbility2Enabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
+    DisallowButton(EventPlayer(), Button.Ability1);
+    DisallowButton(EventPlayer(), Button.Ability2);
 
     Wait(2);
 
-    SetPrimaryFireEnabled(EventPlayer(), true);
-    SetAbility1Enabled(EventPlayer(), true);
-    SetAbility2Enabled(EventPlayer(), true);
+    AllowButton(EventPlayer(), Button.PrimaryFire);
+    AllowButton(EventPlayer(), Button.Ability1);
+    AllowButton(EventPlayer(), Button.Ability2);
 }
 
 rule: "the trigger of e attack"
@@ -85,9 +84,9 @@ if (IsUsingAbility2(EventPlayer()))
 
     SetAtAbility2State(EventPlayer(), true);
 
-    SetPrimaryFireEnabled(EventPlayer(), false);
-    SetAbility1Enabled(EventPlayer(), false);
-    SetAbility2Enabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
+    DisallowButton(EventPlayer(), Button.Ability1);
+    DisallowButton(EventPlayer(), Button.Ability2);
 
     Wait(3);
 
@@ -95,7 +94,7 @@ if (IsUsingAbility2(EventPlayer()))
 
     SetAtAbility2State(EventPlayer(), false);
 
-    SetPrimaryFireEnabled(EventPlayer(), true);
-    SetAbility1Enabled(EventPlayer(), true);
-    SetAbility2Enabled(EventPlayer(), true);
+    AllowButton(EventPlayer(), Button.PrimaryFire);
+    AllowButton(EventPlayer(), Button.Ability1);
+    AllowButton(EventPlayer(), Button.Ability2);
 }

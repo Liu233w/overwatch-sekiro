@@ -13,9 +13,9 @@ Player.Mercy
 {
     ContinueWhenServerLoadAcceptable();
 
-    SetAbility2Enabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.Ability2);
     SetUltimateAbilityEnabled(EventPlayer(), true);
-    SetPrimaryFireEnabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
 }
 
 rule: "mercy shift cd hud"
@@ -58,7 +58,7 @@ Player.Mercy
 if (IsUsingAbility1(EventPlayer()))
 {
     mercyShiftCD = 6;
-    SetAbility1Enabled(EventPlayer(), false);
+    DisallowButton(EventPlayer(), Button.Ability1);
 }
 
 rule: "reset cd when successful deflected and gain ultimate charging"
@@ -75,7 +75,7 @@ Event.OngoingPlayer
 Player.Mercy
 if (mercyShiftCD <= 0)
 {
-    SetAbility1Enabled(EventPlayer(), true);
+    AllowButton(EventPlayer(), Button.Ability1);
 }
 
 private method MercyUltimateEffect(define mercy, define player)
