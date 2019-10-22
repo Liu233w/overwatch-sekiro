@@ -54,18 +54,22 @@ method SetPosture(define player, define number)
 define playervar postureRestoringRate R;
 
 rule: "manually chase posture variable rest-ore"
-Event.OngoingPlayer
-if (IsAlive(EventPlayer()))
 {
     // the ChaseVariableAtRate is lack of performance, use a loop instead
     while(true)
     {
-        posture -= postureRestoringRate * 0.016;
-        if (posture < 0)
+        define playerThatShouldRestore = FilteredArray(AllPlayers(), And(
+            IsAlive(ArrayElement()), 
+            Compare(PlayerVariable(ArrayElement(), Variable.P), Operators.GreaterThan, 0)));
+        foreach (define player in playerThatShouldRestore)
         {
-            posture = 0;
+            player.posture -= player.postureRestoringRate * 0.5;
+            if (player.posture < 0)
+            {
+                player.posture = 0;
+            }
         }
-        Wait(0.016, WaitBehavior.AbortWhenFalse);
+        Wait(0.5, WaitBehavior.AbortWhenFalse);
     }
 }
 
