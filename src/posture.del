@@ -56,6 +56,8 @@ define playervar postureRestoringRate R;
 rule: "manually chase posture variable rest-ore"
 Event.OngoingPlayer
 if (IsAlive(EventPlayer()))
+if (posture > 0)
+if (postureRestoringRate > 0)
 {
     // the ChaseVariableAtRate is lack of performance, use a loop instead
     while(true)

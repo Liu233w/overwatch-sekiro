@@ -27,71 +27,107 @@ class AttackingEvent
 
 define playervar attacking = [];
 
+// ============ not blocking or deflecting
+
+rule: "sub rule: doomfist ability 2"
+Event.OnDamageDealt
+Player.Doomfist
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility2(Attacker()))
+{
+    // doomfist's ability 2: deal 1/2 damage
+    attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 2));
+}
+
+rule: "sub rule: doomfist ability 1"
+Event.OnDamageDealt
+Player.Doomfist
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // doomfist's ability 1: deal no damage
+    Heal(Victim(), null, EventDamage());
+    if (!IsOnGround(Victim()))
+    {
+        // deal 150 posture damage if not on the ground
+        GainPosture(Victim(), 150, Attacker());
+    }
+}
+
+rule: "sub rule: genji ability 1"
+Event.OnDamageDealt
+Player.Genji
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // genji's ability 1: deal no damage or posture
+    Heal(Victim(), null, EventDamage());
+}
+
+rule: "sub rule: genji on roadhog"
+Event.OnDamageDealt
+Player.Genji
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (HeroOf(Victim()) == Hero.Roadhog)
+{
+    // only deal 1/2 damage to commander
+    if (EventDamage() > 60)
+    {
+        Heal(Victim(), null, EventDamage() - 60);
+    }
+    GainPosture(Victim(), 60, Attacker());
+}
+
+rule: "sub rule: reinhardt ability 2"
+Event.OnDamageDealt
+Player.Reinhardt
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (AtAbility2State(Attacker()))
+{
+    // reinhardt's ability 2: deal no damage, but 200 posture when hitted.
+    Heal(Victim(), null, EventDamage());
+    AttackingEvent e = new AttackingEvent(Victim(), 0);
+    e.extraPostureDamageWhenDirectlyHitted = 200;
+    attacking = Append(attacking, e);
+}
+
+rule: "sub rule: reinhardt ability 1"
+Event.OnDamageDealt
+Player.Reinhardt
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // reinhardt's ability 1: deal no damage, but 200 posture when hitted.
+    // if deflected, gain 200 posture damage
+    Heal(Victim(), null, EventDamage());
+    AttackingEvent e = new AttackingEvent(Victim(), 0);
+    e.extraPostureDamageWhenDirectlyHitted = 200;
+    e.extraPostureDamageWhenDeflected = 200;
+    attacking = Append(attacking, e);
+
+    // stop reinhardt
+    SetStatus(Attacker(), null, Status.KnockedDown, 0.5);
+}
+
+rule: "sub rule: mercy attack"
+Event.OnDamageDealt
+Player.Mercy
+if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
+{
+    // mercy deal no damage or posture when directly attacking
+    Heal(Victim(), null, EventDamage());
+}
+
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
 if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
-    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
-    {
-        // doomfist's ability 2: deal 1/2 damage
-        attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 2));
-    }
-    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
-    {
-        // doomfist's ability 1: deal no damage
-        Heal(Victim(), null, EventDamage());
-        if (!IsOnGround(Victim()))
-        {
-            // deal 150 posture damage if not on the ground
-            GainPosture(Victim(), 150, Attacker());
-        }
-    }
-    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
-    {
-        // genji's ability 1: deal no damage or posture
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Genji && HeroOf(Victim()) == Hero.Roadhog)
-    {
-        // only deal 1/2 damage to commander
-        if (EventDamage() > 60)
-        {
-            Heal(Victim(), null, EventDamage() - 60);
-        }
-        GainPosture(Victim(), 60, Attacker());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
-    {
-        // reinhardt's ability 2: deal no damage, but 200 posture when hitted.
-        Heal(Victim(), null, EventDamage());
-        AttackingEvent e = new AttackingEvent(Victim(), 0);
-        e.extraPostureDamageWhenDirectlyHitted = 200;
-        attacking = Append(attacking, e);
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
-    {
-        // reinhardt's ability 1: deal no damage, but 200 posture when hitted.
-        // if deflected, gain 200 posture damage
-        Heal(Victim(), null, EventDamage());
-        AttackingEvent e = new AttackingEvent(Victim(), 0);
-        e.extraPostureDamageWhenDirectlyHitted = 200;
-        e.extraPostureDamageWhenDeflected = 200;
-        attacking = Append(attacking, e);
-
-        // stop reinhardt
-        SetStatus(Attacker(), null, Status.KnockedDown, 0.5);
-    }
-    else if (HeroOf(Victim()) == Hero.Mercy)
+    if (HeroOf(Victim()) == Hero.Mercy)
     {
         // mercy deal fixed 150 posture damage when deflecting
         AttackingEvent e = new AttackingEvent(Victim(), EventDamage());
         e.extraPostureDamageWhenDeflected = 150 - (EventDamage() * 2);
         attacking = Append(attacking, e);
-    }
-    else if (HeroOf(Attacker()) == Hero.Mercy)
-    {
-        // mercy deal no damage or posture when directly attacking
-        Heal(Victim(), null, EventDamage());
     }
     else
     {
@@ -99,38 +135,69 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
     }
 }
 
+// =============== on deflecting ==========================
+
+rule: "sub rule: doomfist ability 1"
+Event.OnDamageDealt
+Player.Doomfist
+if (IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // doomfist's ability 1: deal no damage
+    Heal(Victim(), null, EventDamage());
+}
+
+rule: "sub rule: genji ability 1"
+Event.OnDamageDealt
+Player.Genji
+if (IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // genji's ability 1: cannot be deflected
+    Heal(Victim(), null, EventDamage());
+}
+
+rule: "sub rule: reinhardt ability 1"
+Event.OnDamageDealt
+Player.Reinhardt
+if (IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // reinhardt's ability 1: gain 200 posture damage
+    Heal(Victim(), null, EventDamage());
+    GainPosture(Attacker(), 200, Victim()); // it can stun attack immediately
+    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+    PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
+
+    OnSucceedDeflecting(Victim());
+}
+
+rule: "sub rule: reinhardt ability 2"
+Event.OnDamageDealt
+Player.Reinhardt
+if (IsDeflecting(Victim()))
+if (AtAbility2State(Attacker()))
+{
+    // reinhardt's ability 2: do nothing
+    Heal(Victim(), null, EventDamage());
+}
+
+rule: "sub rule: mercy attack"
+Event.OnDamageDealt
+Player.Mercy
+if (IsDeflecting(Victim()))
+{
+    // mercy cannot be deflected
+    Heal(Victim(), null, EventDamage());
+}
+
 rule: "gain posture if victim is deflecting"
 Event.OnDamageDealt
 if (IsDeflecting(Victim()))
 {
-    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
-    {
-        // doomfist's ability 1: deal no damage
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
-    {
-        // genji's ability 1: cannot be deflected
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
-    {
-        // reinhardt's ability 2: do nothing
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
-    {
-        // reinhardt's ability 1: gain 200 posture damage
-        Heal(Victim(), null, EventDamage());
-        GainPosture(Attacker(), 200, Victim()); // it can stun attack immediately
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-        PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
-
-        OnSucceedDeflecting(Victim());
-    }
-    else if (HeroOf(Victim()) == Hero.Mercy)
+    if (HeroOf(Victim()) == Hero.Mercy)
     {
         // mercy deal fixed 150 posture damage when deflecting
         Heal(Victim(), null, EventDamage());
@@ -141,11 +208,6 @@ if (IsDeflecting(Victim()))
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
 
         OnSucceedDeflecting(Victim());
-    }
-    else if (HeroOf(Attacker()) == Hero.Mercy)
-    {
-        // mercy cannot be deflected
-        Heal(Victim(), null, EventDamage());
     }
     else
     {
@@ -160,49 +222,79 @@ if (IsDeflecting(Victim()))
     }
 }
 
+// ================ on blocking ==================
+
+rule: "sub rule: doomfist ability 1"
+Event.OnDamageDealt
+Player.Doomfist
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // doomfist's ability 1: deal no damage
+    Heal(Victim(), null, EventDamage());
+}
+
+rule: "sub rule: doomfist ability 2"
+Event.OnDamageDealt
+Player.Doomfist
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility2(Attacker()))
+{
+    // doomfist's ability 2: deal 2X posture damage
+    Heal(Victim(), null, EventDamage());
+    GainPosture(Victim(), EventDamage() * 2, Attacker());
+}
+
+rule: "sub rule: genji ability 1"
+Event.OnDamageDealt
+Player.Genji
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // genji's ability 1: deal no posture damage
+    Heal(Victim(), null, EventDamage());
+}
+
+rule: "sub rule: reinhardt ability 1"
+Event.OnDamageDealt
+Player.Reinhardt
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (IsUsingAbility1(Attacker()))
+{
+    // reinhardt's ability 1: knockdown reinhardt, deal reinhardt posture
+    Heal(Victim(), null, EventDamage());
+    GainPosture(Attacker(), 150, Victim());
+    SetStatus(Attacker(), Victim(), Status.KnockedDown, 2);
+}
+
+rule: "sub rule: reinhardt ability 2"
+Event.OnDamageDealt
+Player.Reinhardt
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
+if (AtAbility2State(Attacker()))
+{
+    // reinhardt's ability 2: do nothing
+    Heal(Victim(), null, EventDamage());
+}
+
+rule: "sub rule: mercy attack"
+Event.OnDamageDealt
+Player.Mercy
+if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
+{
+    // mercy deal no damage
+    Heal(Victim(), null, EventDamage());
+}
+
 rule: "deal posture if victim is blocking"
 Event.OnDamageDealt
 if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
-    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
-    {
-        // doomfist's ability 2: deal 2X posture damage
-        Heal(Victim(), null, EventDamage());
-        GainPosture(Victim(), EventDamage() * 2, Attacker());
-    }
-    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
-    {
-        // doomfist's ability 1: deal no damage
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
-    {
-        // genji's ability 1: deal no posture damage
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
-    {
-        // reinhardt's ability 2: do nothing
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
-    {
-        // reinhardt's ability 1: knockdown reinhardt, deal reinhardt posture
-        Heal(Victim(), null, EventDamage());
-        GainPosture(Attacker(), 150, Victim());
-        SetStatus(Attacker(), Victim(), Status.KnockedDown, 2);
-    }
-    else if (HeroOf(Attacker()) == Hero.Mercy)
-    {
-        // mercy deal no damage
-        Heal(Victim(), null, EventDamage());
-    }
-    else
-    {
-        Heal(Victim(), null, EventDamage());
-        GainPosture(Victim(), EventDamage(), Attacker());
-    }
+    Heal(Victim(), null, EventDamage());
+    GainPosture(Victim(), EventDamage(), Attacker());
 }
+
+// ============ state check ==============
 
 rule: "start checking victim state after a short delay"
 Event.OngoingPlayer
