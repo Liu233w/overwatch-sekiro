@@ -83,7 +83,7 @@ Player.Roadhog
     DeclareRoundVictory(OppositeTeamOf(TeamOf(EventPlayer())));
 }
 
-rule: "show commander location"
+rule: "show commander's location"
 Event.OngoingPlayer
 if (IsGameInProgress())
 {
