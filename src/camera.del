@@ -1,0 +1,54 @@
+/*
+camera settings from https://us.forums.blizzard.com/en/overwatch/t/code-release-3rd-person-camera-with-collision-detection-and-perfect-aim/356371
+*/
+
+struct CameraSetting
+{
+    define distance = 2;
+    define verticalAimMultiplier = 1;
+    define offset = Vector(-0.500, 0.500, -1.000);
+
+    public method SetCamera()
+    {
+        StartCamera(EventPlayer(), Add(Multiply(FacingDirectionOf(EventPlayer()), 0.200), RayCastHitPosition(EyePosition(
+			EventPlayer()), Add(Add(EyePosition(EventPlayer()), WorldVectorOf(this.offset, EventPlayer(),
+			LocalVector.Rotation)), Multiply(FacingDirectionOf(EventPlayer()), Multiply(Vector(this.distance,
+			Multiply(this.distance, this.verticalAimMultiplier),
+			this.distance), -1.000))), AllPlayers(), EventPlayer(), true)),
+			RayCastHitPosition(EyePosition(EventPlayer()), Add(EyePosition(EventPlayer()), Multiply(FacingDirectionOf(EventPlayer()),
+			500)), AllPlayers(), EventPlayer(), true), 20);
+    }
+
+    public method ResetCamera()
+    {
+        StopCamera(EventPlayer());
+    }
+}
+
+CameraSetting globalvar camera;
+define globalvar cameraInited = false;
+
+define playervar isThirdPersonEnabled = false;
+
+rule: "use acknowledge to switch third person view"
+Event.OngoingPlayer
+if (IsAlive(EventPlayer()))
+if (IsCommunicating(EventPlayer(), Communication.Acknowledge))
+{
+    if (!cameraInited)
+    {
+        camera = new CameraSetting();
+        cameraInited = true;
+    }
+
+    if (isThirdPersonEnabled)
+    {
+        camera.ResetCamera();
+        isThirdPersonEnabled = false;
+    }
+    else
+    {
+        camera.SetCamera();
+        isThirdPersonEnabled = true;
+    }
+}
