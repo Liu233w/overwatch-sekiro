@@ -39,85 +39,85 @@ the cool down time before or after a player action.
 //     ClearStatus(EventPlayer(), Status.KnockedDown);
 // }
 
-rule: "crash the server to restart automatically"
-if (IsMatchComplete())
-{
-    Wait(0.5);
-    while(true)
-    {
-        DestroyAllEffects();
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-        CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
-    }
-}
+// rule: "crash the server to restart automatically"
+// if (IsMatchComplete())
+// {
+//     Wait(0.5);
+//     while(true)
+//     {
+//         DestroyAllEffects();
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//         CreateEffect(null, Effect.Sphere, Color.White, Vector(0, 0, 0), 0.01, EffectRev.None);
+//     }
+// }
