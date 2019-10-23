@@ -74,6 +74,12 @@ if (final)
 
     SetHealth(EventPlayer(), Health(EventPlayer()) * 1/4);
     SetMoveSpeed(EventPlayer(), 200);
+
+    // commander sticked
+    if (IsInSpawnRoom(EventPlayer()))
+    {
+        Teleport(EventPlayer(), ObjectivePosition());
+    }
 }
 
 rule: "kill hostile commander to win"
