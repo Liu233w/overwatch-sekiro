@@ -45,29 +45,24 @@ if (DistanceBetween(PlayersOnHero(Hero.Roadhog, Team.Team1)[0], PlayersOnHero(He
 rule: "commander remove all abilities and set max health"
 Event.OngoingPlayer
 Player.Roadhog
+if (IsInSetup())
 {
+    final = false;
+
     SetPrimaryFireEnabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     SetUltimateAbilityEnabled(EventPlayer(), false);
 
-    SetMaxHealth(EventPlayer(), 600);
+    SetMaxHealth(EventPlayer(), 400);
     SetMaxPosture(EventPlayer(), 2400);
 
     SetDamageDealt(EventPlayer(), 800);
 
-    OnIdle(EventPlayer());
-}
-
-rule: "commander be slow when not in final"
-Event.OngoingPlayer
-Player.Roadhog
-if (IsGameInProgress())
-if (!IsInSpawnRoom())
-if (!final)
-{
     SetMoveSpeed(EventPlayer(), 15);
+
+    OnIdle(EventPlayer());
 }
 
 rule: "commander be quick in final, and make health less"
@@ -82,16 +77,17 @@ if (final)
 
     MinWait();
 
-    SetHealth(EventPlayer(), Health(EventPlayer()) * 1/6);
+    SetHealth(EventPlayer(), Health(EventPlayer()) * 1/4);
     SetMaxHealth(EventPlayer(), 100);
     SetMoveSpeed(EventPlayer(), 200);
 
     SetPrimaryFireEnabled(EventPlayer(), true);
+    SetDamageDealt(EventPlayer(), 100);
 
-    // commander sticked
-    if (IsInSpawnRoom(EventPlayer()))
+    // commander is stuck
+    if (DistanceBetween(EventPlayer(), PlayersOnHero(Hero.Roadhog, OppositeTeamOf(TeamOf(EventPlayer())))) > 30)
     {
-        Teleport(EventPlayer(), ObjectivePosition());
+        Teleport(EventPlayer(), ObjectivePosition(ObjectiveIndex()));
     }
 }
 
@@ -143,12 +139,14 @@ if (Posture(EventPlayer()) > 1200 && !final)
     SetStatus(EventPlayer(), null, Status.PhasedOut, 20);
 }
 
-rule: "prevent commander from dead by cliff"
+rule: "prevent commander from dead by cliff or stuck"
 Event.OngoingPlayer
 Player.Roadhog
-if (IsInAir(EventPlayer()))
+if (IsGameInProgress())
+// if (PositionOf(EventPlayer()) != NearestWalkablePosition(PositionOf(EventPlayer())))
+if ((!IsMoving(EventPlayer()) && !final) || IsInAir(EventPlayer()))
 {
-    Teleport(EventPlayer(), NearestWalkablePosition(PositionOf(EventPlayer())));
+    Teleport(EventPlayer(), NearestWalkablePosition(PositionOf(EventPlayer()) + Vector(RandomReal(0.5, 3), RandomReal(0.5, 3), RandomReal(0.5, 3))));
 }
 
 rule: "prevent commander from healed by mercy"
@@ -157,4 +155,26 @@ Player.Roadhog
 if (HeroOf(Healer()) == Hero.Mercy)
 {
     Damage(EventPlayer(), null, EventHealing());
+}
+
+define playervar movingHud;
+
+rule: "debug: show if commander moving"
+Event.OngoingPlayer
+Player.Roadhog
+if (IsMoving(EventPlayer()))
+{
+    CreateHudText(EventPlayer(), "location");
+    movingHud = LastTextID();
+}
+
+rule: "debug: un-show if commander not moving"
+Event.OngoingPlayer
+Player.Roadhog
+if (!IsMoving(EventPlayer()))
+{
+    if (movingHud != 0)
+    {
+        DestroyHudText(movingHud);
+    }
 }
