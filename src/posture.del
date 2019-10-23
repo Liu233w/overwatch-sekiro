@@ -191,14 +191,18 @@ if (deadlyStunned == true)
         // when hitted, the max health of doomfist can be greater than 250
         Heal(Attacker(), null, 160);
     }
-    else
+    else if (HeroOf(Attacker()) != Hero.Roadhog)
     {
         Heal(Attacker(), null, MaxHealth(Attacker()) * 2 / 3);
     }
-    Attacker().posture -= 150;
-    if (Attacker().posture < 0)
+
+    if (HeroOf(Attacker()) != Hero.Roadhog)
     {
-        Attacker().posture = 0;
+        Attacker().posture -= 150;
+        if (Attacker().posture < 0)
+        {
+            Attacker().posture = 0;
+        }
     }
 }
 
