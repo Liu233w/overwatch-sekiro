@@ -340,12 +340,12 @@ if (IsAlive(EventPlayer()))
     PressButton(EventPlayer(), Button.Ultimate);
 }
 
-rule: "use ultimate when game begin"
+rule: "use ultimate if genji alive"
 Event.OngoingPlayer
 Player.Genji
-if (IsAlive(EventPlayer()) && IsGameInProgress())
+if (IsAlive(EventPlayer()))
 {
-    MinWait();
+    Wait(2);
     PressButton(EventPlayer(), Button.Ultimate);
 }
 
