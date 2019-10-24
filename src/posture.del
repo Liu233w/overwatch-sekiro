@@ -232,7 +232,6 @@ private method PostureHud(Color color)
 
 rule: "show white posture text when posture < 100"
 Event.OngoingPlayer
-// if (IsAlive(EventPlayer()))
 if (posture < MaxPosture(EventPlayer()) / 2)
 {
     PostureHud(Color.White);
@@ -240,7 +239,6 @@ if (posture < MaxPosture(EventPlayer()) / 2)
 
 rule: "show orange posture text when posture on 100~150"
 Event.OngoingPlayer
-// if (IsAlive(EventPlayer()))
 if (posture >= MaxPosture(EventPlayer()) / 2)
 if (posture < MaxPosture(EventPlayer()) * 3 / 4)
 {
@@ -249,18 +247,7 @@ if (posture < MaxPosture(EventPlayer()) * 3 / 4)
 
 rule: "show red posture text when posture > 150"
 Event.OngoingPlayer
-// if (IsAlive(EventPlayer()))
 if (posture >= MaxPosture(EventPlayer()) * 3 / 4)
 {
     PostureHud(Color.Red);
-}
-
-rule: "destroy posture text when dead"
-Event.OngoingPlayer
-if (IsDead(EventPlayer()))
-{
-    if (inWorldPostureText != 0)
-    {
-        DestroyInWorldText(inWorldPostureText);
-    }
 }
