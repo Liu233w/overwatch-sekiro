@@ -71,6 +71,9 @@ method OffBlocking(define player)
 {
     player.isBlocking = false;
 
-    DestroyEffect(player.blockingAnimation);
+    if (player.blockingAnimation != 0)
+    {
+        DestroyEffect(player.blockingAnimation);
+    }
     // DestroyEffect(player.blockingSound);
 }
