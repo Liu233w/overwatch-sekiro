@@ -445,16 +445,6 @@ if (!IsButtonHeld(EventPlayer(), Button.Interact))
     StopHoldingButton(EventPlayer(), Button.Crouch);
 }
 
-// =============== other rule ===============================
-
-rule: "disable passive"
-Event.OngoingPlayer
-Player.Doomfist
-if (MaxHealth(EventPlayer()) > 250)
-{
-    Damage(EventPlayer(), null, MaxHealth() - 250);
-}
-
 // ================= debugging ====================
 
 define playervar debugHudDoomfist;

@@ -41,7 +41,7 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
     {
         // doomfist's ability 1: deal no damage
         Heal(Victim(), null, EventDamage());
-        if (!IsOnGround(Victim()))
+        if (AltitudeOf(EventPlayer()) > 1)
         {
             // deal 150 posture damage if not on the ground
             GainPosture(Victim(), 150, Attacker());

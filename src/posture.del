@@ -188,8 +188,7 @@ if (deadlyStunned == true)
     Kill(Victim(), Attacker());
     if (HeroOf(Attacker()) == Hero.Doomfist)
     {
-        // when hitted, the max health of doomfist can be greater than 250
-        Heal(Attacker(), null, 160);
+        // do not recover due to the passive ability of doomfist
     }
     else if (HeroOf(Attacker()) != Hero.Roadhog)
     {
