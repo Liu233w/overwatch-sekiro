@@ -6,7 +6,6 @@ rule: "disable score rule"
 {
     DisableAnnouncer();
     DisableScoring();
-    DisableMusic();
 }
 
 define globalvar team1FlagSpawn = null;
