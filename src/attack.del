@@ -31,12 +31,6 @@ rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
 if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
-    if (HeroOf(Attacker()) == Hero.Roadhog)
-    {
-        // this rule can crash server, only allow the attack rule of roadhog following below
-        return;
-    }
-
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
     {
         // doomfist's ability 2: deal 1/2 damage
