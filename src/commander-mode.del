@@ -24,6 +24,8 @@ if (IsGameInProgress())
 if (team1FlagSpawn != null)
 {
     CreateDummyBot(Hero.Roadhog, Team.Team1, -1, team1FlagSpawn, Vector(0, 0, 0));
+    // for performance issues
+    Wait(1);
     CreateDummyBot(Hero.Roadhog, Team.Team2, -1, team2FlagSpawn, Vector(0, 0, 0));
 }
 
