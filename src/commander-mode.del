@@ -13,20 +13,21 @@ define globalvar team1FlagSpawn = null;
 define globalvar team2FlagSpawn = null;
 
 rule: "set flag spawn position at the beginning"
-if (IsGameInProgress())
+if (IsInSetup())
 {
+    Wait(3);
     team1FlagSpawn = FlagPosition(Team.Team1);
     team2FlagSpawn = FlagPosition(Team.Team2);
 }
 
 rule: "spawn commander at flag spawn"
 if (IsGameInProgress())
-if (team1FlagSpawn != null)
 {
-    CreateDummyBot(Hero.Roadhog, Team.Team1, -1, team1FlagSpawn, Vector(0, 0, 0));
     // for performance issues
     Wait(1);
-    CreateDummyBot(Hero.Roadhog, Team.Team2, -1, team2FlagSpawn, Vector(0, 0, 0));
+    CreateDummyBot(Hero.Roadhog, Team.Team1, 5, team1FlagSpawn, Vector(0, 0, 0));
+    Wait(1);
+    CreateDummyBot(Hero.Roadhog, Team.Team2, 5, team2FlagSpawn, Vector(0, 0, 0));
 }
 
 rule: "commander config"
@@ -36,8 +37,10 @@ Player.Roadhog
     SetRespawnMaxTime(EventPlayer(), 30);
     SetMaxPosture(EventPlayer(), 1200);
 
-    CreateHudText(AllPlayers(TeamOf(EventPlayer())), <"teammate: defend <0>%", Posture(EventPlayer())/12>, null, null, Location.Left, 1);
-    CreateHudText(AllPlayers(OppositeTeamOf(TeamOf(EventPlayer()))), <"enemy: defend <0>%", Posture(EventPlayer())/12>, null, null, Location.Left, 1);
+    CreateHudText(AllPlayers(TeamOf(EventPlayer())), <"teammate: defend <0>%", Posture(EventPlayer())/12>, null, null, 
+        Location.Left, 1, Color.White, Color.White, Color.White, StringRev.VisibleToAndString);
+    CreateHudText(AllPlayers(OppositeTeamOf(TeamOf(EventPlayer()))), <"enemy: defend <0>%", Posture(EventPlayer())/12>, null, null, 
+        Location.Left, 1, Color.White, Color.White, Color.White, StringRev.VisibleToAndString);
 
     OnBlocking(EventPlayer());
 }
