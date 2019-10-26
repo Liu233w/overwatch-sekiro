@@ -1,0 +1,193 @@
+// ashe don't need a state machine
+
+import "state-track.del";
+import "block.del";
+import "optimise.del";
+import "posture.del";
+
+rule: "initialize ashe"
+Event.OngoingPlayer
+Player.Ashe
+{
+    ContinueWhenServerLoadAcceptable();
+
+    SetAbility1Enabled(EventPlayer(), true);
+    SetAbility2Enabled(EventPlayer(), false);
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+    SetPrimaryFireEnabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
+}
+
+rule: "set idle on alive"
+Event.OngoingPlayer
+Player.Ashe
+if (IsAlive(EventPlayer()))
+{
+    OnIdle(EventPlayer());
+}
+
+rule: "off idle when dead"
+Event.OngoingPlayer
+Player.Ashe
+if (!IsAlive(EventPlayer()))
+{
+    OffIdle(EventPlayer());
+}
+
+rule: "disable shift when used"
+Event.OngoingPlayer
+Player.Ashe
+if (IsUsingAbility1(EventPlayer()))
+{
+    SetAbility1Enabled(EventPlayer(), false);
+}
+
+rule: "enable shift when on the ground"
+Event.OngoingPlayer
+Player.Ashe
+if (IsOnGround(EventPlayer()))
+{
+    SetAbility1Enabled(EventPlayer(), true);
+}
+
+// ashe have her own damage event
+
+class AsheAttackedEvent
+{
+    public define damage;
+    public define remainingTime = 0.15;
+    public define extraPostureDamageIfNotDeflect = 0;
+
+    public AsheAttackedEvent(define damage)
+    {
+        this.damage = damage;
+    }
+}
+
+// 0-5 representing slot 0-5
+define playervar playerAttackingAshe K = [];
+
+private method UpdateAttackedEventTime(define slot)
+{
+    if (playerAttackingAshe[slot] == 0)
+    {
+        return;
+    }
+    AsheAttackedEvent obj = playerAttackingAshe[slot];
+    obj.remainingTime -= 0.16;
+    if (obj.remainingTime <= 0)
+    {
+        GainPosture(EventPlayer(), obj.damage + obj.extraPostureDamageIfNotDeflect, PlayersInSlot(slot, OppositeTeamOf(TeamOf(EventPlayer()))));
+        delete(obj);
+        playerAttackingAshe[slot] = 0;
+    }
+}
+
+private method SetAttackedEvent(define victim, define slot, define event)
+{
+    if (victim.playerAttackingAshe[slot] != 0)
+    {
+        delete(victim.playerAttackingAshe[slot]);
+    }
+    victim.playerAttackingAshe[slot] = event;
+}
+
+rule: "update every slot"
+Event.OngoingPlayer
+Player.Ashe
+if (IsAlive(EventPlayer()))
+{
+    UpdateAttackedEventTime(0);
+    UpdateAttackedEventTime(1);
+    UpdateAttackedEventTime(2);
+    UpdateAttackedEventTime(3);
+    UpdateAttackedEventTime(4);
+    UpdateAttackedEventTime(5);
+}
+
+rule: "ashe being attacked"
+Event.OnDamageDealt
+if (Victim() == Hero.Ashe)
+{
+    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
+    {
+        // doomfist's ability 2: deal 1/2 damage
+        Heal(Victim(), null, EventDamage() / 2);
+        
+        SetAttackedEvent(Victim(), SlotOf(Attacker()), new AsheAttackedEvent(EventDamage() / 2));
+    }
+    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
+    {
+        // doomfist's ability 1: deal no damage
+        Heal(Victim(), null, EventDamage());
+        if (AltitudeOf(Victim()) > 1)
+        {
+            // deal 150 posture damage if not on the ground
+            GainPosture(Victim(), 150, Attacker());
+        }
+    }
+    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
+    {
+        // genji's ability 1: deal no damage or posture
+        Heal(Victim(), null, EventDamage());
+    }
+    else if (HeroOf(Attacker()) == Hero.Genji && HeroOf(Victim()) == Hero.Roadhog)
+    {
+        // only deal 1/2 damage to commander
+        if (EventDamage() > 60)
+        {
+            Heal(Victim(), null, EventDamage() - 60);
+        }
+        GainPosture(Victim(), 60, Attacker());
+    }
+    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
+    {
+        // reinhardt's ability 2: deal no damage, but 200 posture when hitted.
+        Heal(Victim(), null, EventDamage());
+
+        AsheAttackedEvent e = new AsheAttackedEvent(0);
+        e.extraPostureDamageIfNotDeflect = 200;
+        SetAttackedEvent(Victim(), SlotOf(Attacker()), e);
+    }
+    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
+    {
+        // reinhardt's ability 1: deal no damage, but 200 posture when hitted.
+        // if deflected, gain 200 posture damage
+        Heal(Victim(), null, EventDamage());
+        AsheAttackedEvent e = new AsheAttackedEvent(0);
+        e.extraPostureDamageIfNotDeflect = 200;
+        SetAttackedEvent(Victim(), SlotOf(Attacker()), e);
+
+        // stop reinhardt
+        SetStatus(Attacker(), null, Status.KnockedDown, 0.5);
+    }
+    else if (HeroOf(Attacker()) == Hero.Mercy)
+    {
+        // mercy deal no damage or posture when directly attacking
+        Heal(Victim(), null, EventDamage());
+    }
+    else
+    {
+        SetAttackedEvent(Victim(), SlotOf(Attacker()), new AsheAttackedEvent(EventDamage()));
+    }
+}
+
+rule: "ashe attacking"
+Event.OnDamageDealt
+if (Attacker() == Hero.Ashe)
+{
+    if (Attacker().playerAttackingAshe[SlotOf(Victim())] == 0)
+    {
+        // ashe not deflect, don't do any thing
+        Heal(Victim(), null, EventDamage());
+        return;
+    }
+
+    // it can make the target only have 1 hp
+    Damage(Victim(), Attacker(), 1000);
+    delete(Attacker().playerAttackingAshe[SlotOf(Victim())]);
+    Attacker().playerAttackingAshe[SlotOf(Victim())] = 0;
+
+    SetPosture(Attacker(), 0);
+    Heal(Attacker(), null, 150);
+}
