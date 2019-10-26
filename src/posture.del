@@ -186,11 +186,7 @@ if (deadlyStunned == true)
     // ClearStatus(EventPlayer(), Status.Stunned);
     // MinWait();
     Kill(Victim(), Attacker());
-    if (HeroOf(Attacker()) == Hero.Doomfist)
-    {
-        // do not recover due to the passive ability of doomfist
-    }
-    else if (HeroOf(Attacker()) != Hero.Roadhog)
+    if (HeroOf(Attacker()) != Hero.Roadhog)
     {
         Heal(Attacker(), null, MaxHealth(Attacker()) * 2 / 3);
     }
