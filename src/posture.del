@@ -4,8 +4,8 @@ posture system (also handle hit point)
 everyone have 200 posture
 
 taken damage amount of posture when directly hitted;
-taken damage amount of posture when blocked;
-cause 2 times damage amount of posture to attacker if you deflect a attack.
+taken 1/2 damage amount of posture when blocked;
+cause damage amount of posture to attacker if you deflect a attack.
 
 Posture recover speed:
 when you are full health: 25 per second (8 second to clean up posture)

@@ -35,13 +35,14 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
     {
         // doomfist's ability 2: deal 1/2 damage
+        Heal(Victim(), null, EventDamage() / 2);
         attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 2));
     }
     else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
     {
         // doomfist's ability 1: deal no damage
         Heal(Victim(), null, EventDamage());
-        if (AltitudeOf(EventPlayer()) > 1)
+        if (AltitudeOf(Victim()) > 1)
         {
             // deal 150 posture damage if not on the ground
             GainPosture(Victim(), 150, Attacker());
@@ -91,7 +92,7 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
     {
         // mercy deal fixed 150 posture damage when deflecting
         AttackingEvent e = new AttackingEvent(Victim(), EventDamage());
-        e.extraPostureDamageWhenDeflected = 150 - (EventDamage() * 2);
+        e.extraPostureDamageWhenDeflected = 150 - EventDamage();
         attacking = Append(attacking, e);
     }
     else
@@ -152,7 +153,7 @@ if (IsDeflecting(Victim()))
     else
     {
         Heal(Victim(), null, EventDamage());
-        GainPosture(Attacker(), EventDamage() * 2, Victim());
+        GainPosture(Attacker(), EventDamage(), Victim());
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
         PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, Victim(), 100);
@@ -203,7 +204,7 @@ if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
     else
     {
         Heal(Victim(), null, EventDamage());
-        GainPosture(Victim(), EventDamage(), Attacker());
+        GainPosture(Victim(), EventDamage() / 2, Attacker());
     }
 }
 
@@ -227,7 +228,7 @@ if (CountOf(attacking) > 0)
         {
             // deflecting
             Heal(e.victim, null, e.directDamage);
-            GainPosture(EventPlayer(), e.directDamage * 2 + e.extraPostureDamageWhenDeflected, e.victim);
+            GainPosture(EventPlayer(), e.directDamage + e.extraPostureDamageWhenDeflected, e.victim);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
             PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
