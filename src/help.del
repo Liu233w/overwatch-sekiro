@@ -26,7 +26,7 @@ Player.Doomfist
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, "secondary_fire -> attack", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1 -> fly, none damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "ability 1 -> none damage, damage flying enemy more", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, "ability 2 -> stop enemy defend, less damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
@@ -46,7 +46,7 @@ Player.Genji
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, <"success <0> -> unlock ability 1", Team.Team2>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1 -> none damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "ability 1 -> faster, none damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
 
@@ -64,7 +64,7 @@ Player.Reinhardt
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, "stop use_ability 1 -> stop chase", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1, ability 2 -> stun enemy", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "ability 1, ability 2 -> stun none defend enemy", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
 
@@ -78,6 +78,8 @@ Player.Mercy
     }
     helpHud = [];
 
+    CreateHudText(EventPlayer(), null, null, "attack -> none damage", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, "secondary_fire -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, <"<0> * <1> -> stun enemy", Team.Team2, 2>, Location.Right, 3);
