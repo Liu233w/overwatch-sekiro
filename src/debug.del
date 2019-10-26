@@ -2,16 +2,15 @@ define globalvar debugging;
 
 macro IsDebugging(): debugging == true;
 
-rule: "start debugging"
-Event.OngoingGlobal
-{
-    debugging = true;
-}
+// rule: "start debugging"
+// Event.OngoingGlobal
+// {
+//     debugging = true;
+// }
 
 rule: "show server workload"
 Event.OngoingPlayer
-if (debugging == true)
 {
-    CreateHudText(EventPlayer(), <"server_load: <0>, server_load_average: <1>, server_load_peak: <2>", 
-        ServerLoad(), ServerLoadAverage(), ServerLoadPeak()>, null, null, Location.Top);
+    CreateHudText(EventPlayer(), null, null, <"server_load: <0>, server_load_average: <1>, server_load_peak: <2>", 
+        ServerLoad(), ServerLoadAverage(), ServerLoadPeak()>, Location.Left, 10);
 }

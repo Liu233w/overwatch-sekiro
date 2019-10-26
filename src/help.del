@@ -1,11 +1,13 @@
 rule: "Show instruction on left"
 Event.OngoingPlayer
 {
-    // you can setup your own instruction by setting the team name
-    CreateHudText(EventPlayer(), <"<0> <1>", Team.Team1, Team.Team2>, null, null, Location.Right, 0);
-    CreateHudText(EventPlayer(), "---------- help ----------", null, null, Location.Right, 1);
-    // CreateHudText(EventPlayer(), <"defend -> <0>% = stunned", 100>, null, null, Location.Right, 2);
-    // CreateHudText(EventPlayer(), "stunned + attacked = dead", null, null, Location.Right, 2);
+    // set Team1 = Press L, right click map to see instruction
+    // set Team2 = Deflect
+    CreateHudText(EventPlayer(), Team.Team1, null, null, Location.Right, 0);
+    CreateHudText(EventPlayer(), null, null, "---------- help ----------", Location.Right, 1);
+    CreateHudText(EventPlayer(), null, null, <"start defend + enemy attack -> <0>", Team.Team2>, Location.Right, 2);
+    CreateHudText(EventPlayer(), null, null, <"defend <0>% -> stun", 100>, Location.Right, 2);
+    CreateHudText(EventPlayer(), null, null, "stun + attack -> die", Location.Right, 2);
 }
 
 define playervar helpHud = [];
@@ -20,14 +22,14 @@ Player.Doomfist
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), "interact -> defend", null, null, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "interact and crouch -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    // CreateHudText(EventPlayer(), "secondary_fire -> attack", null, null, Location.Right, 3);
-    // helpHud = Append(helpHud, LastTextID());
-    // CreateHudText(EventPlayer(), "ability 1 -> fly, no damage", null, null, Location.Right, 3);
-    // helpHud = Append(helpHud, LastTextID());
-    // CreateHudText(EventPlayer(), "ability 2 -> reverse defend", null, null, Location.Right, 3);
-    // helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "secondary_fire -> attack", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "ability 1 -> fly, none damage", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "ability 2 -> stop enemy defend, less damage", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
 }
 
 rule: "genji help info"
@@ -40,7 +42,11 @@ Player.Genji
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), "secondary_fire -> defend", null, null, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "secondary_fire -> defend", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, <"success <0> -> unlock ability 1", Team.Team2>, Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "ability 1 -> none damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
 
@@ -53,6 +59,13 @@ Player.Reinhardt
         DestroyHudText(item);
     }
     helpHud = [];
+
+    CreateHudText(EventPlayer(), null, null, "start use_ability 1 -> start chase", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "stop use_ability 1 -> stop chase", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "ability 1, ability 2 -> stun enemy", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
 }
 
 rule: "mercy help info"
@@ -65,6 +78,10 @@ Player.Mercy
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), "secondary_fire -> defend", null, null, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "secondary_fire -> defend", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, <"<0> * <1> -> stun enemy", Team.Team2, 2>, Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "ultimate_ability -> heal", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }

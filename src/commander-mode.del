@@ -22,6 +22,7 @@ if (IsInSetup())
 rule: "spawn commander at flag spawn"
 if (IsGameInProgress())
 {
+    SetObjectiveDescription(AllPlayers(), <"kill enemy <0> -> score", Hero.Roadhog>);
     // for performance issues
     Wait(1);
     CreateDummyBot(Hero.Roadhog, Team.Team1, 5, team1FlagSpawn, Vector(0, 0, 0));
@@ -37,9 +38,9 @@ Player.Roadhog
     SetMaxPosture(EventPlayer(), 1200);
 
     CreateHudText(AllPlayers(TeamOf(EventPlayer())), <"teammate: defend <0>%", Posture(EventPlayer())/12>, null, null, 
-        Location.Left, 1, Color.White, Color.White, Color.White, StringRev.VisibleToAndString);
+        Location.Top, 1, Color.White, Color.White, Color.White, StringRev.VisibleToAndString);
     CreateHudText(AllPlayers(OppositeTeamOf(TeamOf(EventPlayer()))), <"enemy: defend <0>%", Posture(EventPlayer())/12>, null, null, 
-        Location.Left, 1, Color.White, Color.White, Color.White, StringRev.VisibleToAndString);
+        Location.Top, 1, Color.White, Color.White, Color.White, StringRev.VisibleToAndString);
 
     OnBlocking(EventPlayer());
 }
