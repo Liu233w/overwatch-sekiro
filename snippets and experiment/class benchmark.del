@@ -1,0 +1,53 @@
+rule: "show server workload"
+Event.OngoingPlayer
+{
+    CreateHudText(EventPlayer(), null, null, <"server_load: <0>, server_load_average: <1>, server_load_peak: <2>", 
+        ServerLoad(), ServerLoadAverage(), ServerLoadPeak()>, Location.Left, 10);
+}
+
+// if we use class, can crash the server after a while
+struct TestClass
+{
+    public define num1;
+    public define num2;
+
+    public TestClass(define num1, define num2)
+    {
+        this.num1 = num1;
+        this.num2 = num2;
+    }
+}
+
+define globalvar arr = [];
+
+rule: "add object on attacked"
+Event.OnDamageDealt
+{
+    arr = Append(arr, new TestClass(Attacker(), Victim()));
+    MinWait();
+}
+
+// rule: "show attacking list"
+// {
+//     DestroyAllHudText();
+//     MinWait();
+//     foreach(TestClass obj in arr)
+//     {
+//         CreateHudText(AllPlayers(), <"<0>, <1>", obj.num1, obj.num2>);
+//     }
+//     Wait(0.05);
+//     Loop();
+// }
+
+rule: "remove object"
+if (CountOf(arr) > 0)
+{
+    Wait(0.15);
+    foreach (TestClass obj in arr)
+    {
+        // SmallMessage(AllPlayers(), <"<0>, <1>", obj.num1, obj.num2>);
+        // delete(obj);
+    }
+
+    arr = [];
+}
