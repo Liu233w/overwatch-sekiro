@@ -87,3 +87,19 @@ Player.Mercy
     CreateHudText(EventPlayer(), null, null, "ultimate_ability -> heal", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
+
+rule: "ashe help info"
+Event.OngoingPlayer
+Player.Ashe
+{
+    foreach (define item in helpHud)
+    {
+        DestroyHudText(item);
+    }
+    helpHud = [];
+
+    CreateHudText(EventPlayer(), null, null, <"ability 1 + attack -> <0>, kill enemy", Team.Team2>, Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "ability 1 -> none damage", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+}
