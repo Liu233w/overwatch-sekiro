@@ -30,8 +30,8 @@ define playervar attacking = [];
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
 if (Attacker() != null)
-if (Attacker() != Hero.Ashe)
-if (Victim() != Hero.Ashe)
+if (HeroOf(Attacker()) != Hero.Ashe)
+if (HeroOf(Victim()) != Hero.Ashe)
 if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
@@ -106,8 +106,8 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
 rule: "gain posture if victim is deflecting"
 Event.OnDamageDealt
 if (Attacker() != null)
-if (Attacker() != Hero.Ashe)
-if (Victim() != Hero.Ashe)
+if (HeroOf(Attacker()) != Hero.Ashe)
+if (HeroOf(Victim()) != Hero.Ashe)
 if (IsDeflecting(Victim()))
 {
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
@@ -170,8 +170,8 @@ if (IsDeflecting(Victim()))
 rule: "deal posture if victim is blocking"
 Event.OnDamageDealt
 if (Attacker() != null)
-if (Attacker() != Hero.Ashe)
-if (Victim() != Hero.Ashe)
+if (HeroOf(Attacker()) != Hero.Ashe)
+if (HeroOf(Victim()) != Hero.Ashe)
 if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))

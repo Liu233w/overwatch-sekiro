@@ -4,6 +4,7 @@ import "doomfist.del";
 import "genji.del";
 import "reinhardt.del";
 import "mercy.del";
+import "ashe.del";
 // import "zenyatta.del";
 
 import "attack.del";
