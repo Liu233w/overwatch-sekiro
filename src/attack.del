@@ -57,15 +57,6 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
         // genji's ability 1: deal no damage or posture
         Heal(Victim(), null, EventDamage());
     }
-    else if (HeroOf(Attacker()) == Hero.Genji && HeroOf(Victim()) == Hero.Roadhog)
-    {
-        // only deal 1/2 damage to commander
-        if (EventDamage() > 60)
-        {
-            Heal(Victim(), null, EventDamage() - 60);
-        }
-        GainPosture(Victim(), 60, Attacker());
-    }
     else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
     {
         // reinhardt's ability 2: deal no damage, but 200 posture when hitted.
