@@ -61,15 +61,15 @@ rule: "manually chase posture variable rest-ore"
         define playerThatShouldRestore = FilteredArray(AllPlayers(), And(
             IsAlive(ArrayElement()), 
             Compare(PlayerVariable(ArrayElement(), Variable.P), Operators.GreaterThan, 0)));
-        foreach (define player in playerThatShouldRestore)
+        foreach 5 (define player in playerThatShouldRestore)
         {
-            player.posture -= player.postureRestoringRate * 0.5;
+            player.posture -= player.postureRestoringRate * 0.1;
             if (player.posture < 0)
             {
                 player.posture = 0;
             }
         }
-        Wait(0.5, WaitBehavior.AbortWhenFalse);
+        Wait(0.1, WaitBehavior.AbortWhenFalse);
     }
 }
 
