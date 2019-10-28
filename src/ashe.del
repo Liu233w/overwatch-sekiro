@@ -52,20 +52,6 @@ if (IsOnGround(EventPlayer()))
     SetAbility1Enabled(EventPlayer(), true);
 }
 
-// ashe have her own damage event
-
-class AsheAttackedEvent
-{
-    public define damage;
-    public define extraPostureDamageIfNotDeflect = 0;
-    public define successfullyDeflected = false;
-
-    public AsheAttackedEvent(define damage)
-    {
-        this.damage = damage;
-    }
-}
-
 // 0-5 representing slot 0-5
 define playervar playerAttackingAsheStatus = [0, 0, 0, 0, 0, 0]; // 0: not attacking; 1: just attacking; 2: deflected
 define playervar playerAttackingAsheDamage = [0, 0, 0, 0, 0, 0];
