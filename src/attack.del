@@ -252,4 +252,6 @@ if (CountOf(attacking) > 0)
 
         delete(e);
     }
+
+    Loop();
 }
