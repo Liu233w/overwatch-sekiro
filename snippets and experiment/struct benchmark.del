@@ -1,0 +1,61 @@
+rule: "show server workload"
+Event.OngoingPlayer
+{
+    CreateHudText(EventPlayer(), null, null, <"server_load: <0>, server_load_average: <1>, server_load_peak: <2>", 
+        ServerLoad(), ServerLoadAverage(), ServerLoadPeak()>, Location.Left, 10);
+}
+
+struct TestClass
+{
+    public define num1;
+    public define num2;
+
+    public TestClass(define num1, define num2)
+    {
+        this.num1 = num1;
+        this.num2 = num2;
+    }
+}
+
+define playervar arr R = [];
+define playervar idx = 0;
+
+rule: "add object on attacked"
+Event.OnDamageDealt
+{
+    arr[idx] = new TestClass(Attacker(), Victim());
+    idx += 1;
+}
+
+// rule: "show attacking list"
+// {
+//     DestroyAllHudText();
+//     MinWait();
+//     foreach(TestClass obj in arr)
+//     {
+//         CreateHudText(AllPlayers(), <"<0>, <1>", obj.num1, obj.num2>);
+//     }
+//     Wait(0.05);
+//     Loop();
+// }
+
+rule: "remove object"
+Event.OngoingPlayer
+if (CountOf(arr) > 0)
+{
+    // remove all object in arr at once
+    Wait(0.15, WaitBehavior.AbortWhenFalse);
+
+    // the loop is not in a transition, so another array is need to prevent memory leak
+    define toDelete D = arr;
+    arr = [];
+    idx = 0;
+
+    foreach (TestClass obj in toDelete)
+    {
+        // SmallMessage(AllPlayers(), <"<0>, <1>", obj.num1, obj.num2>);
+        // delete(obj);
+    }
+
+    Loop();
+}
