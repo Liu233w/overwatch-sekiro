@@ -25,7 +25,7 @@ class AttackingEvent
     }
 }
 
-define playervar attacking = [];
+AttackingEvent playervar attacking = [];
 
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
@@ -220,15 +220,18 @@ if (CountOf(attacking) > 0)
 {
     if (HeroOf(EventPlayer()) == Hero.Doomfist)
     {
-        Wait(0.15);
+        Wait(0.15, WaitBehavior.AbortWhenFalse);
     }
     else
     {
-        Wait(0.1);
+        Wait(0.1, WaitBehavior.AbortWhenFalse);
     }
 
-    // cannot hurt more than 3 persons at once, so the loop is acceptable.
-    foreach (AttackingEvent e in attacking)
+    // use another variable to prevent memory leak
+    define attackingList = attacking;
+    attacking = [];
+
+    foreach (AttackingEvent e in attackingList)
     {
         if (IsDeflecting(e.victim) || IsBlocking(e.victim))
         {
@@ -249,6 +252,4 @@ if (CountOf(attacking) > 0)
 
         delete(e);
     }
-
-    attacking = [];
 }
