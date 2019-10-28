@@ -6,7 +6,7 @@ import "block.del";
 import "posture.del";
 import "state-track.del";
 
-class AttackingEvent
+struct AttackingEvent
 {
     public define victim;
 
@@ -25,7 +25,8 @@ class AttackingEvent
     }
 }
 
-AttackingEvent playervar attacking = [];
+AttackingEvent playervar attacking T = [];
+define playervar attackingListSize S = 0;
 
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
@@ -38,7 +39,8 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
     {
         // doomfist's ability 2: deal 1/2 damage
         Heal(Victim(), null, EventDamage() / 2);
-        attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage() / 2));
+        attacking[attackingListSize] = new AttackingEvent(Victim(), EventDamage() / 2);
+        attackingListSize += 1;
     }
     else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
     {
@@ -70,7 +72,8 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
         Heal(Victim(), null, EventDamage());
         AttackingEvent e = new AttackingEvent(Victim(), 0);
         e.extraPostureDamageWhenDirectlyHitted = 200;
-        attacking = Append(attacking, e);
+        attacking[attackingListSize] = e;
+        attackingListSize += 1;
     }
     else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
     {
@@ -80,7 +83,8 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
         AttackingEvent e = new AttackingEvent(Victim(), 0);
         e.extraPostureDamageWhenDirectlyHitted = 200;
         e.extraPostureDamageWhenDeflected = 200;
-        attacking = Append(attacking, e);
+        attacking[attackingListSize] = e;
+        attackingListSize += 1;
 
         // stop reinhardt
         SetStatus(Attacker(), null, Status.KnockedDown, 0.5);
@@ -95,11 +99,13 @@ if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
         // mercy deal fixed 150 posture damage when deflecting
         AttackingEvent e = new AttackingEvent(Victim(), EventDamage());
         e.extraPostureDamageWhenDeflected = 150 - EventDamage();
-        attacking = Append(attacking, e);
+        attacking[attackingListSize] = e;
+        attackingListSize += 1;
     }
     else
     {
-        attacking = Append(attacking, new AttackingEvent(Victim(), EventDamage()));
+        attacking[attackingListSize] = new AttackingEvent(Victim(), EventDamage());
+        attackingListSize += 1;
     }
 }
 
@@ -216,7 +222,7 @@ if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
 
 rule: "start checking victim state after a short delay"
 Event.OngoingPlayer
-if (CountOf(attacking) > 0)
+if (attackingListSize > 0)
 {
     if (HeroOf(EventPlayer()) == Hero.Doomfist)
     {
@@ -227,9 +233,10 @@ if (CountOf(attacking) > 0)
         Wait(0.1, WaitBehavior.AbortWhenFalse);
     }
 
-    // use another variable to prevent memory leak
+    // use another variable to prevent add new element while loop on old elements
     define attackingList = attacking;
     attacking = [];
+    attackingListSize = 0;
 
     foreach (AttackingEvent e in attackingList)
     {
@@ -249,7 +256,7 @@ if (CountOf(attacking) > 0)
         {
             GainPosture(e.victim, e.directDamage + e.extraPostureDamageWhenDirectlyHitted, EventPlayer());
         }
-
-        delete(e);
     }
+
+    Loop();
 }
