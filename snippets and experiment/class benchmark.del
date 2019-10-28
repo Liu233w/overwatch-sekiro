@@ -5,8 +5,7 @@ Event.OngoingPlayer
         ServerLoad(), ServerLoadAverage(), ServerLoadPeak()>, Location.Left, 10);
 }
 
-// if we use class, can crash the server after a while
-struct TestClass
+class TestClass
 {
     public define num1;
     public define num2;
@@ -18,13 +17,12 @@ struct TestClass
     }
 }
 
-define globalvar arr = [];
+define globalvar arr R = [];
 
 rule: "add object on attacked"
 Event.OnDamageDealt
 {
     arr = Append(arr, new TestClass(Attacker(), Victim()));
-    MinWait();
 }
 
 // rule: "show attacking list"
@@ -42,12 +40,18 @@ Event.OnDamageDealt
 rule: "remove object"
 if (CountOf(arr) > 0)
 {
-    Wait(0.15);
-    foreach (TestClass obj in arr)
+    // remove all object in arr at once
+    Wait(0.15, WaitBehavior.AbortWhenFalse);
+
+    // the loop is not in a transition, so another array is need to prevent memory leak
+    define toDelete D = arr;
+    arr = [];
+
+    foreach (TestClass obj in toDelete)
     {
         // SmallMessage(AllPlayers(), <"<0>, <1>", obj.num1, obj.num2>);
-        // delete(obj);
+        delete(obj);
     }
 
-    arr = [];
+    Loop();
 }

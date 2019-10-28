@@ -1,0 +1,36 @@
+struct TestClass
+{
+    public define num1;
+    public define num2;
+
+    public TestClass(define num1, define num2)
+    {
+        this.num1 = num1;
+        this.num2 = num2;
+    }
+}
+
+TestClass globalvar arr T = [];
+
+rule: "generate array"
+{
+    arr[0] = new TestClass(0.1, 0.11);
+    arr[1] = new TestClass(0.2, 0.22);
+    arr[2] = new TestClass(0.3, 0.33);
+    arr[3] = new TestClass(0.4, 0.44);
+
+    // cannot use Append in an array of struct
+    // arr = Append(arr, new TestClass(0.1, 0.11));
+    // arr = Append(arr, new TestClass(0.2, 0.22));
+    // arr = Append(arr, new TestClass(0.3, 0.33));
+    // arr = Append(arr, new TestClass(0.4, 0.44));
+}
+
+rule: "show array"
+{
+    Wait(1);
+    foreach (TestClass c in arr)
+    {
+        CreateHudText(AllPlayers(), <"<0>, <1>", c.num1, c.num2>);
+    }
+}
