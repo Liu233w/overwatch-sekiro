@@ -13,7 +13,6 @@ Player.Ashe
 
     SetAbility2Enabled(EventPlayer(), false);
     SetUltimateAbilityEnabled(EventPlayer(), false);
-    SetPrimaryFireEnabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
 }
 
@@ -22,6 +21,7 @@ Event.OngoingPlayer
 Player.Ashe
 if (IsAlive(EventPlayer()))
 {
+    SetPrimaryFireEnabled(EventPlayer(), true);
     SetAbility1Enabled(EventPlayer(), true);
     OnIdle(EventPlayer());
 }
@@ -34,189 +34,59 @@ if (!IsAlive(EventPlayer()))
     OffIdle(EventPlayer());
 }
 
-rule: "disable shift when used"
+rule: "set counter attack when using shift"
+Event.OngoingPlayer
+Player.Ashe
+if (IsUsingAbility1(EventPlayer()) || IsFiringPrimary(EventPlayer()))
+if (IsAlive(EventPlayer()))
+{
+    // totally 0.5 sec counter attack time
+    SetInCounterAttack(EventPlayer());
+    SetPrimaryFireEnabled(EventPlayer(), false);
+    Wait(0.2);
+    SetAbility1Enabled(EventPlayer(), false);
+    Wait(0.3);
+    SetOffCounterAttack(EventPlayer());
+}
+
+rule: "enable shift when on the ground and off counter attack"
+Event.OngoingPlayer
+Player.Ashe
+if (IsOnGround(EventPlayer()))
+if (!InCounterAttack(EventPlayer()))
+{
+    SetAbility1Enabled(EventPlayer(), true);
+    SetPrimaryFireEnabled(EventPlayer(), true);
+}
+
+rule: "ashe attacking player: add them to counter attack list"
+Event.OnDamageDealt
+if (Attacker() != null)
+if (HeroOf(Attacker()) == Hero.Ashe)
+// if (InCounterAttack(EventPlayer()))
+{
+    Heal(Victim(), null, EventDamage());
+    AddCounterAttackPlayer(Attacker(), Victim());
+}
+
+rule: "ashe can fly when using ability 1 on the air"
 Event.OngoingPlayer
 Player.Ashe
 if (IsUsingAbility1(EventPlayer()))
 if (IsAlive(EventPlayer()))
+if (IsInAir(EventPlayer()))
 {
-    Wait(0.5, WaitBehavior.AbortWhenFalse);
-    SetAbility1Enabled(EventPlayer(), false);
+    Wait(0.1, WaitBehavior.AbortWhenFalse);
+    define facingDirection = FacingDirectionOf(EventPlayer());
+    // speed will be lower when player pointing at the ground, prevent player from flying too high.
+    define speed = YOf(facingDirection) < -0.7 ? 15 : 20;
+    ApplyImpulse(EventPlayer(), facingDirection * -1, speed, Relative.ToWorld, ContraryMotion.Cancel);
 }
 
-rule: "enable shift when on the ground"
+rule: "ashe use secondary attack as ability 1"
 Event.OngoingPlayer
 Player.Ashe
-if (IsOnGround(EventPlayer()))
+if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
 {
-    SetAbility1Enabled(EventPlayer(), true);
-}
-
-// 0-5 representing slot 0-5
-define playervar playerAttackingAsheStatus = [0, 0, 0, 0, 0, 0]; // 0: not attacking; 1: just attacking; 2: deflected
-define playervar playerAttackingAsheDamage = [0, 0, 0, 0, 0, 0];
-define playervar playerAttackingAsheExtraPostureDamage = [0, 0, 0, 0, 0, 0];
-
-
-private method UpdateAttackedStatus(define slot)
-{
-    Wait(0.5, WaitBehavior.AbortWhenFalse);
-    define player = PlayersInSlot(slot, OppositeTeamOf(TeamOf(EventPlayer())));
-    if (playerAttackingAsheStatus[slot] == 2)
-    {
-        // that can kill the attacker
-        GainPosture(player, 200, EventPlayer());
-        Wait(0.05);
-        Kill(player, EventPlayer());
-    }
-    else
-    {
-        GainPosture(EventPlayer(), playerAttackingAsheDamage[slot] + playerAttackingAsheExtraPostureDamage[slot], player);
-    }
-
-    playerAttackingAsheStatus[slot] = 0;
-}
-
-private method SetAttackedStatus(define attacker, define victim, define damage, define extraPostureDamage)
-{
-    define slot = SlotOf(attacker);
-    victim.playerAttackingAsheStatus[slot] = 1;
-    victim.playerAttackingAsheDamage[slot] = damage;
-    victim.playerAttackingAsheExtraPostureDamage[slot] = extraPostureDamage;
-}
-
-rule: "update slot 0"
-Event.OngoingPlayer
-Player.Ashe
-if (IsAlive(EventPlayer()))
-if (playerAttackingAsheStatus[0] != 0)
-{
-    UpdateAttackedStatus(0);
-}
-
-rule: "update slot 1"
-Event.OngoingPlayer
-Player.Ashe
-if (IsAlive(EventPlayer()))
-if (playerAttackingAsheStatus[1] != 0)
-{
-    UpdateAttackedStatus(1);
-}
-
-rule: "update slot 2"
-Event.OngoingPlayer
-Player.Ashe
-if (IsAlive(EventPlayer()))
-if (playerAttackingAsheStatus[2] != 0)
-{
-    UpdateAttackedStatus(2);
-}
-
-rule: "update slot 3"
-Event.OngoingPlayer
-Player.Ashe
-if (IsAlive(EventPlayer()))
-if (playerAttackingAsheStatus[3] != 0)
-{
-    UpdateAttackedStatus(3);
-}
-
-rule: "update slot 4"
-Event.OngoingPlayer
-Player.Ashe
-if (IsAlive(EventPlayer()))
-if (playerAttackingAsheStatus[4] != 0)
-{
-    UpdateAttackedStatus(4);
-}
-
-rule: "update slot 1"
-Event.OngoingPlayer
-Player.Ashe
-if (IsAlive(EventPlayer()))
-if (playerAttackingAsheStatus[1] != 0)
-{
-    UpdateAttackedStatus(1);
-}
-
-rule: "ashe attacking"
-Event.OnDamageDealt
-if (HeroOf(Attacker()) == Hero.Ashe)
-{
-    define slot = SlotOf(Victim());
-
-    if (Attacker().playerAttackingAsheStatus[slot] == 0)
-    {
-        // ashe not deflect, don't do any thing
-        Heal(Victim(), null, EventDamage());
-        return;
-    }
-
-    SetPosture(Attacker(), 0);
-    Heal(Attacker(), null, 150 + Attacker().playerAttackingAsheDamage[slot]);
-
-    Attacker().playerAttackingAsheStatus[slot] = 2;
-}
-
-rule: "ashe being attacked"
-Event.OnDamageDealt
-if (HeroOf(Attacker()) != Hero.Ashe)
-if (HeroOf(Victim()) == Hero.Ashe)
-{
-    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
-    {
-        // doomfist's ability 2: deal 1/2 damage
-        Heal(Victim(), null, EventDamage() / 2);
-        
-        SetAttackedStatus(Attacker(), Victim(), EventDamage() / 2, 0);
-    }
-    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
-    {
-        // doomfist's ability 1: deal no damage
-        Heal(Victim(), null, EventDamage());
-        if (AltitudeOf(Victim()) > 1)
-        {
-            // deal 150 posture damage if not on the ground
-            GainPosture(Victim(), 150, Attacker());
-        }
-    }
-    else if (HeroOf(Attacker()) == Hero.Genji && IsUsingAbility1(Attacker()))
-    {
-        // genji's ability 1: deal no damage or posture
-        Heal(Victim(), null, EventDamage());
-    }
-    else if (HeroOf(Attacker()) == Hero.Genji && HeroOf(Victim()) == Hero.Roadhog)
-    {
-        // only deal 1/2 damage to commander
-        if (EventDamage() > 60)
-        {
-            Heal(Victim(), null, EventDamage() - 60);
-        }
-        GainPosture(Victim(), 60, Attacker());
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && AtAbility2State(Attacker()))
-    {
-        // reinhardt's ability 2: deal no damage, but 200 posture when hitted.
-        Heal(Victim(), null, EventDamage());
-        SetAttackedStatus(Attacker(), Victim(), 0, 200);
-    }
-    else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
-    {
-        // reinhardt's ability 1: deal no damage, but 200 posture when hitted.
-        // if deflected, gain 200 posture damage
-        Heal(Victim(), null, EventDamage());
-        SetAttackedStatus(Attacker(), Victim(), 0, 200);
-
-        // stop reinhardt
-        SetStatus(Attacker(), null, Status.KnockedDown, 0.5);
-    }
-    else if (HeroOf(Attacker()) == Hero.Mercy)
-    {
-        // mercy deal no damage or posture when directly attacking
-        Heal(Victim(), null, EventDamage());
-    }
-    else
-    {
-        SetAttackedStatus(Attacker(), Victim(), EventDamage(), 0);
-    }
+    PressButton(EventPlayer(), Button.Ability1);
 }

@@ -32,7 +32,6 @@ rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
 if (Attacker() != null)
 if (HeroOf(Attacker()) != Hero.Ashe)
-if (HeroOf(Victim()) != Hero.Ashe)
 if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
@@ -104,7 +103,6 @@ rule: "gain posture if victim is deflecting"
 Event.OnDamageDealt
 if (Attacker() != null)
 if (HeroOf(Attacker()) != Hero.Ashe)
-if (HeroOf(Victim()) != Hero.Ashe)
 if (IsDeflecting(Victim()))
 {
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
@@ -168,7 +166,6 @@ rule: "deal posture if victim is blocking"
 Event.OnDamageDealt
 if (Attacker() != null)
 if (HeroOf(Attacker()) != Hero.Ashe)
-if (HeroOf(Victim()) != Hero.Ashe)
 if (IsBlocking(Victim()) && !IsDeflecting(Victim()))
 {
     if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
@@ -231,6 +228,17 @@ if (attackingListSize > 0)
 
     foreach (AttackingEvent e in attackingList)
     {
+        if (InCounterAttack(e.victim) && IsCounterAttacked(e.victim, EventPlayer()))
+        {
+
+            SetPosture(e.victim, 0);
+            Heal(e.victim, null, 150 + e.directDamage);
+            // that can kill the attacker
+            GainPosture(EventPlayer(), 300, e.victim);
+            Wait(0.05);
+            Kill(EventPlayer(), e.victim);
+        }
+
         if (IsDeflecting(e.victim) || IsBlocking(e.victim))
         {
             // deflecting

@@ -8,3 +8,22 @@ method SetAtAbility2State(define player, define state)
 {
     player.ability2State = state;
 }
+
+define playervar counterAttackingPlayer = null;
+method SetInCounterAttack(define player)
+{
+    player.counterAttackingPlayer = [];
+}
+method SetOffCounterAttack(define player)
+{
+    player.counterAttackingPlayer = null;
+}
+method AddCounterAttackPlayer(define player, define target)
+{
+    // prevent from appending multiple times
+    player.counterAttackingPlayer = Append(
+        RemoveFromArray(player.counterAttackingPlayer, target), 
+        target);
+}
+macro InCounterAttack(define player): player.counterAttackingPlayer != null;
+macro IsCounterAttacked(define player, define target): ArrayContains(player.counterAttackingPlayer, target);
