@@ -20,6 +20,10 @@ method SetOffCounterAttack(define player)
 }
 method AddCounterAttackPlayer(define player, define target)
 {
+    if (!InCounterAttack(player))
+    {
+        SetInCounterAttack(player);
+    }
     // prevent from appending multiple times
     player.counterAttackingPlayer = Append(
         RemoveFromArray(player.counterAttackingPlayer, target), 

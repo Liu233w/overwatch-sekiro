@@ -11,6 +11,9 @@ Player.Ashe
 {
     ContinueWhenServerLoadAcceptable();
 
+    SetPrimaryFireEnabled(EventPlayer(), true);
+    SetAbility1Enabled(EventPlayer(), true);
+
     SetAbility2Enabled(EventPlayer(), false);
     SetUltimateAbilityEnabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
@@ -21,8 +24,7 @@ Event.OngoingPlayer
 Player.Ashe
 if (IsAlive(EventPlayer()))
 {
-    SetPrimaryFireEnabled(EventPlayer(), true);
-    SetAbility1Enabled(EventPlayer(), true);
+    AllowButton(EventPlayer(), Button.PrimaryFire);
     OnIdle(EventPlayer());
 }
 
@@ -34,53 +36,62 @@ if (!IsAlive(EventPlayer()))
     OffIdle(EventPlayer());
 }
 
-rule: "set counter attack when using shift"
+rule: "set counter attack when using attack"
 Event.OngoingPlayer
 Player.Ashe
-if (IsUsingAbility1(EventPlayer()) || IsFiringPrimary(EventPlayer()))
+if (IsFiringPrimary(EventPlayer()))
 if (IsAlive(EventPlayer()))
 {
     // totally 0.5 sec counter attack time
-    SetInCounterAttack(EventPlayer());
-    SetPrimaryFireEnabled(EventPlayer(), false);
-    Wait(0.2);
-    SetAbility1Enabled(EventPlayer(), false);
-    Wait(0.3);
+    OffIdle(EventPlayer());
+    // SetInCounterAttack(EventPlayer());
+    DisallowButton(EventPlayer(), Button.PrimaryFire);
+    Wait(0.5);
+    AllowButton(EventPlayer(), Button.PrimaryFire);
     SetOffCounterAttack(EventPlayer());
+    OnIdle(EventPlayer());
 }
 
-rule: "enable shift when on the ground and off counter attack"
+define playervar asheCanPush = true;
+
+rule: "reset push variable when landed"
 Event.OngoingPlayer
 Player.Ashe
 if (IsOnGround(EventPlayer()))
-if (!InCounterAttack(EventPlayer()))
 {
-    SetAbility1Enabled(EventPlayer(), true);
-    SetPrimaryFireEnabled(EventPlayer(), true);
+    asheCanPush = true;
 }
 
 rule: "ashe attacking player: add them to counter attack list"
 Event.OnDamageDealt
 if (Attacker() != null)
 if (HeroOf(Attacker()) == Hero.Ashe)
-// if (InCounterAttack(EventPlayer()))
+if (!IsUsingAbility1(EventPlayer()))
 {
     Heal(Victim(), null, EventDamage());
     AddCounterAttackPlayer(Attacker(), Victim());
 }
 
-rule: "ashe can fly when using ability 1 on the air"
+rule: "ashe firing ability 1"
 Event.OngoingPlayer
 Player.Ashe
 if (IsUsingAbility1(EventPlayer()))
 if (IsAlive(EventPlayer()))
-if (IsInAir(EventPlayer()))
 {
+    OffIdle(EventPlayer());
+
     Wait(0.1, WaitBehavior.AbortWhenFalse);
-    define facingDirection = FacingDirectionOf(EventPlayer());
-    // speed will be lower when player pointing at the ground, prevent player from flying too high.
-    define speed = YOf(facingDirection) < -0.7 ? 15 : 20;
-    ApplyImpulse(EventPlayer(), facingDirection * -1, speed, Relative.ToWorld, ContraryMotion.Cancel);
+
+    if (IsInAir(EventPlayer()) && asheCanPush)
+    { // can fly when at air
+        asheCanPush = false;
+        define facingDirection = FacingDirectionOf(EventPlayer());
+        // speed will be lower when player pointing at the ground, prevent player from flying too high.
+        define speed = YOf(facingDirection) < -0.7 ? 15 : 20;
+        ApplyImpulse(EventPlayer(), facingDirection * -1, speed, Relative.ToWorld, ContraryMotion.Cancel);
+    }
+
+    OnIdle(EventPlayer());
 }
 
 rule: "ashe use secondary attack as ability 1"

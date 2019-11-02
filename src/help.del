@@ -98,9 +98,11 @@ Player.Ashe
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), null, null, <"ability 1 / primary_fire + attack -> <0>, kill enemy", Team.Team2>, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, <"primary_fire + enemy attack -> <0>, stun enemy", Team.Team2>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1 / primary_fire -> none damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "primary_fire -> none damage", Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, "ability 1 -> attack", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, "ability 1 + flying -> more speed", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
