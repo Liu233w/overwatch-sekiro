@@ -19,9 +19,6 @@ Player.Doomfist
     SetUltimateAbilityEnabled(EventPlayer(), false);
     SetPrimaryFireEnabled(EventPlayer(), false);
 
-    // enable ability 1 all the time, use in game cd to control
-    SetAbility1Enabled(EventPlayer(), true);
-
     SetDamageDealt(EventPlayer(), 100);
 }
 
@@ -55,6 +52,7 @@ if (stateInitedDoomfist == false)
     OnIdle(EventPlayer());
 
     SetSecondaryFireEnabled(EventPlayer(), true);
+    SetAbility1Enabled(EventPlayer(), true);
     SetAbility2Enabled(EventPlayer(), true);
 
     stateInitedDoomfist = true;
@@ -162,6 +160,15 @@ if (stateInitedDoomfist == false)
     stateInitedDoomfist = true;
 }
 
+rule: "state 41: ability 1 activated"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentStateDoomfist == 41)
+if (stateInitedDoomfist == false)
+{
+    stateInitedDoomfist = true;
+}
+
 // ============== state switching rule =====================
 
 rule: "1 -- crouch button --> 11"
@@ -172,6 +179,7 @@ if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInitedDoomfist == true)
 {
     OffIdle(EventPlayer());
+    SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
     StopHoldingButton(EventPlayer(), Button.SecondaryFire);
@@ -187,8 +195,23 @@ if (IsFiringSecondary(EventPlayer()))
 if (stateInitedDoomfist == true)
 {
     OffIdle(EventPlayer());
+    SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     currentStateDoomfist = 21;
+    stateInitedDoomfist = false;
+}
+
+rule: "1 -- using ability 1 --> 41"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentStateDoomfist == 1)
+if (IsUsingAbility1(EventPlayer()))
+if (stateInitedDoomfist == true)
+{
+    SetAbility2Enabled(EventPlayer(), false);
+    SetSecondaryFireEnabled(EventPlayer(), false);
+    OffIdle(EventPlayer());
+    currentStateDoomfist = 31;
     stateInitedDoomfist = false;
 }
 
@@ -199,6 +222,7 @@ if (currentStateDoomfist == 1)
 if (IsUsingAbility2(EventPlayer()))
 if (stateInitedDoomfist == true)
 {
+    SetAbility1Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
     OffIdle(EventPlayer());
     currentStateDoomfist = 31;
@@ -389,6 +413,17 @@ if (currentStateDoomfist == 32)
 if (stateInitedDoomfist == true)
 {
     Wait(0.5, WaitBehavior.AbortWhenFalse);
+    currentStateDoomfist = 1;
+    stateInitedDoomfist = false;
+}
+
+rule: "41 -- 1 sec --> 1"
+Event.OngoingPlayer
+Player.Doomfist
+if (currentStateDoomfist == 41)
+if (stateInitedDoomfist == true)
+{
+    Wait(1, WaitBehavior.AbortWhenFalse);
     currentStateDoomfist = 1;
     stateInitedDoomfist = false;
 }
