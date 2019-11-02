@@ -14,3 +14,9 @@ Event.OngoingPlayer
     CreateHudText(EventPlayer(), null, null, <"server_load: <0>, server_load_average: <1>, server_load_peak: <2>", 
         ServerLoad(), ServerLoadAverage(), ServerLoadPeak()>, Location.Left, 10);
 }
+
+rule: "show position"
+Event.OngoingPlayer
+{
+    CreateHudText(EventPlayer(), null, null, <"position: <0>", PositionOf(EventPlayer())>, Location.Left, 10);
+}

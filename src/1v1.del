@@ -1,0 +1,188 @@
+define globalvar is1V1Mode = false;
+
+rule: "set current game mode"
+{
+    if (GetMap() == Map.Nepal_Sanctum)
+    {
+        is1V1Mode = true;
+    }
+}
+
+define globalvar matchCircle = Vector(82, 130, 0);
+define globalvar matchCircleRedis = 13;
+
+define globalvar beginCircle1 = Vector(84, 128, -7);
+define globalvar beginCircle2 = Vector(84, 128, 7);
+define globalvar spawnCircle = Vector(50, 130, 0);
+define globalvar changeHeroCircle = Vector(46, 130, 0);
+
+rule: "draw circles"
+if (is1V1Mode)
+{
+    CreateEffect(AllPlayers(), Effect.Ring, Color.Red, matchCircle, matchCircleRedis);
+
+    CreateEffect(AllPlayers(), Effect.Ring, Color.White, beginCircle1, 2);
+    CreateInWorldText(AllPlayers(), "thank_you - start", beginCircle1, 1);
+
+    CreateEffect(AllPlayers(), Effect.Ring, Color.White, beginCircle2, 2);
+    CreateInWorldText(AllPlayers(), "thank_you - start", beginCircle2, 1);
+
+    CreateEffect(AllPlayers(), Effect.Ring, Color.White, changeHeroCircle, 2);
+    CreateInWorldText(AllPlayers(), "thank_you - next_hero", changeHeroCircle, 1);
+}
+
+define globalvar player_slot = [null, null];
+
+macro GameBegin(): player_slot[0] != null && player_slot[1] != null;
+
+rule: "reset slot when player dead"
+Event.OngoingPlayer
+if (is1V1Mode)
+if (GameBegin())
+if (IsDead(EventPlayer()))
+if (ArrayContains(player_slot, EventPlayer()))
+{
+    define alivePlayer = RemoveFromArray(player_slot, EventPlayer())[0];
+    BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+
+    player_slot = [null, null];
+}
+
+rule: "reset living player if player leave"
+Event.OnPlayerLeave
+if (is1V1Mode)
+if (GameBegin())
+if (ArrayContains(player_slot, EventPlayer()))
+{
+    define alivePlayer = RemoveFromArray(player_slot, EventPlayer())[0];
+    BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+
+    player_slot = [null, null];
+}
+
+private method SetPlayer(define player, define slot, define location)
+{
+    if (player_slot[slot] == null)
+    {
+        Teleport(player, location);
+        SetStatus(player, null, Status.KnockedDown, 9999);
+
+        player_slot[slot] = player;
+    }
+    else if (player_slot[slot] == player)
+    {
+        player_slot[slot] = null;
+        ClearStatus(player, Status.KnockedDown);
+    }
+}
+
+rule: "player1 start"
+Event.OngoingPlayer
+if (is1V1Mode)
+if (!GameBegin())
+if (IsCommunicating(EventPlayer(), Communication.Thanks))
+if (DistanceBetween(EventPlayer(), beginCircle1) <= 2)
+{
+    SetPlayer(EventPlayer(), 0, beginCircle1);
+}
+
+rule: "player2 start"
+Event.OngoingPlayer
+if (is1V1Mode)
+if (!GameBegin())
+if (IsCommunicating(EventPlayer(), Communication.Thanks))
+if (DistanceBetween(EventPlayer(), beginCircle2) <= 2)
+{
+    SetPlayer(EventPlayer(), 1, beginCircle2);
+}
+
+rule: "start game hud"
+if (is1V1Mode)
+if (GameBegin())
+{
+    BigMessage(AllPlayers(), "game");
+    Wait(1);
+    BigMessage(AllPlayers(), "start");
+
+    ClearStatus(player_slot[0], Status.KnockedDown);
+    ClearStatus(player_slot[1], Status.KnockedDown);
+}
+
+define playervar ghostAttack = null;
+
+rule: "set respawn status"
+Event.OngoingPlayer
+if (is1V1Mode)
+if (IsAlive(EventPlayer()))
+if (IsGameInProgress())
+if (!GameBegin() || !ArrayContains(player_slot, EventPlayer()))
+{
+    // ClearStatus(EventPlayer(), Status.Burning);
+    Wait(1);
+    SetStatus(EventPlayer(), null, Status.PhasedOut, 9999);
+    if (ghostAttack != null)
+    {
+        StartDamageModification(AllPlayers(), EventPlayer(), 0, ModRev.ReceiversAndDamagers);
+        ghostAttack = LastDamageModificationID();
+    }
+    Teleport(EventPlayer(), spawnCircle);
+    SetStatus(EventPlayer(), null, Status.KnockedDown, 1);
+}
+
+rule: "set in game status"
+Event.OngoingPlayer
+if (is1V1Mode)
+if (IsAlive(EventPlayer()))
+if (GameBegin())
+if (ArrayContains(player_slot, EventPlayer()))
+{
+    ClearStatus(EventPlayer(), Status.PhasedOut);
+    StopDamageModification(ghostAttack);
+    ghostAttack = null;
+}
+
+rule: "when game begin, teleport non-players out of match circle"
+Event.OngoingPlayer
+if (is1V1Mode)
+if (GameBegin())
+if (!ArrayContains(player_slot, EventPlayer()))
+if (DistanceBetween(EventPlayer(), matchCircle) <= matchCircleRedis)
+{
+    Teleport(EventPlayer(), spawnCircle);
+}
+
+// rule: "when game begin, burn player not in the match circle"
+// Event.OngoingPlayer
+// if (is1V1Mode)
+// if (GameBegin())
+// if (ArrayContains(player_slot, EventPlayer()))
+// if (DistanceBetween(EventPlayer(), matchCircle) > matchCircleRedis)
+// {
+//     SetStatus(EventPlayer(), null, Status.Burning);
+// }
+
+// rule: "when game begin, clear burning when in match circle"
+// Event.OngoingPlayer
+// if (is1V1Mode)
+// if (GameBegin())
+// if (ArrayContains(player_slot, EventPlayer()))
+// if (DistanceBetween(EventPlayer(), matchCircle) <= matchCircleRedis)
+// {
+//     Wait(5, WaitBehavior.AbortWhenFalse);
+//     ClearStatus(EventPlayer(), Status.Burning);
+// }
+
+rule: "change hero circle"
+Event.OngoingPlayer
+if (is1V1Mode)
+if (IsCommunicating(EventPlayer(), Communication.Thanks))
+if (DistanceBetween(EventPlayer(), changeHeroCircle) <= 2)
+{
+    ClearStatus(EventPlayer(), Status.Unkillable);
+    ClearStatus(EventPlayer(), Status.PhasedOut);
+    MinWait();
+    Kill(EventPlayer(), null);
+
+    Wait(1);
+    SetPlayerScore(EventPlayer(), ScoreOf(EventPlayer()) + 1);
+}
