@@ -358,6 +358,7 @@ if (currentStateDoomfist == 21)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInitedDoomfist == true)
 {
+    SetSecondaryFireEnabled(EventPlayer(), false);
     currentStateDoomfist = 11;
     stateInitedDoomfist = false;
 }
@@ -391,6 +392,7 @@ if (currentStateDoomfist == 23)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInitedDoomfist == true)
 {
+    SetSecondaryFireEnabled(EventPlayer(), false);
     currentStateDoomfist = 12;
     stateInitedDoomfist = false;
 }
