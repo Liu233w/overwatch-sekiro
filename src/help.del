@@ -78,11 +78,15 @@ Player.Mercy
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), null, null, "attack -> none damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, "attack -> less damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, "secondary_fire -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, <"<0> * <1> -> stun enemy", Team.Team2, 2>, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, <"<0> -> enemy defend = <1>%", Team.Team2, 75>, Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, <"attack defend <0>% enemy -> stun enemy", 75>, Location.Right, 3);
+    helpHud = Append(helpHud, LastTextID());
+    CreateHudText(EventPlayer(), null, null, <"enemy <0> player -> damage more defend", Team.Team2>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, "ultimate_ability -> heal", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
