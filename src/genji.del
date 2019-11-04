@@ -136,6 +136,14 @@ if (currentStateGenji == 23)
 if (stateInitedGenji == false)
 {
     DisallowButton(EventPlayer(), Button.PrimaryFire);
+
+    // set powerUp lower
+    if (genjiPowerUp != 0)
+    {
+        genjiPowerUp -= 40;
+        SetDamageDealt(EventPlayer(), genjiPowerUp);
+    }
+
     stateInitedGenji = true;
 }
 
@@ -357,6 +365,22 @@ if (DeflectSucceedCount(EventPlayer()) > 0)
     SetAbility1Enabled(EventPlayer(), true);
     Wait(2);
     SetAbility1Enabled(EventPlayer(), false);
+}
+
+define playervar genjiPowerUp = 0;
+
+rule: "set power up for 2 seconds after use ability 1"
+Event.OngoingPlayer
+Player.Genji
+if (IsUsingAbility1(EventPlayer()))
+{
+    Wait(0.5);
+    SetAbility1Enabled(EventPlayer(), false);
+    genjiPowerUp = 200; // 200% damage
+    SetDamageDealt(EventPlayer(), genjiPowerUp);
+    Wait(2);
+    genjiPowerUp = 0;
+    SetDamageDealt(EventPlayer(), 100);
 }
 
 // ================= debugging ====================
