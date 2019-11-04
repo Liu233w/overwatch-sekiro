@@ -11,12 +11,7 @@ Player.Ashe
 {
     ContinueWhenServerLoadAcceptable();
 
-    SetPrimaryFireEnabled(EventPlayer(), true);
-    SetAbility1Enabled(EventPlayer(), true);
-
-    SetAbility2Enabled(EventPlayer(), false);
-    SetUltimateAbilityEnabled(EventPlayer(), false);
-    SetSecondaryFireEnabled(EventPlayer(), false);
+    SetDamageDealt(EventPlayer(), 100);
 }
 
 rule: "set idle on alive"
