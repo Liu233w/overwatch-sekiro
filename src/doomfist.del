@@ -34,6 +34,7 @@ rule: "set state to 0 when dead"
 Event.OnDeath
 Player.Doomfist
 {
+    OffIdle(EventPlayer());
     currentStateDoomfist = 0;
     stateInitedDoomfist = false;
 }

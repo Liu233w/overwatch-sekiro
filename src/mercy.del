@@ -123,6 +123,7 @@ rule: "set state to 0 when dead"
 Event.OnDeath
 Player.Mercy
 {
+    OffIdle(EventPlayer());
     currentStateMercy = 0;
     stateInitedMercy = false;
 }
