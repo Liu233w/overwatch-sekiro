@@ -22,13 +22,13 @@ if (is1V1Mode)
     CreateEffect(AllPlayers(), Effect.Ring, Color.Red, matchCircle, matchCircleRedis);
 
     CreateEffect(AllPlayers(), Effect.Ring, Color.White, beginCircle1, 2);
-    CreateInWorldText(AllPlayers(), "thank_you - start", beginCircle1, 1);
+    CreateInWorldText(AllPlayers(), "thanks - start", beginCircle1, 1);
 
     CreateEffect(AllPlayers(), Effect.Ring, Color.White, beginCircle2, 2);
-    CreateInWorldText(AllPlayers(), "thank_you - start", beginCircle2, 1);
+    CreateInWorldText(AllPlayers(), "thanks - start", beginCircle2, 1);
 
     CreateEffect(AllPlayers(), Effect.Ring, Color.White, changeHeroCircle, 2);
-    CreateInWorldText(AllPlayers(), "thank_you - next_hero", changeHeroCircle, 1);
+    CreateInWorldText(AllPlayers(), "thanks - next_hero", changeHeroCircle, 1);
 }
 
 define globalvar player_slot = [null, null];
