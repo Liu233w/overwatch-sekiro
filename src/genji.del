@@ -16,6 +16,9 @@ Player.Genji
 {
     ContinueWhenServerLoadAcceptable();
 
+    SetAbility1Enabled(EventPlayer(), false);
+    SetAbility2Enabled(EventPlayer(), false);
+
     SetDamageDealt(EventPlayer(), 100);
 }
 

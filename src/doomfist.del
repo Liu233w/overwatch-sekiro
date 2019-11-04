@@ -16,6 +16,9 @@ Player.Doomfist
 {
     ContinueWhenServerLoadAcceptable();
 
+    SetUltimateAbilityEnabled(EventPlayer(), false);
+    SetPrimaryFireEnabled(EventPlayer(), false);
+
     SetDamageDealt(EventPlayer(), 100);
 }
 
