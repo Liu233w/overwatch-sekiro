@@ -51,11 +51,13 @@ if (ArrayContains(player_slot, EventPlayer()))
 rule: "reset living player if player leave"
 Event.OnPlayerLeave
 if (is1V1Mode)
-if (GameBegin())
 if (ArrayContains(player_slot, EventPlayer()))
 {
-    define alivePlayer = RemoveFromArray(player_slot, EventPlayer())[0];
-    BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+    if (GameBegin())
+    {
+        define alivePlayer = RemoveFromArray(player_slot, EventPlayer())[0];
+        BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+    }
 
     player_slot = [null, null];
 }
