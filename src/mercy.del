@@ -16,6 +16,8 @@ Player.Mercy
     SetAbility2Enabled(EventPlayer(), false);
     SetUltimateAbilityEnabled(EventPlayer(), true);
     SetPrimaryFireEnabled(EventPlayer(), false);
+
+    SetDamageDealt(EventPlayer(), 50);
 }
 
 rule: "mercy shift cd hud"
