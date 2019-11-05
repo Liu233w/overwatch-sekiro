@@ -5,11 +5,17 @@ rule: "set current game mode"
     if (GetMap() == Map.Nepal_Sanctum)
     {
         is1V1Mode = true;
+        // if not in the player_slot, cannot damage other players
+        StartDamageModification(
+            AllPlayers(), 
+            FilteredArray(AllPlayers(), Not(ArrayContains(player_slot, ArrayElement()))), 
+            0, 
+            ModRev.ReceiversAndDamagers);
     }
 }
 
 define globalvar matchCircle = Vector(82, 130, 0);
-define globalvar matchCircleRedis = 13;
+define globalvar matchCircleRedis = 12;
 
 define globalvar beginCircle1 = Vector(84, 128, -7);
 define globalvar beginCircle2 = Vector(84, 128, 7);
@@ -43,7 +49,16 @@ if (IsDead(EventPlayer()))
 if (ArrayContains(player_slot, EventPlayer()))
 {
     define alivePlayer = RemoveFromArray(player_slot, EventPlayer())[0];
-    BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+    if (Health(alivePlayer) <= 1)
+    {
+        BigMessage(AllPlayers(), "draw");
+        SetPlayerScore(alivePlayer, ScoreOf(alivePlayer) + 1);
+        SetPlayerScore(EventPlayer(), ScoreOf(EventPlayer()) + 1);
+    }
+    else
+    {
+        BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+    }
 
     player_slot = [null, null];
 }
@@ -110,8 +125,6 @@ if (GameBegin())
     ClearStatus(player_slot[1], Status.KnockedDown);
 }
 
-define playervar ghostAttack = null;
-
 rule: "set respawn status"
 Event.OngoingPlayer
 if (is1V1Mode)
@@ -122,11 +135,6 @@ if (!GameBegin() || !ArrayContains(player_slot, EventPlayer()))
     // ClearStatus(EventPlayer(), Status.Burning);
     Wait(1);
     SetStatus(EventPlayer(), null, Status.PhasedOut, 9999);
-    if (ghostAttack != null)
-    {
-        StartDamageModification(AllPlayers(), EventPlayer(), 0, ModRev.ReceiversAndDamagers);
-        ghostAttack = LastDamageModificationID();
-    }
     Teleport(EventPlayer(), spawnCircle);
     SetStatus(EventPlayer(), null, Status.KnockedDown, 1);
 }
@@ -139,8 +147,6 @@ if (GameBegin())
 if (ArrayContains(player_slot, EventPlayer()))
 {
     ClearStatus(EventPlayer(), Status.PhasedOut);
-    StopDamageModification(ghostAttack);
-    ghostAttack = null;
 }
 
 rule: "when game begin, teleport non-players out of match circle"
@@ -151,6 +157,7 @@ if (!ArrayContains(player_slot, EventPlayer()))
 if (DistanceBetween(EventPlayer(), matchCircle) <= matchCircleRedis)
 {
     Teleport(EventPlayer(), spawnCircle);
+    SetStatus(EventPlayer(), null, Status.KnockedDown, 1);
 }
 
 // rule: "when game begin, burn player not in the match circle"
@@ -180,11 +187,7 @@ if (is1V1Mode)
 if (IsCommunicating(EventPlayer(), Communication.Thanks))
 if (DistanceBetween(EventPlayer(), changeHeroCircle) <= 2)
 {
-    ClearStatus(EventPlayer(), Status.Unkillable);
-    ClearStatus(EventPlayer(), Status.PhasedOut);
-    MinWait();
-    Kill(EventPlayer(), null);
-
-    Wait(1);
+    Teleport(EventPlayer(), Vector(0, -128, 0));
+    Wait(5);
     SetPlayerScore(EventPlayer(), ScoreOf(EventPlayer()) + 1);
 }
