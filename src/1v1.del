@@ -97,7 +97,7 @@ rule: "player1 start"
 Event.OngoingPlayer
 if (is1V1Mode)
 if (!GameBegin())
-if (IsCommunicating(EventPlayer(), Communication.Thanks))
+if (IsCommunicating(EventPlayer(), Communication.Thanks) || IsCommunicating(EventPlayer(), Communication.Hello))
 if (DistanceBetween(EventPlayer(), beginCircle1) <= 2)
 {
     SetPlayer(EventPlayer(), 0, beginCircle1);
@@ -107,7 +107,7 @@ rule: "player2 start"
 Event.OngoingPlayer
 if (is1V1Mode)
 if (!GameBegin())
-if (IsCommunicating(EventPlayer(), Communication.Thanks))
+if (IsCommunicating(EventPlayer(), Communication.Thanks) || IsCommunicating(EventPlayer(), Communication.Hello))
 if (DistanceBetween(EventPlayer(), beginCircle2) <= 2)
 {
     SetPlayer(EventPlayer(), 1, beginCircle2);
@@ -184,7 +184,7 @@ if (DistanceBetween(EventPlayer(), matchCircle) <= matchCircleRedis)
 rule: "change hero circle"
 Event.OngoingPlayer
 if (is1V1Mode)
-if (IsCommunicating(EventPlayer(), Communication.Thanks))
+if (IsCommunicating(EventPlayer(), Communication.Thanks) || IsCommunicating(EventPlayer(), Communication.Hello))
 if (DistanceBetween(EventPlayer(), changeHeroCircle) <= 2)
 {
     Teleport(EventPlayer(), Vector(0, -128, 0));
