@@ -25,7 +25,7 @@ Event.OngoingPlayer
 Player.Reinhardt
 if (IsAlive(EventPlayer()))
 {
-    OnIdle(EventPlayer());
+    OnIdle();
 }
 
 rule: "off idle when dead"
@@ -33,7 +33,7 @@ Event.OngoingPlayer
 Player.Reinhardt
 if (!IsAlive(EventPlayer()))
 {
-    OffIdle(EventPlayer());
+    OffIdle();
 }
 
 rule: "deal damage to player nearby when charging"
@@ -81,9 +81,9 @@ Player.Reinhardt
 if (IsUsingAbility2(EventPlayer()))
 {
     // only e ability stop reinhardt restore posture
-    OffIdle(EventPlayer());
+    OffIdle();
 
-    SetAtAbility2State(EventPlayer(), true);
+    SetAtAbility2State(true);
 
     SetPrimaryFireEnabled(EventPlayer(), false);
     SetAbility1Enabled(EventPlayer(), false);
@@ -91,9 +91,9 @@ if (IsUsingAbility2(EventPlayer()))
 
     Wait(3);
 
-    OnIdle(EventPlayer());
+    OnIdle();
 
-    SetAtAbility2State(EventPlayer(), false);
+    SetAtAbility2State(false);
 
     SetPrimaryFireEnabled(EventPlayer(), true);
     SetAbility1Enabled(EventPlayer(), true);

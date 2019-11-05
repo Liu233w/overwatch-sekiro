@@ -127,7 +127,7 @@ rule: "set state to 0 when dead"
 Event.OnDeath
 Player.Mercy
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateMercy = 0;
     stateInitedMercy = false;
 }
@@ -140,7 +140,7 @@ Player.Mercy
 if (currentStateMercy == 1)
 if (stateInitedMercy == false)
 {
-    OnIdle(EventPlayer());
+    OnIdle();
 
     stateInitedMercy = true;
 }
@@ -151,8 +151,8 @@ Player.Mercy
 if (currentStateMercy == 2)
 if (stateInitedMercy == false)
 {
-    OffDeflecting(EventPlayer());
-    OffBlocking(EventPlayer());
+    OffDeflecting();
+    OffBlocking();
     stateInitedMercy = true;
 }
 
@@ -162,7 +162,7 @@ Player.Mercy
 if (currentStateMercy == 11)
 if (stateInitedMercy == false)
 {
-    OnDeflecting(EventPlayer());
+    OnDeflecting();
     stateInitedMercy = true;
 }
 
@@ -172,8 +172,8 @@ Player.Mercy
 if (currentStateMercy == 12)
 if (stateInitedMercy == false)
 {
-    OffDeflecting(EventPlayer());
-    OnBlocking(EventPlayer());
+    OffDeflecting();
+    OnBlocking();
     stateInitedMercy = true;
 }
 
@@ -183,7 +183,7 @@ Player.Mercy
 if (currentStateMercy == 13)
 if (stateInitedMercy == false)
 {
-    OffBlocking(EventPlayer());
+    OffBlocking();
     stateInitedMercy = true;
 }
 
@@ -196,7 +196,7 @@ if (currentStateMercy == 1)
 if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
 if (stateInitedMercy == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateMercy = 11;
     stateInitedMercy = false;
 }
@@ -208,7 +208,7 @@ if (HasStatus(EventPlayer(), Status.Stunned))
 if (IsDeadlyStunned(EventPlayer()))
 if (stateInitedMercy == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateMercy = 2;
     stateInitedMercy = false;
 }

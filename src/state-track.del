@@ -4,29 +4,29 @@ To track the state of hero attack
 
 define playervar ability2State;
 macro AtAbility2State(define player): player.ability2State == true;
-method SetAtAbility2State(define player, define state)
+method SetAtAbility2State(define state)
 {
-    player.ability2State = state;
+    ability2State = state;
 }
 
 define playervar counterAttackingPlayer = null;
-method SetInCounterAttack(define player)
+method SetInCounterAttack()
 {
-    player.counterAttackingPlayer = [];
+    counterAttackingPlayer = [];
 }
-method SetOffCounterAttack(define player)
+method SetOffCounterAttack()
 {
-    player.counterAttackingPlayer = null;
+    counterAttackingPlayer = null;
 }
-method AddCounterAttackPlayer(define player, define target)
+method AddCounterAttackPlayer(define target)
 {
-    if (!InCounterAttack(player))
+    if (!InCounterAttack(EventPlayer()))
     {
-        SetInCounterAttack(player);
+        SetInCounterAttack();
     }
     // prevent from appending multiple times
-    player.counterAttackingPlayer = Append(
-        RemoveFromArray(player.counterAttackingPlayer, target), 
+    counterAttackingPlayer = Append(
+        RemoveFromArray(counterAttackingPlayer, target), 
         target);
 }
 macro InCounterAttack(define player): player.counterAttackingPlayer != null;

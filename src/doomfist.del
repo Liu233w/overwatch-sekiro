@@ -37,7 +37,7 @@ rule: "set state to 0 when dead"
 Event.OnDeath
 Player.Doomfist
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateDoomfist = 0;
     stateInitedDoomfist = false;
 }
@@ -50,7 +50,7 @@ Player.Doomfist
 if (currentStateDoomfist == 1)
 if (stateInitedDoomfist == false)
 {
-    OnIdle(EventPlayer());
+    OnIdle();
 
     SetSecondaryFireEnabled(EventPlayer(), true);
     SetAbility1Enabled(EventPlayer(), true);
@@ -65,8 +65,8 @@ Player.Doomfist
 if (currentStateDoomfist == 2)
 if (stateInitedDoomfist == false)
 {
-    OffDeflecting(EventPlayer());
-    OffBlocking(EventPlayer());
+    OffDeflecting();
+    OffBlocking();
     stateInitedDoomfist = true;
 }
 
@@ -76,7 +76,7 @@ Player.Doomfist
 if (currentStateDoomfist == 11)
 if (stateInitedDoomfist == false)
 {
-    OnDeflecting(EventPlayer());
+    OnDeflecting();
     stateInitedDoomfist = true;
 }
 
@@ -86,8 +86,8 @@ Player.Doomfist
 if (currentStateDoomfist == 12)
 if (stateInitedDoomfist == false)
 {
-    OffDeflecting(EventPlayer());
-    OnBlocking(EventPlayer());
+    OffDeflecting();
+    OnBlocking();
     stateInitedDoomfist = true;
 }
 
@@ -106,7 +106,7 @@ Player.Doomfist
 if (currentStateDoomfist == 14)
 if (stateInitedDoomfist == false)
 {
-    OffBlocking(EventPlayer());
+    OffBlocking();
     stateInitedDoomfist = true;
 }
 
@@ -179,7 +179,7 @@ if (currentStateDoomfist == 1)
 if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInitedDoomfist == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
@@ -195,7 +195,7 @@ if (currentStateDoomfist == 1)
 if (IsFiringSecondary(EventPlayer()))
 if (stateInitedDoomfist == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     SetAbility1Enabled(EventPlayer(), false);
     SetAbility2Enabled(EventPlayer(), false);
     currentStateDoomfist = 21;
@@ -211,7 +211,7 @@ if (stateInitedDoomfist == true)
 {
     SetAbility2Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateDoomfist = 31;
     stateInitedDoomfist = false;
 }
@@ -225,7 +225,7 @@ if (stateInitedDoomfist == true)
 {
     SetAbility1Enabled(EventPlayer(), false);
     SetSecondaryFireEnabled(EventPlayer(), false);
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateDoomfist = 31;
     stateInitedDoomfist = false;
 }
@@ -237,7 +237,7 @@ if (HasStatus(EventPlayer(), Status.Stunned))
 if (IsDeadlyStunned(EventPlayer()))
 if (stateInitedDoomfist == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateDoomfist = 2;
     stateInitedDoomfist = false;
 }

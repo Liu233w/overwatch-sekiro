@@ -21,31 +21,28 @@ macro IsIdle(define player): player.isIdle == true;
 
 macro DeflectSucceedCount(define player): player.deflectingSucceedCount;
 
-define playervar blockingAnimation;
-define playervar blockingSound;
-
-method OnIdle(define player)
+method OnIdle()
 {
-    player.isIdle = true;
+    isIdle = true;
 }
 
-method OffIdle(define player)
+method OffIdle()
 {
-    player.isIdle = false;
+    isIdle = false;
 }
 
-method OnDeflecting(define player)
+method OnDeflecting()
 {
-    player.isDeflecting = true;
-    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Blue, player, 2);
-    PlayEffect(AllPlayers(), PlayEffect.DebuffImpactSound, Color.White, player, 30);
+    isDeflecting = true;
+    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Blue, EventPlayer(), 2);
+    PlayEffect(AllPlayers(), PlayEffect.DebuffImpactSound, Color.White, EventPlayer(), 30);
 
-    player.deflectingSucceedCount = 0;
+    deflectingSucceedCount = 0;
 }
 
-method OffDeflecting(define player)
+method OffDeflecting()
 {
-    player.isDeflecting = false;
+    isDeflecting = false;
 }
 
 method OnSucceedDeflecting(define player)
@@ -53,27 +50,30 @@ method OnSucceedDeflecting(define player)
     player.deflectingSucceedCount += 1;
 }
 
-method OnBlocking(define player)
-{
-    player.isBlocking = true;
 
-    if (player.blockingAnimation != 0)
-    {
-        DestroyEffect(player.blockingAnimation);
-    }
-    CreateEffect(AllPlayers(), Effect.Sphere, Color.SkyBlue, player, 1.5);
-    player.blockingAnimation = LastCreatedEntity();
-    // CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, player, 200);
-    // player.blockingSound = LastCreatedEntity();
+define playervar blockingAnimation = 0;
+define playervar blockingSound;
+
+rule: "create blocking effect"
+Event.OngoingPlayer
+{
+    // change radius instead create and destroy effect
+    CreateEffect(AllPlayers(), Effect.Sphere, Color.SkyBlue, EventPlayer(), blockingAnimation, EffectRev.VisibleToPositionAndRadius);
+    CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, EventPlayer(), blockingSound, EffectRev.VisibleToPositionAndRadius);
 }
 
-method OffBlocking(define player)
+method OnBlocking()
 {
-    player.isBlocking = false;
+    isBlocking = true;
 
-    if (player.blockingAnimation != 0)
-    {
-        DestroyEffect(player.blockingAnimation);
-    }
-    // DestroyEffect(player.blockingSound);
+    blockingAnimation = 1.5;
+    blockingSound = 100;
+}
+
+method OffBlocking()
+{
+    isBlocking = false;
+
+    blockingAnimation = 0;
+    blockingSound = 0;
 }

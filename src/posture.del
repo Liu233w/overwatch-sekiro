@@ -76,13 +76,13 @@ if (!IsIdle(EventPlayer()) && !IsBlocking(EventPlayer()))
     postureRestoringRate = 0;
 }
 
-method ResolvePostureRecoveringRate(define player)
+method ResolvePostureRecoveringRate()
 {
-    if (Health(player) > (4/5 * MaxHealth(player)))
+    if (Health(EventPlayer()) > (4/5 * MaxHealth(EventPlayer())))
     {
         return 25;
     }
-    else if (Health(player) > (2/5 * MaxHealth(player)))
+    else if (Health(EventPlayer()) > (2/5 * MaxHealth(EventPlayer())))
     {
         return 20;
     }
@@ -98,7 +98,7 @@ if (IsIdle(EventPlayer()))
 if (postureRestoringRate == 0)
 {
     Wait(1, WaitBehavior.AbortWhenFalse);
-    postureRestoringRate = ResolvePostureRecoveringRate(EventPlayer());
+    postureRestoringRate = ResolvePostureRecoveringRate();
 }
 
 rule: "recovering posture when at blocking"
@@ -107,7 +107,7 @@ if (IsBlocking(EventPlayer()))
 if (postureRestoringRate == 0)
 {
     Wait(2, WaitBehavior.AbortWhenFalse);
-    postureRestoringRate = ResolvePostureRecoveringRate(EventPlayer()) * 2;
+    postureRestoringRate = ResolvePostureRecoveringRate() * 2;
 }
 
 rule: "pause recovering when hitted"

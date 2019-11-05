@@ -37,7 +37,7 @@ rule: "set state to 0 when dead"
 Event.OnDeath
 Player.Genji
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateGenji = 0;
     stateInitedGenji = false;
 }
@@ -50,7 +50,7 @@ Player.Genji
 if (currentStateGenji == 1)
 if (stateInitedGenji == false)
 {
-    OnIdle(EventPlayer());
+    OnIdle();
     DisallowButton(EventPlayer(), Button.PrimaryFire);
 
     stateInitedGenji = true;
@@ -62,8 +62,8 @@ Player.Genji
 if (currentStateGenji == 2)
 if (stateInitedGenji == false)
 {
-    OffDeflecting(EventPlayer());
-    OffBlocking(EventPlayer());
+    OffDeflecting();
+    OffBlocking();
     DisallowButton(EventPlayer(), Button.PrimaryFire);
     stateInitedGenji = true;
 }
@@ -74,7 +74,7 @@ Player.Genji
 if (currentStateGenji == 11)
 if (stateInitedGenji == false)
 {
-    OnDeflecting(EventPlayer());
+    OnDeflecting();
     stateInitedGenji = true;
 }
 
@@ -84,8 +84,8 @@ Player.Genji
 if (currentStateGenji == 12)
 if (stateInitedGenji == false)
 {
-    OffDeflecting(EventPlayer());
-    OnBlocking(EventPlayer());
+    OffDeflecting();
+    OnBlocking();
     stateInitedGenji = true;
 }
 
@@ -95,7 +95,7 @@ Player.Genji
 if (currentStateGenji == 13)
 if (stateInitedGenji == false)
 {
-    OffBlocking(EventPlayer());
+    OffBlocking();
     stateInitedGenji = true;
 }
 
@@ -158,7 +158,7 @@ if (IsButtonHeld(EventPlayer(), Button.SecondaryFire))
 if (!IsOnWall(EventPlayer()))
 if (stateInitedGenji == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateGenji = 11;
     stateInitedGenji = false;
 }
@@ -170,7 +170,7 @@ if (currentStateGenji == 1)
 if (IsButtonHeld(EventPlayer(), Button.PrimaryFire))
 if (stateInitedGenji == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateGenji = 21;
     stateInitedGenji = false;
 }
@@ -182,7 +182,7 @@ if (HasStatus(EventPlayer(), Status.Stunned))
 if (IsDeadlyStunned(EventPlayer()))
 if (stateInitedGenji == true)
 {
-    OffIdle(EventPlayer());
+    OffIdle();
     currentStateGenji = 2;
     stateInitedGenji = false;
 }

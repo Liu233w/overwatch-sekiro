@@ -27,7 +27,7 @@ Player.Ashe
 if (IsAlive(EventPlayer()))
 {
     AllowButton(EventPlayer(), Button.PrimaryFire);
-    OnIdle(EventPlayer());
+    OnIdle();
 }
 
 rule: "off idle when dead"
@@ -35,7 +35,7 @@ Event.OngoingPlayer
 Player.Ashe
 if (!IsAlive(EventPlayer()))
 {
-    OffIdle(EventPlayer());
+    OffIdle();
 }
 
 rule: "set counter attack when using attack"
@@ -45,13 +45,13 @@ if (IsFiringPrimary(EventPlayer()))
 if (IsAlive(EventPlayer()))
 {
     // totally 0.5 sec counter attack time
-    OffIdle(EventPlayer());
+    OffIdle();
     // SetInCounterAttack(EventPlayer());
     DisallowButton(EventPlayer(), Button.PrimaryFire);
     Wait(0.5);
     AllowButton(EventPlayer(), Button.PrimaryFire);
-    SetOffCounterAttack(EventPlayer());
-    OnIdle(EventPlayer());
+    SetOffCounterAttack();
+    OnIdle();
 }
 
 define playervar asheCanPush = true;
@@ -71,7 +71,7 @@ if (HeroOf(Attacker()) == Hero.Ashe)
 if (!IsUsingAbility1(EventPlayer()))
 {
     Heal(Victim(), null, EventDamage());
-    AddCounterAttackPlayer(Attacker(), Victim());
+    AddCounterAttackPlayer(Victim());
 }
 
 rule: "ashe firing ability 1"
@@ -80,7 +80,7 @@ Player.Ashe
 if (IsUsingAbility1(EventPlayer()))
 if (IsAlive(EventPlayer()))
 {
-    OffIdle(EventPlayer());
+    OffIdle();
 
     Wait(0.1, WaitBehavior.AbortWhenFalse);
 
@@ -93,7 +93,7 @@ if (IsAlive(EventPlayer()))
         ApplyImpulse(EventPlayer(), facingDirection * -1, speed, Relative.ToWorld, ContraryMotion.Cancel);
     }
 
-    OnIdle(EventPlayer());
+    OnIdle();
 }
 
 rule: "ashe use secondary attack as ability 1"
