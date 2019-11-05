@@ -59,7 +59,7 @@ Event.OngoingPlayer
 {
     // change radius instead create and destroy effect
     CreateEffect(AllPlayers(), Effect.Sphere, Color.SkyBlue, EventPlayer(), blockingAnimation, EffectRev.VisibleToPositionAndRadius);
-    CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, EventPlayer(), blockingSound, EffectRev.VisibleToPositionAndRadius);
+    // CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, EventPlayer(), blockingSound, EffectRev.VisibleToPositionAndRadius);
 }
 
 method OnBlocking()
@@ -67,7 +67,7 @@ method OnBlocking()
     isBlocking = true;
 
     blockingAnimation = 1.5;
-    blockingSound = 100;
+    // blockingSound = 100;
 }
 
 method OffBlocking()
@@ -75,5 +75,5 @@ method OffBlocking()
     isBlocking = false;
 
     blockingAnimation = 0;
-    blockingSound = 0;
+    // blockingSound = 0;
 }
