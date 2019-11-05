@@ -58,7 +58,8 @@ if (ArrayContains(player_slot, EventPlayer()))
         BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
     }
 
-    player_slot = [null, null];
+    player_slot[0] = null;
+    player_slot[1] = null;
 }
 
 rule: "reset living player if player leave"
@@ -72,7 +73,8 @@ if (ArrayContains(player_slot, EventPlayer()))
         BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
     }
 
-    player_slot = [null, null];
+    player_slot[0] = null;
+    player_slot[1] = null;
 }
 
 private method SetPlayer(define player, define slot, define location)

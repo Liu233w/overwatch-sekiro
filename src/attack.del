@@ -6,27 +6,13 @@ import "block.del";
 import "posture.del";
 import "state-track.del";
 
-struct AttackingEvent
-{
-    public define victim;
-
-    public define directDamage;
-
-    // TODO: let each kind of attacking have their own posture damage
-    // can be achieved by adding a multiplier (* the multiplier when hitted in blocking)
-
-    public define extraPostureDamageWhenDirectlyHitted = 0;
-    public define extraPostureDamageWhenDeflected = 0;
-
-    public AttackingEvent(define victim, define damage)
-    {
-        this.victim = victim;
-        this.directDamage = damage;
-    }
-}
-
-AttackingEvent playervar attacking T = [];
-define playervar attackingListSize S = 0;
+// to prevent from frequently allocating and destroying arrays
+// which can lead to performance issues
+define playervar attackingVictimList = [];
+define playervar attackingDirectDamageList = [];
+define playervar attackingHittedPostureList = [];
+define playervar attackingDeflectedPostureList = [];
+define playervar attackingListSize = 0;
 
 rule: "add victim to list after attacking, if the victim is not blocking"
 Event.OnDamageDealt
@@ -54,9 +40,11 @@ if (HeroOf(Attacker()) != Hero.Ashe || IsUsingAbility1(Attacker()))
     {
         // reinhardt's ability 2: deal no damage, but 200 posture when hitted.
         Heal(Victim(), null, EventDamage());
-        AttackingEvent e = new AttackingEvent(Victim(), 0);
-        e.extraPostureDamageWhenDirectlyHitted = 200;
-        attacking[attackingListSize] = e;
+
+        attackingVictimList[attackingListSize] = Victim();
+        attackingDirectDamageList[attackingListSize] = 0;
+        attackingHittedPostureList[attackingListSize] = 200;
+        attackingDeflectedPostureList[attackingListSize] = 0;
         attackingListSize += 1;
     }
     else if (HeroOf(Attacker()) == Hero.Reinhardt && IsUsingAbility1(Attacker()))
@@ -64,10 +52,11 @@ if (HeroOf(Attacker()) != Hero.Ashe || IsUsingAbility1(Attacker()))
         // reinhardt's ability 1: deal no damage, but 200 posture when hitted.
         // if deflected, gain 200 posture damage
         Heal(Victim(), null, EventDamage());
-        AttackingEvent e = new AttackingEvent(Victim(), 0);
-        e.extraPostureDamageWhenDirectlyHitted = 200;
-        e.extraPostureDamageWhenDeflected = 200;
-        attacking[attackingListSize] = e;
+
+        attackingVictimList[attackingListSize] = Victim();
+        attackingDirectDamageList[attackingListSize] = 0;
+        attackingHittedPostureList[attackingListSize] = 200;
+        attackingDeflectedPostureList[attackingListSize] = 200;
         attackingListSize += 1;
 
         // stop reinhardt
@@ -75,43 +64,54 @@ if (HeroOf(Attacker()) != Hero.Ashe || IsUsingAbility1(Attacker()))
     }
     else if (HeroOf(Attacker()) == Hero.Mercy)
     {
-        AttackingEvent e = new AttackingEvent(Victim(), EventDamage());
+        attackingVictimList[attackingListSize] = Victim();
+        attackingDirectDamageList[attackingListSize] = EventDamage();
         // mercy deal extra 50 posture damage if victim's posture reaches 150
         if (Posture(Victim()) >= 150)
         {
-            e.extraPostureDamageWhenDirectlyHitted = 50 - EventDamage();
+            attackingHittedPostureList[attackingListSize] = 50 - EventDamage();
+        }
+        else
+        {
+            attackingHittedPostureList[attackingListSize] = 0;
         }
         // mercy receive 150 posture damage if deflected
-        e.extraPostureDamageWhenDeflected = 150 - EventDamage();
-
-        attacking[attackingListSize] = e;
+        attackingDeflectedPostureList[attackingListSize] = 150 - EventDamage();
         attackingListSize += 1;
     }
     else if (HeroOf(Victim()) == Hero.Mercy)
     {
-        AttackingEvent e = new AttackingEvent(Victim(), EventDamage());
+        attackingVictimList[attackingListSize] = Victim();
+        attackingDirectDamageList[attackingListSize] = EventDamage();
+        attackingHittedPostureList[attackingListSize] = 0;
         // mercy will set attacker's posture to 150 if it's not reached 150
         if (Posture(Victim()) < 150)
         {
-            e.extraPostureDamageWhenDeflected = 150 - Posture(Victim()) - EventDamage();
+            attackingDeflectedPostureList[attackingListSize] = 150 - Posture(Victim()) - EventDamage();
         }
         else
         {
-            e.extraPostureDamageWhenDeflected = -EventDamage();
+            attackingDeflectedPostureList[attackingListSize] = -EventDamage();
         }
-        attacking[attackingListSize] = e;
         attackingListSize += 1;
     }
     else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
     {
         // doomfist's ability 2: deal 1/2 damage
         Heal(Victim(), null, EventDamage() / 2);
-        attacking[attackingListSize] = new AttackingEvent(Victim(), EventDamage() / 2);
+
+        attackingVictimList[attackingListSize] = Victim();
+        attackingDirectDamageList[attackingListSize] = EventDamage() / 2;
+        attackingHittedPostureList[attackingListSize] = 0;
+        attackingDeflectedPostureList[attackingListSize] = 0;
         attackingListSize += 1;
     }
     else
     {
-        attacking[attackingListSize] = new AttackingEvent(Victim(), EventDamage());
+        attackingVictimList[attackingListSize] = Victim();
+        attackingDirectDamageList[attackingListSize] = EventDamage();
+        attackingHittedPostureList[attackingListSize] = 0;
+        attackingDeflectedPostureList[attackingListSize] = 0;
         attackingListSize += 1;
     }
 }
@@ -238,38 +238,32 @@ if (attackingListSize > 0)
         Wait(0.1, WaitBehavior.AbortWhenFalse);
     }
 
-    // use another variable to prevent add new element while loop on old elements
-    define attackingList = attacking;
-    attacking = [];
-    attackingListSize = 0;
-
-    foreach (AttackingEvent e in attackingList)
+    for (define i = 0; i < attackingListSize; i++)
     {
-        if (InCounterAttack(e.victim) && IsCounterAttacked(e.victim, EventPlayer()))
+        if (InCounterAttack(attackingVictimList[i]) && IsCounterAttacked(attackingVictimList[i], EventPlayer()))
         {
-
-            SetPosture(e.victim, 0);
-            Heal(e.victim, null, 150 + e.directDamage);
+            SetPosture(attackingVictimList[i], 0);
+            Heal(attackingVictimList[i], null, 150 + attackingDirectDamageList[i]);
             // that can stun the attacker
-            GainPosture(EventPlayer(), 300, e.victim);
+            GainPosture(EventPlayer(), 300, attackingVictimList[i]);
         }
-        else if (IsDeflecting(e.victim) || IsBlocking(e.victim))
+        else if (IsDeflecting(attackingVictimList[i]) || IsBlocking(attackingVictimList[i]))
         {
             // deflecting
-            Heal(e.victim, null, e.directDamage);
-            GainPosture(EventPlayer(), e.directDamage + e.extraPostureDamageWhenDeflected, e.victim);
-            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
-            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
-            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
-            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, e.victim, 100);
+            Heal(attackingVictimList[i], null, attackingDirectDamageList[i]);
+            GainPosture(EventPlayer(), attackingDirectDamageList[i] + attackingDeflectedPostureList[i], attackingVictimList[i]);
+            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, attackingVictimList[i], 100);
+            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, attackingVictimList[i], 100);
+            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, attackingVictimList[i], 100);
+            PlayEffect(AllPlayers(), PlayEffect.ExplosionSound, Color.White, attackingVictimList[i], 100);
 
-            OnSucceedDeflecting(e.victim);
+            OnSucceedDeflecting(attackingVictimList[i]);
         }
         else
         {
-            GainPosture(e.victim, e.directDamage + e.extraPostureDamageWhenDirectlyHitted, EventPlayer());
+            GainPosture(attackingVictimList[i], attackingDirectDamageList[i] + attackingHittedPostureList[i], EventPlayer());
         }
     }
 
-    Loop();
+    attackingListSize = 0;
 }
