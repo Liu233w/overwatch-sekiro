@@ -162,7 +162,7 @@ if (Health(EventPlayer()) == 1)
 if (IsAlive(EventPlayer()))
 {
     Wait(2.5, WaitBehavior.AbortWhenFalse);
-    Kill(EventPlayer(), null);
+    Kill(EventPlayer(), lastPostureAttacker);
 }
 
 rule: "stun player 2 seconds when posture is filled"

@@ -52,8 +52,6 @@ if (ArrayContains(player_slot, EventPlayer()))
     if (Health(alivePlayer) <= 1)
     {
         BigMessage(AllPlayers(), "draw");
-        SetPlayerScore(alivePlayer, ScoreOf(alivePlayer) + 1);
-        SetPlayerScore(EventPlayer(), ScoreOf(EventPlayer()) + 1);
     }
     else
     {
