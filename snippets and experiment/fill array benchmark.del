@@ -1,0 +1,32 @@
+// workload can be 255 after 15 minutes
+
+rule: "show server workload"
+Event.OngoingPlayer
+{
+    CreateHudText(EventPlayer(), null, null, <"server_load: <0>, server_load_average: <1>, server_load_peak: <2>", 
+        ServerLoad(), ServerLoadAverage(), ServerLoadPeak()>, Location.Left, 10);
+}
+
+define playervar arr = [];
+
+rule: "fill array"
+Event.OngoingPlayer
+{
+    for (define i = 0; i < 12; i++)
+    {
+        arr[i] = [i, i*10, 0, 0];
+    }
+
+    Wait(0.2);
+
+    arr = [];
+    Loop();
+}
+
+rule: "play effect"
+Event.OngoingPlayer
+{
+    Wait(RandomReal(3, 10));
+    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Yellow, EventPlayer(), 1.5);
+    Loop();
+}
