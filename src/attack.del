@@ -35,14 +35,7 @@ if (!IsDeadlyStunned(Victim()))
 if (!IsBlocking(Victim()) && !IsDeflecting(Victim()))
 if (HeroOf(Attacker()) != Hero.Ashe || IsUsingAbility1(Attacker()))
 {
-    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
-    {
-        // doomfist's ability 2: deal 1/2 damage
-        Heal(Victim(), null, EventDamage() / 2);
-        attacking[attackingListSize] = new AttackingEvent(Victim(), EventDamage() / 2);
-        attackingListSize += 1;
-    }
-    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
+    if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility1(Attacker()))
     {
         // doomfist's ability 1: deal no damage
         Heal(Victim(), null, EventDamage());
@@ -98,11 +91,22 @@ if (HeroOf(Attacker()) != Hero.Ashe || IsUsingAbility1(Attacker()))
     {
         AttackingEvent e = new AttackingEvent(Victim(), EventDamage());
         // mercy will set attacker's posture to 150 if it's not reached 150
-        if (Posture(Victim()) + EventDamage() < 150)
+        if (Posture(Victim()) < 150)
         {
             e.extraPostureDamageWhenDeflected = 150 - Posture(Victim()) - EventDamage();
         }
+        else
+        {
+            e.extraPostureDamageWhenDeflected = -EventDamage();
+        }
         attacking[attackingListSize] = e;
+        attackingListSize += 1;
+    }
+    else if (HeroOf(Attacker()) == Hero.Doomfist && IsUsingAbility2(Attacker()))
+    {
+        // doomfist's ability 2: deal 1/2 damage
+        Heal(Victim(), null, EventDamage() / 2);
+        attacking[attackingListSize] = new AttackingEvent(Victim(), EventDamage() / 2);
         attackingListSize += 1;
     }
     else
