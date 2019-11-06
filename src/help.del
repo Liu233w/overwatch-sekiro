@@ -4,10 +4,10 @@ Event.OngoingPlayer
     // set Team1 = Press L, right click map to see instruction
     // set Team2 = Deflect
     CreateHudText(EventPlayer(), Team.Team1, null, null, Location.Right, 0);
-    CreateHudText(EventPlayer(), null, null, "---------- help ----------", Location.Right, 1);
+    CreateHudText(EventPlayer(), null, null, @"---------- help ----------", Location.Right, 1);
     CreateHudText(EventPlayer(), null, null, <"start defend + enemy attack -> <0>", Team.Team2>, Location.Right, 2);
     CreateHudText(EventPlayer(), null, null, <"defend <0>% -> stun", 100>, Location.Right, 2);
-    CreateHudText(EventPlayer(), null, null, "stun + attack -> die", Location.Right, 2);
+    CreateHudText(EventPlayer(), null, null, @"stun + attack -> die", Location.Right, 2);
 }
 
 define playervar helpHud = [];
@@ -22,13 +22,13 @@ Player.Doomfist
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), null, null, "interact and crouch -> defend", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"interact and crouch -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "secondary_fire -> attack", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"secondary_fire -> attack", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1 -> none damage, damage flying enemy more", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"ability 1 -> none damage, damage flying enemy more", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 2 -> stop enemy defend, less damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"ability 2 -> stop enemy defend, less damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
 
@@ -42,11 +42,11 @@ Player.Genji
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), null, null, "secondary_fire -> defend", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"secondary_fire -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, <"success <0> -> unlock ability 1", Team.Team2>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1 -> faster, none damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"ability 1 -> faster, none damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
 
@@ -60,11 +60,11 @@ Player.Reinhardt
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), null, null, "start use_ability 1 -> start chase", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"start use_ability 1 -> start chase", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "stop use_ability 1 -> stop chase", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"stop use_ability 1 -> stop chase", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1, ability 2 -> stun none defend enemy", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"ability 1, ability 2 -> stun none defend enemy", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
 
@@ -78,9 +78,9 @@ Player.Mercy
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), null, null, "attack -> less damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"attack -> less damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "secondary_fire -> defend", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"secondary_fire -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, <"<0> -> enemy defend = <1>%", Team.Team2, 75>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
@@ -88,7 +88,7 @@ Player.Mercy
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, <"enemy <0> player -> damage more defend", Team.Team2>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ultimate_ability -> heal", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"ultimate_ability -> heal", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }
 
@@ -104,12 +104,12 @@ Player.Ashe
 
     CreateHudText(EventPlayer(), null, null, <"primary_fire + enemy attack -> <0>, stun enemy", Team.Team2>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "primary_fire -> none damage", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"primary_fire -> none damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1 -> attack", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"ability 1 -> attack", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "ability 1 + flying -> more speed", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"ability 1 + flying -> more speed", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, "secondary_fire -> ability 1", Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, @"secondary_fire -> ability 1", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
 }

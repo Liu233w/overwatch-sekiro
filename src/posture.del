@@ -24,7 +24,7 @@ import "settings.del";
 
 // ================= posture gaining ========================
 
-define playervar posture P = 0;
+define playervar posture = 0;
 define playervar lastPostureAttacker; // the last enemy who deal posture damage to certain player
 
 rule: "set posture to 0 when spawned"
@@ -51,7 +51,7 @@ method SetPosture(define player, define number)
 
 // ================== posture restoring =======================
 
-define playervar postureRestoringRate R = 0;
+define playervar postureRestoringRate = 0;
 
 rule: "manually chase posture variable rest-ore"
 {

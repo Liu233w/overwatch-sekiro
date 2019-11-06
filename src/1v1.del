@@ -2,7 +2,7 @@ define globalvar is1V1Mode = false;
 
 rule: "set current game mode"
 {
-    if (GetMap() == Map.Nepal_Sanctum)
+    if (CurrentMap() == Map.Nepal_Sanctum)
     {
         is1V1Mode = true;
         // if not in the player_slot, cannot damage other players
@@ -28,13 +28,13 @@ if (is1V1Mode)
     CreateEffect(AllPlayers(), Effect.Ring, Color.Red, matchCircle, matchCircleRedis);
 
     CreateEffect(AllPlayers(), Effect.Ring, Color.White, beginCircle1, 2);
-    CreateInWorldText(AllPlayers(), "thanks - start", beginCircle1, 1);
+    CreateInWorldText(AllPlayers(), @"thanks - start", beginCircle1, 1);
 
     CreateEffect(AllPlayers(), Effect.Ring, Color.White, beginCircle2, 2);
-    CreateInWorldText(AllPlayers(), "thanks - start", beginCircle2, 1);
+    CreateInWorldText(AllPlayers(), @"thanks - start", beginCircle2, 1);
 
     CreateEffect(AllPlayers(), Effect.Ring, Color.White, changeHeroCircle, 2);
-    CreateInWorldText(AllPlayers(), "thanks - next_hero", changeHeroCircle, 1);
+    CreateInWorldText(AllPlayers(), @"thanks - next_hero", changeHeroCircle, 1);
 }
 
 define globalvar player_slot = [null, null];
@@ -51,7 +51,7 @@ if (ArrayContains(player_slot, EventPlayer()))
     define alivePlayer = RemoveFromArray(player_slot, EventPlayer())[0];
     if (Health(alivePlayer) <= 1)
     {
-        BigMessage(AllPlayers(), "draw");
+        BigMessage(AllPlayers(), @"draw");
     }
     else
     {
@@ -117,9 +117,9 @@ rule: "start game hud"
 if (is1V1Mode)
 if (GameBegin())
 {
-    BigMessage(AllPlayers(), "game");
+    BigMessage(AllPlayers(), @"game");
     Wait(1);
-    BigMessage(AllPlayers(), "start");
+    BigMessage(AllPlayers(), @"start");
 
     ClearStatus(player_slot[0], Status.KnockedDown);
     ClearStatus(player_slot[1], Status.KnockedDown);
