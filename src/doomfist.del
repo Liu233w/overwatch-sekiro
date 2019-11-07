@@ -20,6 +20,12 @@ Player.Doomfist
     SetPrimaryFireEnabled(EventPlayer(), false);
 
     SetDamageDealt(EventPlayer(), 100);
+
+    ContinueWhenServerLoadAcceptable();
+
+    SetSecondaryFireEnabled(EventPlayer(), true);
+    SetAbility1Enabled(EventPlayer(), true);
+    SetAbility2Enabled(EventPlayer(), true);
 }
 
 rule: "set state to 1 when spawned"
@@ -51,11 +57,6 @@ if (currentStateDoomfist == 1)
 if (stateInitedDoomfist == false)
 {
     OnIdle();
-
-    SetSecondaryFireEnabled(EventPlayer(), true);
-    SetAbility1Enabled(EventPlayer(), true);
-    SetAbility2Enabled(EventPlayer(), true);
-
     stateInitedDoomfist = true;
 }
 
@@ -110,65 +111,16 @@ if (stateInitedDoomfist == false)
     stateInitedDoomfist = true;
 }
 
-rule: "state 21: fist charging"
+rule: "state 20: attacking"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentStateDoomfist == 21)
+if (currentStateDoomfist == 20)
 if (stateInitedDoomfist == false)
 {
-    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Yellow, EventPlayer(), 2);
-    StartHoldingButton(EventPlayer(), Button.SecondaryFire);
+    OffBlocking();
     stateInitedDoomfist = true;
 }
 
-rule: "state 22: fist releasing"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 22)
-if (stateInitedDoomfist == false)
-{
-    StopHoldingButton(EventPlayer(), Button.SecondaryFire);
-    stateInitedDoomfist = true;
-}
-
-rule: "state 23: fist cooling down"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 23)
-if (stateInitedDoomfist == false)
-{
-    SetSecondaryFireEnabled(EventPlayer(), false);
-    StopHoldingButton(EventPlayer(), Button.SecondaryFire);
-    stateInitedDoomfist = true;
-}
-
-rule: "state 31: activating ability 2"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 31)
-if (stateInitedDoomfist == false)
-{
-    stateInitedDoomfist = true;
-}
-
-rule: "state 32: ability 2 cooling down"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 32)
-if (stateInitedDoomfist == false)
-{
-    SetAbility2Enabled(EventPlayer(), false);
-    stateInitedDoomfist = true;
-}
-
-rule: "state 41: ability 1 activated"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 41)
-if (stateInitedDoomfist == false)
-{
-    stateInitedDoomfist = true;
-}
 
 // ============== state switching rule =====================
 
@@ -180,53 +132,17 @@ if (IsButtonHeld(EventPlayer(), Button.Crouch))
 if (stateInitedDoomfist == true)
 {
     OffIdle();
-    SetAbility1Enabled(EventPlayer(), false);
-    SetAbility2Enabled(EventPlayer(), false);
-    SetSecondaryFireEnabled(EventPlayer(), false);
-    StopHoldingButton(EventPlayer(), Button.SecondaryFire);
     currentStateDoomfist = 11;
     stateInitedDoomfist = false;
 }
 
-rule: "1 -- secondary fire --> 21"
+rule: "any state -- use any ability --> 20"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentStateDoomfist == 1)
-if (IsFiringSecondary(EventPlayer()))
+if (IsFiringSecondary(EventPlayer()) || IsUsingAbility1(EventPlayer()) || IsUsingAbility2(EventPlayer()))
 if (stateInitedDoomfist == true)
 {
-    OffIdle();
-    SetAbility1Enabled(EventPlayer(), false);
-    SetAbility2Enabled(EventPlayer(), false);
-    currentStateDoomfist = 21;
-    stateInitedDoomfist = false;
-}
-
-rule: "1 -- using ability 1 --> 41"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 1)
-if (IsUsingAbility1(EventPlayer()))
-if (stateInitedDoomfist == true)
-{
-    SetAbility2Enabled(EventPlayer(), false);
-    SetSecondaryFireEnabled(EventPlayer(), false);
-    OffIdle();
-    currentStateDoomfist = 31;
-    stateInitedDoomfist = false;
-}
-
-rule: "1 -- using ability 2 --> 31"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 1)
-if (IsUsingAbility2(EventPlayer()))
-if (stateInitedDoomfist == true)
-{
-    SetAbility1Enabled(EventPlayer(), false);
-    SetSecondaryFireEnabled(EventPlayer(), false);
-    OffIdle();
-    currentStateDoomfist = 31;
+    currentStateDoomfist = 20;
     stateInitedDoomfist = false;
 }
 
@@ -319,119 +235,20 @@ if (stateInitedDoomfist == true)
     stateInitedDoomfist = false;
 }
 
-rule: "21 -- 0.2 sec --> 22"
+rule: "20 -- stop use any ability --> 1"
 Event.OngoingPlayer
 Player.Doomfist
-if (currentStateDoomfist == 21)
-if (stateInitedDoomfist == true)
-{
-    Wait(0.2, WaitBehavior.AbortWhenFalse);
-    currentStateDoomfist = 22;
-    stateInitedDoomfist = false;
-}
-
-rule: "21 -- release secondary fire --> 23"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 21)
-if (!IsButtonHeld(EventPlayer(), Button.SecondaryFire))
-if (stateInitedDoomfist == true)
-{
-    currentStateDoomfist = 23;
-    stateInitedDoomfist = false;
-}
-
-rule: "21 -- left button --> 23"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 21)
-if (IsButtonHeld(EventPlayer(), Button.PrimaryFire))
-if (stateInitedDoomfist == true)
-{
-    currentStateDoomfist = 23;
-    stateInitedDoomfist = false;
-}
-
-rule: "21 -- crouch button --> 11"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 21)
-if (IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInitedDoomfist == true)
-{
-    SetSecondaryFireEnabled(EventPlayer(), false);
-    currentStateDoomfist = 11;
-    stateInitedDoomfist = false;
-}
-
-rule: "22 -- 0.3 sec --> 23"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 22)
-if (stateInitedDoomfist == true)
-{
-    Wait(0.3, WaitBehavior.AbortWhenFalse);
-    currentStateDoomfist = 23;
-    stateInitedDoomfist = false;
-}
-
-rule: "23 -- 0.5 sec --> 1"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 23)
-if (stateInitedDoomfist == true)
-{
-    Wait(0.5, WaitBehavior.AbortWhenFalse);
-    currentStateDoomfist = 1;
-    stateInitedDoomfist = false;
-}
-
-rule: "23 -- crouch button --> 12"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 23)
-if (IsButtonHeld(EventPlayer(), Button.Crouch))
-if (stateInitedDoomfist == true)
-{
-    SetSecondaryFireEnabled(EventPlayer(), false);
-    currentStateDoomfist = 12;
-    stateInitedDoomfist = false;
-}
-
-rule: "31 -- finish ability 2 --> 32"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 31)
+if (currentStateDoomfist == 20)
+if (!IsFiringSecondary(EventPlayer()))
+if (!IsUsingAbility1(EventPlayer()))
 if (!IsUsingAbility2(EventPlayer()))
 if (stateInitedDoomfist == true)
 {
-    currentStateDoomfist = 32;
-    stateInitedDoomfist = false;
-}
-
-rule: "32 -- 0.3 sec --> 1"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 32)
-if (stateInitedDoomfist == true)
-{
-    Wait(0.5, WaitBehavior.AbortWhenFalse);
     currentStateDoomfist = 1;
     stateInitedDoomfist = false;
 }
 
-rule: "41 -- 1 sec --> 1"
-Event.OngoingPlayer
-Player.Doomfist
-if (currentStateDoomfist == 41)
-if (stateInitedDoomfist == true)
-{
-    Wait(1, WaitBehavior.AbortWhenFalse);
-    currentStateDoomfist = 1;
-    stateInitedDoomfist = false;
-}
-
-// =============== interact as crouch =======================
+// =============== other rules =======================
 rule: "interact to crouch"
 Event.OngoingPlayer
 Player.Doomfist
@@ -446,6 +263,14 @@ Player.Doomfist
 if (!IsButtonHeld(EventPlayer(), Button.Interact))
 {
     StopHoldingButton(EventPlayer(), Button.Crouch);
+}
+
+rule: "show yellow flash when charging secondary fire"
+Event.OngoingPlayer
+Player.Doomfist
+if (IsFiringSecondary(EventPlayer()))
+{
+    PlayEffect(AllPlayers(), PlayEffect.GoodExplosion, Color.Yellow, EventPlayer(), 2);
 }
 
 // ================= debugging ====================
