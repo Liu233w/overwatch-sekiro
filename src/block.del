@@ -52,14 +52,20 @@ method OnSucceedDeflecting(define player)
 
 
 define playervar blockingAnimation = 0;
-define playervar blockingSound;
+define playervar blockingEffect;
 
 rule: "create blocking effect"
 Event.OngoingPlayer
 {
     // change radius instead create and destroy effect
     CreateEffect(AllPlayers(), Effect.Sphere, Color.SkyBlue, EventPlayer(), blockingAnimation, EffectRev.VisibleToPositionAndRadius);
-    // CreateEffect(AllPlayers(), Effect.SparklesSound, Color.White, EventPlayer(), blockingSound, EffectRev.VisibleToPositionAndRadius);
+    blockingEffect = LastCreatedEntity();
+}
+
+rule: "destroy effect when leave"
+Event.OnPlayerLeave
+{
+    DestroyEffect(blockingEffect);
 }
 
 method OnBlocking()
@@ -67,7 +73,6 @@ method OnBlocking()
     isBlocking = true;
 
     blockingAnimation = 1.5;
-    // blockingSound = 100;
 }
 
 method OffBlocking()
@@ -75,5 +80,4 @@ method OffBlocking()
     isBlocking = false;
 
     blockingAnimation = 0;
-    // blockingSound = 0;
 }
