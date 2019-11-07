@@ -1,0 +1,8 @@
+// custom string; use your own language to change in game string
+
+// "Deflect"
+macro string_deflect(): "招架（弹反）";
+
+// will be shown in the top-right of the screen
+// "Press L, right click map to see instruction"
+macro string_message(): "按L，右键点地图看说明";
