@@ -395,7 +395,7 @@ if (IsDebugging())
 {
     if (debugHudGenji == 0)
     {
-        CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentStateGenji, stateInitedGenji>);
+        CreateHudText(EventPlayer(), <@"status: <0> - initial: <1>", currentStateGenji, stateInitedGenji>);
         debugHudGenji = LastTextID();
     }
 }

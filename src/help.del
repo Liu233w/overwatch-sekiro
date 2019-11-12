@@ -5,8 +5,8 @@ Event.OngoingPlayer
 {
     CreateHudText(EventPlayer(), string_message(), null, null, Location.Right, 0);
     CreateHudText(EventPlayer(), null, null, @"---------- help ----------", Location.Right, 1);
-    CreateHudText(EventPlayer(), null, null, <"start defend + enemy attack -> <0>", string_deflect()>, Location.Right, 2);
-    CreateHudText(EventPlayer(), null, null, <"defend <0>% -> stun", 100>, Location.Right, 2);
+    CreateHudText(EventPlayer(), null, null, <@"start defend + enemy attack -> <0>", string_deflect()>, Location.Right, 2);
+    CreateHudText(EventPlayer(), null, null, <@"defend <0>% -> stun", 100>, Location.Right, 2);
     CreateHudText(EventPlayer(), null, null, @"stun + attack -> die", Location.Right, 2);
 }
 
@@ -44,7 +44,7 @@ Player.Genji
 
     CreateHudText(EventPlayer(), null, null, @"secondary_fire -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, <"success <0> -> unlock ability 1", string_deflect()>, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, <@"success <0> -> unlock ability 1", string_deflect()>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, @"ability 1 -> faster, none damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
@@ -82,11 +82,11 @@ Player.Mercy
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, @"secondary_fire -> defend", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, <"<0> -> enemy defend = <1>%", string_deflect(), 75>, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, <@"<0> -> enemy defend = <1>%", string_deflect(), 75>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, <"attack defend <0>% enemy -> stun enemy", 75>, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, <@"attack defend <0>% enemy -> stun enemy", 75>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
-    CreateHudText(EventPlayer(), null, null, <"enemy <0> player -> damage more defend", string_deflect()>, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, <@"enemy <0> player -> damage more defend", string_deflect()>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, @"ultimate_ability -> heal", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
@@ -102,7 +102,7 @@ Player.Ashe
     }
     helpHud = [];
 
-    CreateHudText(EventPlayer(), null, null, <"primary_fire + enemy attack -> <0>, stun enemy", string_deflect()>, Location.Right, 3);
+    CreateHudText(EventPlayer(), null, null, <@"primary_fire + enemy attack -> <0>, stun enemy", string_deflect()>, Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());
     CreateHudText(EventPlayer(), null, null, @"primary_fire -> none damage", Location.Right, 3);
     helpHud = Append(helpHud, LastTextID());

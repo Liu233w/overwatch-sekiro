@@ -28,7 +28,7 @@ Player.Mercy
     {
         DestroyHudText(mercyShiftHud);
     }
-    CreateHudText(EventPlayer(), <"ability 1: <0> sec", mercyShiftCD>);
+    CreateHudText(EventPlayer(), <@"ability 1: <0> sec", mercyShiftCD>);
     mercyShiftHud = LastTextID();
 }
 
@@ -280,7 +280,7 @@ if (IsDebugging())
 {
     if (debugHudMercy == 0)
     {
-        CreateHudText(EventPlayer(), <"status: <0> - initial: <1>", currentStateMercy, stateInitedMercy>);
+        CreateHudText(EventPlayer(), <@"status: <0> - initial: <1>", currentStateMercy, stateInitedMercy>);
         debugHudMercy = LastTextID();
     }
 }

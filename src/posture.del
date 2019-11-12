@@ -214,11 +214,11 @@ private method PostureHud(Color color)
     }
     // MinWait();
 
-    CreateInWorldText(AllPlayers(), <"<0>%", (posture / MaxPosture(EventPlayer())) * 100>, EventPlayer(), 1, 
+    CreateInWorldText(AllPlayers(), <@"<0>%", (posture / MaxPosture(EventPlayer())) * 100>, EventPlayer(), 1, 
         Clipping.ClipAgainstSurfaces, InworldTextRev.VisibleToPositionAndString, color);
     inWorldPostureText = LastTextID();
 
-    CreateHudText(EventPlayer(), <"defend: <0>%", (posture / MaxPosture(EventPlayer())) * 100>, null, null, Location.Left, 0, color);
+    CreateHudText(EventPlayer(), <@"defend: <0>%", (posture / MaxPosture(EventPlayer())) * 100>, null, null, Location.Left, 0, color);
     postureHud = LastTextID();
 }
 

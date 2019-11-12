@@ -55,7 +55,7 @@ if (ArrayContains(player_slot, EventPlayer()))
     }
     else
     {
-        BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+        BigMessage(AllPlayers(), <@"<0> win", alivePlayer>);
     }
 
     player_slot[0] = null;
@@ -70,7 +70,7 @@ if (ArrayContains(player_slot, EventPlayer()))
     if (GameBegin())
     {
         define alivePlayer = RemoveFromArray(player_slot, EventPlayer())[0];
-        BigMessage(AllPlayers(), <"<0> win", alivePlayer>);
+        BigMessage(AllPlayers(), <@"<0> win", alivePlayer>);
     }
 
     player_slot[0] = null;
