@@ -1,0 +1,85 @@
+settings
+{
+	modes
+	{
+		disabled Assault
+		{
+			Limit Roles: 2 Of Each Role Per Team
+		}
+
+		disabled Control
+		{
+			Limit Roles: 2 Of Each Role Per Team
+		}
+
+		disabled Escort
+		{
+			Limit Roles: 2 Of Each Role Per Team
+		}
+
+		disabled Hybrid
+		{
+			Limit Roles: 2 Of Each Role Per Team
+		}
+
+		Practice Range
+	}
+}
+
+rule("Set hero damage")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Alive(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Damage Received(Event Player, 0);
+	}
+}
+
+rule("deal damage")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Interact) == True;
+	}
+
+	actions
+	{
+		Event Player.A = Players Within Radius(Eye Position(Event Player), 5, Opposite Team Of(Team Of(Event Player)), Off);
+		Set Damage Received(Event Player.A, 100);
+		Wait(0.016, Ignore Condition);
+		Kill(Event Player.A, Event Player);
+	}
+}
+
+rule("when damaged")
+{
+	event
+	{
+		Player Took Damage;
+		All;
+		All;
+	}
+
+	actions
+	{
+		Small Message(All Players(All Teams), Custom String("{0} received damage", Event Player));
+	}
+}
